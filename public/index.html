@@ -280,6 +280,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .irow .nm,.srow .nm{font-size:13.5px;font-weight:500} .nm.g0{color:var(--g0)} .nm.g1{color:var(--g1)} .nm.g2{color:var(--g2)} .nm.g3{color:var(--g3)}
 .irow .iv,.srow .iv{font-size:12px;color:var(--muted)}
 .irow .ib{display:flex;gap:4px}
+.irow .is{grid-column:1/-1;font-size:11px;color:var(--muted);opacity:.85} .irow .is:empty{display:none}
 .irow .ip{grid-column:1/-1;font-size:11.5px;color:var(--muted)} .irow .ip b{color:var(--pw);font-weight:600} .irow .ip .br{color:var(--ember)}
 .irow button,.srow button,.crow button{font:inherit;font-size:11.5px;font-family:var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);padding:4px 7px;border-radius:2px;cursor:pointer;white-space:nowrap}
 .irow button.enh{border-color:rgba(240,138,62,.6);color:var(--pw)} .irow button.sell,.crow button{color:var(--muted)}
@@ -348,7 +349,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hsub" id="hSub"></div>
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
       <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><b id="fameNum">0</b><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
-      <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 4·8에서 숙련 ★</span></h4><div id="skillBox"></div></div>
+      <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
       <div class="mini"><div><span>레벨</span><b id="mLvl">1</b></div><div><span>처치</span><b id="mKill">0</b></div><div><span>용병</span><b id="mAlly">0</b></div></div>
       <div class="stats" id="hStats"></div>
       <dl class="facts">
@@ -430,8 +431,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
     <h3>스킬</h3>
     <ul>
-      <li>출정할 때 2번, <b>레벨이 오를 때마다</b> 1번, 세계를 정복할 때 2번 스킬을 고른다. 무작위로 나온 3개 중 1개를 고르고, 같은 스킬은 3랭크까지 올린다.</li>
-      <li>스킬은 <b>전투·생존·성장·재물</b> 네 계열로 나뉜다. 한 계열의 랭크 합이 <b>4</b>와 <b>8</b>이 되면 숙련 보너스가 붙는다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵다.</li>
+      <li><b>레벨 3부터 2레벨마다</b>(3·5·7…) 1번, 세계를 정복할 때 1번 스킬을 고른다. 한 판에 고르는 횟수가 많지 않으니 신중하게 고르자. 무작위로 나온 3개 중 1개를 고르고, 같은 스킬은 3랭크까지 올린다.</li>
+      <li>스킬은 <b>전투·생존·성장·재물</b> 네 계열로 나뉜다. 한 계열의 랭크 합이 <b>3</b>과 <b>6</b>이 되면 숙련 보너스가 붙는다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵다.</li>
       <li>스킬은 언제나 직접 고른다. 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
     </ul>
     <div class="tblWrap"><table id="helpSkills"></table></div>
@@ -458,7 +459,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
     <h3>아이템과 강화</h3>
     <ul>
-      <li>등급: <span style="color:var(--g0)">일반</span> · <span style="color:var(--g1)">희귀</span> · <span style="color:var(--g2)">영웅</span> · <span style="color:var(--g3)">전설</span>. 전설은 드물지만 수치가 압도적이다(예: 힘 +27, 전투력 +70%).</li>
+      <li>등급: <span style="color:var(--g0)">일반</span> · <span style="color:var(--g1)">희귀</span> · <span style="color:var(--g2)">영웅</span> · <span style="color:var(--g3)">전설</span>. 영웅은 드물고 전설은 극히 드물다. 불리한 싸움에서 이길수록, 지배자를 쓰러뜨릴수록, 깊은 세계와 끝없는 전장일수록 높은 등급이 나올 확률이 오른다. 명성 상점에도 아주 가끔 나온다.</li>
       <li>세계마다 장비 세트가 다르다. 지상계 → 지하 세계(망자의 뼈칼 등) → 마계(타락한 마검 등) → 심연 → 공허 순서로 수치가 크게 오른다. 소지품에는 등급, 어느 세계 장비인지, 어디서 얻었는지(전투 승리·지배자 처치·탐험·의뢰·상점 등)가 표시된다.</li>
       <li>같은 부위(각 능력치, 전투력, 승리확률, 도망 확률)는 <b>하나만</b> 착용한다. 더 좋은 것이 들어오면 자동으로 교체되고 기존 것은 금화로 팔린다.</li>
       <li><b>강화</b>: 소지품의 강화 버튼으로 금화를 써서 +1~+10까지 올린다. +2까지는 조금씩 오르다가 <b>+3부터 크게</b> 커지고, 전설 장비는 +10이면 25배가 된다. 등급이 낮을수록 강화 효율이 낮다(일반 15%, 희귀 35%, 영웅 70%, 전설 100%). 대신 <b>+1부터는 실패하면 장비가 무조건 부서진다.</b> 버튼 아래에 성공했을 때의 효과가 미리 표시된다.</li>
@@ -573,7 +574,7 @@ function renderHero(){
      const enh=canEnhance(i)?`<button type="button" class="enh" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'} title="+${pl}→+${pl+1} 성공 ${Math.round(ENH_RATE[pl]*100)}%${pl>=1?' · 실패하면 파괴':' · 실패해도 그대로'}">강화 ${Math.round(ENH_RATE[pl]*100)}%·${fmt(cost)}</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
-     return `<div class="irow" title="${esc(tip)}"><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}</span><span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'}>판매 ${fmt(sellPrice(run,i))}</button></div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
+     return `<div class="irow" title="${esc(tip)}"><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}</span><span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'}>판매 ${fmt(sellPrice(run,i))}</button></div><div class="is">${i.src?`획득: ${esc(i.src)}${i.where?' · '+esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
@@ -898,7 +899,7 @@ if(store.get('bgm',0)){const kick=()=>{document.removeEventListener('pointerdown
 document.addEventListener('visibilitychange',()=>{});
 let helpWasPaused=false;
 function fillHelpSkills(){const t=$('helpSkills');if(!t||t.dataset.done)return;t.dataset.done=1;
-  t.innerHTML=ROLES.map(role=>`<tr><th>${role}<br><small style="font-weight:400">숙련 4: ${MASTERY[role](1)}<br>숙련 8: ${MASTERY[role](2)}</small></th><td>${SKILLS.filter(k=>k.role===role).map(k=>`<b>${k.name}</b> ${k.d(1)}`).join('<br>')}</td></tr>`).join('');
+  t.innerHTML=ROLES.map(role=>`<tr><th>${role}<br><small style="font-weight:400">숙련 3: ${MASTERY[role](1)}<br>숙련 6: ${MASTERY[role](2)}</small></th><td>${SKILLS.filter(k=>k.role===role).map(k=>`<b>${k.name}</b> ${k.d(1)}`).join('<br>')}</td></tr>`).join('');
   $('helpTraits').innerHTML=[1,2,3,4].map(w=>`<tr><th>${STAGES[w].name}</th><td><b>${WORLD_TRAITS[w].name}</b> · ${WORLD_TRAITS[w].d}</td></tr>`).join('');}
 function openHelp(){fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}

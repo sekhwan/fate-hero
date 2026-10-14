@@ -123,14 +123,14 @@ function makeItem(r,grade,kind,tier){
   const sv=(k==='cha'||k==='luk')?[1,3,6,12][grade]:Math.round(g.stat*TIER_STAT[tier]);
   return Object.assign(base,{name:itemNameOf(k,grade,tier),stat:k,v:sv,d:`${STAT_NAMES[k]} +${sv}`});
 }
-function rollGrade(r,bonus){const b=clamp(bonus||0,0,1);const w=[70*(1-0.7*b),22+8*b,5+14*b,0.25+2.2*b];let v=r()*w.reduce((a,c)=>a+c,0);for(let i=0;i<4;i++){if((v-=w[i])<=0)return i;}return 0;}
+function rollGrade(r,bonus){const b=clamp(bonus||0,0,1);const w=[70*(1-0.5*b),26+6*b,GW[0]+GW[1]*b,GW[2]+GW[3]*b];let v=r()*w.reduce((a,c)=>a+c,0);for(let i=0;i<4;i++){if((v-=w[i])<=0)return i;}return 0;}
 function makeShop(s){
   const r=s.r, sc=rs(s,1.3)*(1+s.stage), out=[];
   const tr=tierOf(s);
   if(r()<0.5) out.push({item:makeItem(r,0,'heal'),cur:'gold',price:Math.round(110*sc*(1-SKV.discount*sk(s,'merchant')))});
   const dc=1-SKV.discount*sk(s,'merchant');
   for(let i=0;i<2;i++){const g=rollGrade(r,0.1+SKV.appraise*sk(s,'appraise'));out.push({item:makeItem(r,g,null,tr),cur:'gold',price:Math.round(GRADES[g].gold*sc*dc)});}
-  for(let i=0;i<2;i++){const x=r();const gg=x<0.04?3:x<0.35?2:1;out.push({item:makeItem(r,gg,null,tr),cur:'fame',price:Math.round(GRADES[gg].fame*(1+s.stage*0.5))});}
+  for(let i=0;i<2;i++){const x=r();const gg=x<0.006?3:x<0.12?2:1;out.push({item:makeItem(r,gg,null,tr),cur:'fame',price:Math.round(GRADES[gg].fame*(1+s.stage*0.5))});}
   if(r()<0.12) out.push({item:makeItem(r,1,'revive'),cur:'fame',price:Math.round(80*(1+s.stage*0.5))});
   return out;
 }
@@ -244,13 +244,14 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 
 // ===== 스킬 =====
 // 레벨업과 지배자 처치 때마다 3개 중 1개를 고른다. 같은 스킬은 3랭크까지.
-let SKV={blade:0.10,giant:0.10,boss:0.06,command:0.03,cmdcap:2,cmdHire:2,grit:0.6,flee:0.45,talk:0.45,camp:0.4,scholar:0.2,fame:0.8,famecap:0.1,lucky:4,charm:6,treasure:2.5,appraise:1.2,smith:0.07,ward:0.3,merchant:1.0,discount:0.1,startPicks:2,conquerPicks:2,mT1:4,mT2:8,mPow:[0,0.12,0.5],mGold:[0,0.3,0.8],mEnh:[0,0.03,0.1],mStat:[0,5,15],mDmg:[0,0.5,0.8],mXp:[0,0.5,1.5],mItem:[0,0.3,0.8],mGrit:[0,0.15,0.4],mRetry:[1.05,0.88,0.75]};
+let SKV={blade:0.16,giant:0.15,boss:0.10,command:0.05,cmdcap:2,cmdHire:3,grit:0.6,flee:0.5,talk:0.5,camp:0.5,scholar:0.3,fame:1.2,famecap:0.15,lucky:6,charm:9,treasure:2.0,appraise:0.25,smith:0.1,ward:0.45,merchant:2.0,discount:0.12,startPicks:0,conquerPicks:1,pickFrom:3,pickEvery:2,mT1:3,mT2:6,mPow:[0,0.12,0.5],mGold:[0,0.3,0.8],mEnh:[0,0.03,0.1],mStat:[0,5,15],mDmg:[0,0.5,0.8],mXp:[0,0.5,1.5],mItem:[0,0.45,1.1],mGrit:[0,0.15,0.4],mRetry:[1.05,0.88,0.75]};
 const ROLES=['전투','생존','성장','재물'];
 const MASTERY={'전투':t=>`전투력 +${Math.round(SKV.mPow[t]*100)}%`,'생존':t=>`부활 +1, 받는 피해 -${Math.round(SKV.mDmg[t]*100)}%, 최종 지배자 재도전 +${t}, 재도전마다 지배자 약화 ${Math.round((1-SKV.mRetry[t])*100)}%, 생명력 절반 이하일 때 전투력 +${Math.round(SKV.mGrit[t]*100)}%`,'성장':t=>`모든 능력치 +${SKV.mStat[t]}, 경험치 +${Math.round(SKV.mXp[t]*100)}%`,'재물':t=>`장비 효과 +${Math.round(SKV.mItem[t]*100)}%, 금화 +${Math.round(SKV.mGold[t]*100)}%, 강화 확률 +${Math.round(SKV.mEnh[t]*100)}%p`};
 function roleRanks(s,role){let v=0;for(const k in (s.skills||{})) if(SKILL_BY[k]&&SKILL_BY[k].role===role) v+=s.skills[k];return v;}
 function mastery(s,role){const v=roleRanks(s,role);return v>=SKV.mT2?2:v>=SKV.mT1?1:0;}
-let FRESH_SK=[1,0.507,0.379,0.368,0.075,1];
-let DIFF=[1.513,3.267,4.136,4.18,15.984,1.8];
+let GW=[2,5,0.06,0.6]; // 영웅·전설 가중치(기본, 보너스 비례)
+let FRESH_SK=[1,0.754,0.742,0.963,0.373,1];
+let DIFF=[0.934,1.421,1.43,1.099,2.467,0.7];
 const SKILLS=[
   {id:'blade',role:'전투',name:'검술',d:r=>`전투력 +${Math.round(SKV.blade*r*100)}%`},
   {id:'giant',role:'전투',name:'거인 사냥',d:r=>`승률 60% 미만인 싸움에서 승률 +${Math.round(SKV.giant*r*100)}%p`},
@@ -542,7 +543,7 @@ function gainItem(s,out,bonus,src){
 }
 function gainXp(s,amt,out){
   s.xp+=amt*(1+traitSum(s.hero,'xp',0)+SKV.scholar*sk(s,'scholar')+SKV.mXp[mastery(s,'성장')]);
-  while(s.xp>=s.lvl*10){s.xp-=s.lvl*10;s.lvl++;s.pendingPicks=(s.pendingPicks||0)+1;const o=s.maxHp;s.maxHp=hpMax(s);s.hp=Math.min(s.maxHp,s.hp+(s.maxHp-o)+Math.round(s.maxHp*0.1));out.push({t:'good',x:`레벨 ${s.lvl} 달성`});}
+  while(s.xp>=s.lvl*10){s.xp-=s.lvl*10;s.lvl++;if(s.lvl>=SKV.pickFrom&&(s.lvl-SKV.pickFrom)%SKV.pickEvery===0)s.pendingPicks=(s.pendingPicks||0)+1;const o=s.maxHp;s.maxHp=hpMax(s);s.hp=Math.min(s.maxHp,s.hp+(s.maxHp-o)+Math.round(s.maxHp*0.1));out.push({t:'good',x:`레벨 ${s.lvl} 달성`});}
 }
 function kill(s,n,out){s.killed+=n.share;s.regionKilled[s.region]+=n.share;s.kills=(s.kills||0)+n.count;}
 function winRewards(s,n,p,out){
@@ -682,7 +683,7 @@ function leaveHunt(s){
   s.stage=s.huntFrom; s.conquered=true; return advanceStage(s);
 }
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.1.0';
+const ENGINE_VERSION='1.2.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -771,4 +772,4 @@ function isImportant(s,c,mode){
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
 globalThis.FateEngine={ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+if(typeof module!=='undefined') module.exports={ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};

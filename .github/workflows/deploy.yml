@@ -89,4 +89,4 @@ jobs:
       - name: 게시된 페이지 확인
         run: |
           curl -fsS "https://sekhwan.github.io/fate-hero/" | grep -q '운명의 용사'
-          curl -fsS "https://sekhwan.github.io/fate-hero/engine.js" | grep -q "ENGINE_VERSION='1.1.0'"
+          V=$(grep -o "ENGINE_VERSION='[0-9.]*'" public/engine.js); sleep 20; curl -fsS "https://sekhwan.github.io/fate-hero/engine.js" | grep -q "$V"
