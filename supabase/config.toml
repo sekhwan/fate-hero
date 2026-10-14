@@ -1,0 +1,7 @@
+project_id = "fate-hero"
+
+[functions.start-run]
+verify_jwt = false
+
+[functions.submit-run]
+verify_jwt = false

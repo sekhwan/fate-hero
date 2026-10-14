@@ -1,0 +1,67 @@
+# main에 올라오면 1) Supabase DB·서버 함수를 배포하고 2) public 폴더를 GitHub Pages에 올린다.
+name: deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: link
+        run: supabase link --project-ref "$PROJECT_REF" -p "$SUPABASE_DB_PASSWORD"
+      - name: db push
+        run: supabase db push -p "$SUPABASE_DB_PASSWORD"
+      - name: RUN_SECRET (처음 한 번만 무작위로 만든다)
+        run: |
+          if ! supabase secrets list --project-ref "$PROJECT_REF" | grep -q RUN_SECRET; then
+            supabase secrets set RUN_SECRET="$(openssl rand -hex 32)" --project-ref "$PROJECT_REF"
+          fi
+      - name: functions
+        run: |
+          supabase functions deploy start-run --no-verify-jwt --project-ref "$PROJECT_REF"
+          supabase functions deploy submit-run --no-verify-jwt --project-ref "$PROJECT_REF"
+      - name: smoke test
+        run: |
+          KEY=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          curl -fsS -X POST "https://$PROJECT_REF.supabase.co/functions/v1/start-run" -H "apikey: $KEY" -H "Content-Type: application/json" -d '{}'
+  pages:
+    needs: backend
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: config.js (공개 키를 Supabase에서 직접 받아 넣는다)
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          KEY=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          test -n "$KEY" && test "$KEY" != "null"
+          printf 'window.FATE_CONFIG = { supabaseUrl: "https://%s.supabase.co", anonKey: "%s" };\n' "$PROJECT_REF" "$KEY" > public/config.js
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+      - id: deployment
+        uses: actions/deploy-pages@v4
