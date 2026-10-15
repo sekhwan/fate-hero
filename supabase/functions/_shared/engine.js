@@ -560,7 +560,7 @@ function winRewards(s,n,p,out){
     out.push({t:'item',x:`불리한 싸움을 이겨내고 각성했다: ${STAT_NAMES[k]} +${v}`}); }
   if(n.quest){ const q=n.q; s.activeQuest=null; s.quests++; (s.doneQ=s.doneQ||[]).push(q.giver);
     s.fame+=40; out.push({t:'fame',x:'의뢰 완수 · 명성 +40'}); gainItem(s,out,0.7,`의뢰 보상 (${q.giver})`);
-    const ks=STAT_KEYS.slice().sort(()=>s.r()-0.5).slice(0,2); ks.forEach(k=>{const v=3+Math.floor(s.r()*3);s.stats[k]+=v;out.push({t:'item',x:`${q.giver}의 하사품: ${STAT_NAMES[k]} +${v}`});});
+    const ks=STAT_KEYS.slice();for(let z=ks.length-1;z>0;z--){const y=Math.floor(s.r()*(z+1));[ks[z],ks[y]]=[ks[y],ks[z]];}ks.length=2; ks.forEach(k=>{const v=3+Math.floor(s.r()*3);s.stats[k]+=v;out.push({t:'item',x:`${q.giver}의 하사품: ${STAT_NAMES[k]} +${v}`});});
     const o=s.maxHp;s.maxHp=hpMax(s);s.hp+=Math.max(0,s.maxHp-o);
     if(!s.spouse && s.fame>=q.min+60 && s.stats.cha>=11){ s.queue.splice(1,0,{type:'event',kind:'proposal',q}); }
     else if(!s.spouse) out.push({t:'bad',x:`명성이 ${q.min+60} 이상이고 매력이 11 이상이었다면 ${q.rel}와(과)의 혼담이 오갔을지 모른다`});
@@ -683,7 +683,7 @@ function leaveHunt(s){
   s.stage=s.huntFrom; s.conquered=true; return advanceStage(s);
 }
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.2.0';
+const ENGINE_VERSION='1.2.1';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
