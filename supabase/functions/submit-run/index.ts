@@ -19,7 +19,19 @@ Deno.serve(async (req) => {
   try {
     verified = await verifySubmission(body, runSecret());
   } catch (e) {
-    return json({ error: (e as Error).message }, 400);
+    const msg = (e as Error).message;
+    // 재생이 어긋난 기록은 원인을 찾을 수 있게 보관한다 (게임 기록뿐, 개인정보 없음)
+    if (msg.startsWith('기록 재생 실패')) {
+      try {
+        const b = body as Record<string, unknown>;
+        await fetch(restUrl('run_failures'), {
+          method: 'POST',
+          headers: { ...adminHeaders(), Prefer: 'return=minimal' },
+          body: JSON.stringify({ seed: Number(b?.seed) || null, version: String(b?.version ?? ''), error: msg, log: b?.log ?? null }),
+        });
+      } catch (err) { console.error('failure log', err); }
+    }
+    return json({ error: msg }, 400);
   }
 
   try {

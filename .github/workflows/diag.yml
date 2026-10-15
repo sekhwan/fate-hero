@@ -1,0 +1,34 @@
+# diag 브랜치에 커밋이 올라오면, 재생 실패 기록을 Supabase에서 꺼내 diag-out 브랜치에 저장한다(원인 분석용).
+name: diag
+on:
+  push:
+    branches: [diag]
+permissions:
+  contents: write
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: dump failures
+        run: |
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          AUTH=""; case "$SERVICE" in eyJ*) AUTH="Authorization: Bearer $SERVICE";; esac
+          mkdir -p out
+          curl -fsS "https://$PROJECT_REF.supabase.co/rest/v1/run_failures?select=*&order=id.desc&limit=10" -H "apikey: $SERVICE" -H "$AUTH" > out/failures.json
+          wc -c out/failures.json
+      - name: push to diag-out
+        run: |
+          git config user.name "diag-bot"; git config user.email "diag-bot@users.noreply.github.com"
+          git checkout --orphan diag-out
+          git rm -rfq . ; cp out/failures.json failures.json
+          git add failures.json; git commit -qm "diag dump $(date -u +%FT%TZ)"
+          git push -f origin diag-out
