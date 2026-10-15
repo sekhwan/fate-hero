@@ -21,13 +21,13 @@ Deno.serve(async (req) => {
   } catch (e) {
     const msg = (e as Error).message;
     // 재생이 어긋난 기록은 원인을 찾을 수 있게 보관한다 (게임 기록뿐, 개인정보 없음)
-    if (msg.startsWith('기록 재생 실패')) {
+    if (msg.startsWith('기록 재생 실패') || msg.startsWith('게임 버전이')) {
       try {
         const b = body as Record<string, unknown>;
         await fetch(restUrl('run_failures'), {
           method: 'POST',
           headers: { ...adminHeaders(), Prefer: 'return=minimal' },
-          body: JSON.stringify({ seed: Number(b?.seed) || null, version: String(b?.version ?? ''), error: msg, log: b?.log ?? null }),
+          body: JSON.stringify({ seed: Number(b?.seed) || null, version: String(b?.version ?? ''), error: msg, log: { nickname: b?.nickname ?? null, ts: b?.ts ?? null, token: b?.token ?? null, log: b?.log ?? null } }),
         });
       } catch (err) { console.error('failure log', err); }
     }
