@@ -1,0 +1,29 @@
+# admin 브랜치의 admin/insert.json 한 줄을 랭킹에 넣는다 (운영자 수동 등록, version에 -manual 표시)
+name: admin
+on:
+  push:
+    branches: [admin]
+permissions:
+  contents: read
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  insert:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: insert
+        run: |
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          AUTH=""; case "$SERVICE" in eyJ*) AUTH="Authorization: Bearer $SERVICE";; esac
+          B="https://$PROJECT_REF.supabase.co/rest/v1"
+          curl -fsS -X POST "$B/runs?on_conflict=seed" -H "apikey: $SERVICE" -H "$AUTH" -H "Content-Type: application/json" -H "Prefer: resolution=merge-duplicates,return=minimal" --data @admin/insert.json
+          SEED=$(jq -r .seed admin/insert.json)
+          curl -fsS "$B/runs?select=seed,nickname,kills,power,reach,version&seed=eq.$SEED" -H "apikey: $SERVICE" -H "$AUTH"
+          curl -fsS -X POST "$B/rpc/run_ranks" -H "apikey: $SERVICE" -H "$AUTH" -H "Content-Type: application/json" -d "{\"p_seed\":$SEED}"
