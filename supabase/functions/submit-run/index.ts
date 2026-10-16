@@ -1,6 +1,7 @@
 // 플레이 기록을 처음부터 다시 재생해 검증한 뒤 랭킹에 올린다.
 import { LIMITS, verifySubmission } from '../_shared/verify.js';
 import { adminHeaders, cors, json, restUrl, runSecret } from '../_shared/http.ts';
+import { worldRank } from '../_shared/worldrank.ts';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -50,7 +51,9 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ p_seed: verified.row.seed }),
     });
     const ranks = rk.ok ? await rk.json() : null;
-    return json({ ok: true, summary: verified.summary, ranks });
+    let world = null;
+    try { world = await worldRank(verified); } catch (e) { console.error('world', e); }
+    return json({ ok: true, summary: verified.summary, ranks, world });
   } catch (e) {
     console.error(e);
     return json({ error: '서버 오류' }, 500);

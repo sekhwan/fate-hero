@@ -30,14 +30,15 @@
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.6;margin:0;
   background-image:radial-gradient(ellipse at 20% -10%,rgba(210,166,78,.08),transparent 60%),radial-gradient(ellipse at 100% 110%,rgba(216,83,59,.07),transparent 55%)}
-.wrap{max-width:1140px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
-header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;border-bottom:1px solid var(--line);padding-bottom:18px}
-h1{font-family:var(--display);font-weight:400;font-size:clamp(34px,6vw,54px);line-height:1;margin:0}
+.wrap{max-width:1140px;margin:0 auto;padding-inline:16px;padding-block:14px 64px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+header>div:first-child{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px}
+h1{font-family:var(--display);font-weight:400;font-size:clamp(24px,3.4vw,32px);line-height:1;margin:0}
 h1 span{color:var(--brass)}
-.tag{color:var(--muted);margin:6px 0 0;max-width:48ch;text-wrap:balance}
+.tag{display:none}
 .counter{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:right}
-.counter b{display:block;font-size:20px;color:var(--ember);font-weight:600}
-.stages{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}
+.counter b{display:inline;margin-left:6px;font-size:18px;color:var(--ember);font-weight:600}
+.stages{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .stage{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--fg);padding:7px 12px;border-radius:2px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
 .stage small{font-family:var(--mono);color:var(--muted);font-size:11px}
 .stage[aria-pressed="true"]{border-color:var(--brass);background:rgba(210,166,78,.1)}
@@ -223,6 +224,9 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .rankTbl td,.rankTbl th{white-space:nowrap}
 .rankTbl td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .rankTbl tr.me td{color:var(--brass)}
+.botTag{display:inline-block;font-size:10px;padding:0 5px;margin-left:4px;border:1px solid #5b5470;border-radius:8px;color:var(--muted);vertical-align:1px}
+.wRes{margin-top:10px} .wRes .wSum{font-weight:700;margin:6px 0} .wRes .wRounds{font-size:12.5px;color:var(--muted);margin:4px 0 8px;line-height:1.6}
+.wRes details{border:1px solid #3a3446;border-radius:6px;padding:6px 10px;margin-top:6px} .wRes summary{cursor:pointer;font-size:13px}
 .rankBox{margin-top:14px;padding:12px 14px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
 .rankBox .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
 .rankBox input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
@@ -232,6 +236,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .monster .art{width:112px;height:112px;display:grid;place-items:center;background:radial-gradient(circle at 50% 60%,rgba(216,83,59,.18),transparent 65%);border:1px solid var(--line)}
 .monster .art.boss{width:136px;height:136px;border-color:var(--ember)}
 .monster .art svg{width:88%;height:88%;image-rendering:pixelated}
+.monster .art{overflow:hidden} .monster .art .mimg{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 6px rgba(0,0,0,.55))} .monster .art .mimg.ghost{filter:grayscale(.7) brightness(.75) hue-rotate(160deg) drop-shadow(0 0 8px rgba(120,200,255,.5));opacity:.88} .monster .art .mpx{display:contents} .monster .art .mpx svg{width:88%;height:88%}
 @media (max-width:480px){.monster .art,.monster .art.boss{width:84px;height:84px}.decide,.autoCard{min-height:400px}}
 .prog{height:4px;background:rgba(255,255,255,.06);margin-top:10px;overflow:hidden}
 .prog i{display:block;height:100%;width:0;background:var(--brass);animation:fillbar linear forwards}
@@ -250,6 +255,112 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .note{color:var(--muted);font-size:12.5px;margin-top:28px;max-width:72ch}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 /* 정비 */
+/* 강화 결과 알림: 화면 가운데 위 */
+.irow button.enh.boosted::after{content:' ▲';color:var(--g2);font-size:10px}
+.toast{position:fixed;left:50%;top:22%;transform:translate(-50%,-8px) scale(.96);z-index:90;min-width:min(340px,calc(100vw - 32px));max-width:calc(100vw - 32px);padding:16px 22px;text-align:center;border:2px solid;background:#1c1922;box-shadow:0 12px 40px rgba(0,0,0,.6);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+.toast b{display:block;font-size:22px;letter-spacing:.02em;margin-bottom:4px} .toast span{font-size:13.5px;color:var(--fg)}
+.toast.ok{border-color:var(--g2)} .toast.ok b{color:var(--g2)}
+.toast.bad{border-color:var(--ember);background:#2a1716} .toast.bad b{color:var(--ember)}
+.toast.warn{border-color:var(--pw)} .toast.warn b{color:var(--pw)}
+.toast.sm{padding:12px 18px} .toast.sm b{font-size:19px} .toast.sm span{font-size:13px;line-height:1.5;display:block;max-width:440px;margin:0 auto}
+
+.toast.t1{border-color:#e8c45a;box-shadow:0 0 0 1px #e8c45a55,0 0 28px #e8c45a88,0 12px 40px rgba(0,0,0,.6);background:linear-gradient(180deg,#2a2412,#1c1922)}
+.toast.t1 b{color:#ffe08a;text-shadow:0 0 10px #e8c45aaa;font-size:25px}
+.toast.t2{border-color:#ffd36b;background:linear-gradient(110deg,#2b1f0c 0%,#4a3510 40%,#7a5a18 50%,#4a3510 60%,#2b1f0c 100%);background-size:250% 100%;animation:tShine 1.1s linear infinite,tPop .35s ease-out;box-shadow:0 0 0 2px #ffd36b66,0 0 46px #ffb43ccc,0 12px 40px rgba(0,0,0,.6)}
+.toast.t2 b{font-size:28px;color:#fff3c4;text-shadow:0 0 6px #fff,0 0 18px #ffb43c}
+.toast.t3{border:3px solid transparent;border-radius:6px;background:linear-gradient(#1a0f24,#1a0f24) padding-box,linear-gradient(90deg,#ff5a5a,#ffd36b,#6bffb0,#6bc7ff,#c07bff,#ff5a5a) border-box;background-size:100% 100%,300% 100%;animation:tRain 1s linear infinite,tPop .45s cubic-bezier(.2,1.6,.4,1);box-shadow:0 0 60px #ffd36b,0 0 120px #c07bff88;padding:22px 30px;z-index:92}
+.toast.t3 b{font-size:36px;background:linear-gradient(90deg,#ffd36b,#fff,#ffb0f0,#ffd36b);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:tShine 1s linear infinite;filter:drop-shadow(0 0 10px #ffd36b)}
+.toast .tier{display:block;font-size:11px;letter-spacing:.3em;margin-bottom:4px;color:#ffe08a;opacity:.9}
+@keyframes tShine{to{background-position:-250% 0}}
+@keyframes tRain{to{background-position:0 0,-300% 0}}
+@keyframes tPop{0%{transform:translate(-50%,0) scale(.6)}70%{transform:translate(-50%,0) scale(1.08)}100%{transform:translate(-50%,0) scale(1)}}
+
+
+.cmb{border:1px dashed #5a4a72;border-radius:6px;padding:6px 8px;margin-bottom:6px;background:#9a6fd60a}
+.cmb.on{border:1px solid #ffd36b;background:linear-gradient(180deg,#ffd36b1c,#ffd36b08);box-shadow:0 0 10px #ffd36b44}
+.cmh{display:flex;flex-direction:column;gap:1px;margin-bottom:5px} .cmh .tipt{font-size:13px;font-weight:700;color:#e0c2ff} .cmb.on .cmh .tipt{color:#ffe08a}
+.cmh em{font-style:normal;font-size:11.5px;color:#fff1c0;opacity:.85}
+
+.cmb.god{border-color:#ff7a6b;background:linear-gradient(180deg,#ff7a6b14,#c07bff10)} .cmb.god .cmh .tipt{color:#ffb4a8}
+.cmb.god.on{border-color:#ffd36b;box-shadow:0 0 16px #ff7a6b88}
+.cmb.no{opacity:.55}
+.gtag{align-self:flex-start;font-size:10px;letter-spacing:.1em;padding:0 6px;border-radius:3px;background:linear-gradient(90deg,#ff7a6b,#c07bff);color:#fff;font-weight:700;margin-bottom:2px}
+.cc.x{border-color:#ff7a6b55;color:#ff9a8e} .cc.x b{color:#ffb4a8}
+.ccs{display:flex;flex-wrap:wrap;gap:4px}
+.cc{font-size:11px;line-height:18px;padding:0 6px;border-radius:9px;border:1px solid #4a4458;color:var(--muted)} .cc b{font-weight:600;color:var(--fg)}
+.cc.ok{border-color:#4fc3a1;background:#4fc3a122;color:#7fe0c3} .cc.ok b{color:#c9f5e8}
+
+.myth{margin:0 0 12px;padding:10px 12px;border:1px solid #c07bff88;border-radius:6px;background:linear-gradient(180deg,#c07bff14,#ffd36b08)}
+.myth h4{margin:0 0 8px;color:#e0c2ff} .myth h4 span{float:right;font-weight:400;font-size:11.5px;color:var(--muted)}
+.mysl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.mys{font-size:12px;padding:5px 8px;border:1px dashed #5a4a72;border-radius:4px;color:var(--muted)} .mys i{font-style:normal;display:block;font-size:10.5px;opacity:.8}
+.mys.on{border:1px solid #ffd36b;color:#ffe08a;background:#ffd36b14;box-shadow:0 0 8px #c07bff55}
+.myreq{list-style:none;margin:8px 0;padding:0;font-size:12px;color:var(--muted)} .myreq li.ok{color:#7fe0c3}
+.mybtn{width:100%;padding:8px;border:1px solid #c07bff;background:#c07bff22;color:#e0c2ff;font-weight:700;cursor:pointer} .mybtn:disabled{opacity:.45;cursor:not-allowed} .mybtn.arm{background:#ff7a6b33;border-color:#ff7a6b;color:#ffd0c8}
+.myn{font-size:11px;color:var(--muted);margin:6px 0 0}
+
+.pvpBox{margin:0 0 14px} .pvpBox h4{margin:0 0 6px}
+.pvpRow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.pv{display:flex;flex-direction:column;align-items:center;padding:5px 2px;border:1px solid #3a3446;border-radius:5px;font-size:11px;color:var(--muted);cursor:help}
+.pv i{font-style:normal;font-size:15px;line-height:1.1} .pv b{font-size:15px;color:var(--fg)}
+.pv.on.pv-ass{border-color:#ff7a6b;color:#ffb4a8} .pv.on.pv-rev{border-color:#7fe0c3;color:#bff3e4} .pv.on.pv-cur{border-color:#b99cff;color:#ddd0ff} .pv.on.pv-bls{border-color:#ffd36b;color:#ffe9a8}
+.pvRace{font-size:11.5px;color:var(--muted);margin-top:5px} .pvRace .s{color:#7fe0c3} .pvRace .w{color:#ff9a8e}
+.pvpBtn{margin-top:6px;width:100%;padding:6px;border:1px solid #4a4458;background:transparent;color:var(--fg);font-size:12.5px;cursor:pointer}
+.duelList{list-style:none;padding:0;margin:10px 0;display:grid;gap:8px}
+.duelList>li{border:1px solid #3a3446;border-radius:6px;padding:8px 10px} .duelList ol li{border:0;padding:1px 0;background:none}
+.duelList .dh{display:flex;justify-content:space-between;gap:8px;font-weight:700} .duelList .dh .w{color:#7fe0c3} .duelList .dh .l{color:#ff9a8e}
+.duelList .ds{font-size:11.5px;color:var(--muted);margin-top:2px} .duelList ol{margin:6px 0 0;padding-left:18px;font-size:12px;color:var(--fg)}
+.pvTbl{width:100%;font-size:12px;border-collapse:collapse;margin:6px 0} .pvTbl td,.pvTbl th{border-bottom:1px solid #2c2836;padding:4px 6px;text-align:left} .pvTbl th{white-space:nowrap;vertical-align:top}
+.qt{display:inline-block;margin-left:5px;padding:0 4px;border-radius:3px;font-size:10px;line-height:15px;border:1px solid #4a4458;color:var(--muted);vertical-align:1px} .qt.hi{border-color:#ffd36b;color:#ffe08a;background:#ffd36b18} .qt.lo{border-color:#5a5060;color:#8b8494}
+
+.xp{margin:-6px 0 14px} .xp .row{display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:var(--muted)} .xp .row b{color:var(--fg);font-size:14px} .xp em{font-style:normal;font-size:11.5px}
+.xp .bar{height:5px;background:rgba(255,255,255,.06);margin-top:3px;position:relative} .xp .bar i{position:absolute;inset:0 auto 0 0;background:#8fb4ff;transition:width .4s}
+.cmbBox{position:relative;margin:0 0 14px} .cmbBox h4{margin:0;cursor:pointer;padding:6px 8px;border:1px dashed #5a4a72;border-radius:5px;display:flex;gap:8px;align-items:baseline}
+.cmbBox h4 #cmbSum{color:#e0c2ff;font-weight:600} .cmbBox .cmbHint{margin-left:auto;font-weight:400;font-size:11px;color:var(--muted)}
+.cmbBox #hCombo{display:none;position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:40;background:#1a1722;border:1px solid #5a4a72;border-radius:6px;padding:8px;box-shadow:0 12px 30px rgba(0,0,0,.6)}
+.cmbBox:hover #hCombo,.cmbBox:focus-within #hCombo,.cmbBox.open #hCombo{display:block}
+.travel{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;font-size:12.5px;color:var(--muted)} .travel>div{display:flex;flex-wrap:wrap;gap:6px} .travel .btn{padding:6px 10px;font-size:12.5px}
+.chip.combo{border-style:dashed;color:var(--muted)}
+.chip.combo.near{border-style:solid;color:#e0c2ff;border-color:#9a6fd6;background:#9a6fd618}
+.chip.combo.on{border-style:solid;color:#1a1206;background:linear-gradient(90deg,#ffd36b,#fff1c0,#ffd36b);background-size:200% 100%;border-color:#ffd36b;font-weight:700;animation:tShine 2.4s linear infinite;box-shadow:0 0 10px #ffd36b88}
+.comboFx{position:fixed;inset:0;z-index:95;display:grid;place-items:center;pointer-events:none;background:radial-gradient(circle at 50% 40%,#2a1640ee,#0b0710f2 70%);opacity:0;transition:opacity .25s}
+.comboFx.show{opacity:1}
+.comboFx .cbox{text-align:center;padding:24px 28px;max-width:calc(100vw - 32px);animation:tPop2 .6s cubic-bezier(.2,1.6,.4,1)}
+.comboFx .ck{font-size:13px;letter-spacing:.5em;color:#e0c2ff;margin-bottom:10px}
+.comboFx .cn{font-size:clamp(26px,6vw,46px);font-weight:800;line-height:1.2;background:linear-gradient(90deg,#ffd36b,#fff,#ffb0f0,#a8ccf0,#ffd36b);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:tShine 1.4s linear infinite;filter:drop-shadow(0 0 14px #ffd36b)}
+.comboFx .cd{margin-top:12px;font-size:15px;color:#fff1c0}
+.comboFx .cc{margin-top:8px;font-size:12px;color:#c2b4de}
+@keyframes tPop2{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.chip.combo.on,.comboFx .cn,.comboFx .cbox{animation:none!important}}
+#burst{position:fixed;inset:0;z-index:91;pointer-events:none;overflow:hidden}
+#burst .fl{position:absolute;inset:0;background:radial-gradient(circle at 50% 30%,#fff8 0,#ffd36b55 18%,transparent 55%);animation:bFlash 1.2s ease-out forwards}
+#burst i{position:absolute;left:50%;top:30%;width:8px;height:8px;border-radius:50%;animation:bFly 1.3s ease-out forwards}
+@keyframes bFlash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+@keyframes bFly{0%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(.3);opacity:0}}
+.evt{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%) scale(.85);z-index:89;display:flex;align-items:center;gap:10px;max-width:calc(100vw - 32px);padding:10px 20px 10px 12px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.55);opacity:0;transition:opacity .15s,transform .15s cubic-bezier(.2,1.5,.4,1);pointer-events:none;color:#0d1117}
+.evt.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.evt .ei{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;font-weight:800;background:rgba(0,0,0,.18)}
+.evt .et{min-width:0;text-align:left} .evt .et b{display:block;font-size:18px;font-weight:800} .evt .et span{display:block;font-size:12.5px;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw}
+.evt.ok{background:#5fd4b0} .evt.bad{background:#b8a9d6} .evt.mid{background:#9cc3ea}
+.src{display:inline-block;padding:0 6px;border-radius:3px;font-size:10.5px;line-height:16px;border:1px solid;margin-right:4px;opacity:1}
+.src.s-shop{color:#f0c75e;border-color:#f0c75e66;background:#f0c75e14}
+.src.s-boss{color:#ff7a6b;border-color:#ff7a6b66;background:#ff7a6b14}
+.src.s-exp{color:#4fd1c5;border-color:#4fd1c566;background:#4fd1c514}
+.src.s-quest{color:#b99cff;border-color:#b99cff66;background:#b99cff14}
+.src.s-heir{color:#ff9ad5;border-color:#ff9ad566;background:#ff9ad514}
+.src.s-rob{color:#ffa552;border-color:#ffa55266;background:#ffa55214}
+.src.s-war{color:#c9d1d9;border-color:#c9d1d955;background:#c9d1d910}
+@media (prefers-reduced-motion:reduce){.toast.t2,.toast.t3,.toast.t3 b,#burst *{animation:none!important}}
+
+/* 설명 말풍선 */
+[data-tt]{cursor:help}
+.tipt{border-bottom:1px dotted color-mix(in srgb,currentColor 55%,transparent)}
+.qi{font-style:normal;display:inline-grid;place-items:center;width:15px;height:15px;border:1px solid var(--line);border-radius:50%;font-size:10px;color:var(--muted);margin-left:2px;vertical-align:1px}
+.tipBox{position:fixed;z-index:80;max-width:min(320px,calc(100vw - 24px));background:#211d28;border:1px solid var(--brass);box-shadow:0 8px 28px rgba(0,0,0,.55);padding:10px 12px;font-size:13px;line-height:1.5;color:var(--fg);pointer-events:none}
+.tipBox b{display:block;color:var(--brass);font-size:13.5px;margin-bottom:4px}
+.tipBox div{color:var(--fg)} .tipBox div+div{margin-top:2px}
+
 /* 구역 색: 전투(붉은색) · 정비(청록색) · 상점(금색) */
 :root{--zb:#e2614b;--zg:#4fbfae;--zs:#e3b341}
 .zone{--z:var(--zb);border:1px solid color-mix(in srgb,var(--z) 55%,transparent);background:color-mix(in srgb,var(--z) 5%,var(--panel));margin-top:16px}
@@ -317,6 +428,14 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .front .actions{margin:12px 0 0}
 .core b{white-space:nowrap}
 @media (max-width:480px){header .tag{display:none}.wrap{padding-block:18px 48px}}
+
+.htags{display:flex;flex-wrap:wrap;gap:5px;margin:8px 0 2px}
+.htags .rc{font-size:13px;font-weight:700;padding:2px 9px;border-radius:4px;background:#e8c45a22;border:1px solid #e8c45a88;color:#ffe08a;cursor:help}
+.htags .chip{font-size:12.5px}
+.facts.top{margin:8px 0 10px;gap:4px 12px}
+.cmbBox{margin:6px 0 14px} .cmbBox h4{margin:0 0 6px}
+.hstrip .tg{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px;font-size:11.5px} .hstrip .tg span{padding:0 6px;border:1px solid #4a4458;border-radius:9px;line-height:18px}
+.hstrip .tg .rc{border-color:#e8c45a88;color:#ffe08a} .hstrip .tg .gd{border-color:#4fc3a188;color:#7fe0c3} .hstrip .tg .bd{border-color:#ff7a6b88;color:#ff9a8e} .hstrip .tg .cb{border-color:#9a6fd6;color:#e0c2ff}
 .hstrip{display:none}
 @media (max-width:840px){
   .hstrip{display:grid;grid-template-columns:minmax(0,1fr);gap:4px 12px;align-items:center;margin-top:12px;padding:10px 12px;background:var(--panel);border:1px solid var(--line);font-size:13px}
@@ -347,17 +466,23 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <section class="roster" aria-label="용사 정보">
       <div class="hname" id="hName"></div>
       <div class="hsub" id="hSub"></div>
+      <div class="htags" id="hTags"></div>
+      <dl class="facts top">
+        <dt>재산</dt><dd id="hWealth"></dd>
+      </dl>
+      <div id="hTraits" hidden></div>
+      <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
+      <div class="xp"><div class="row"><span>레벨 <b id="xpLv">1</b></span><em id="xpTxt"></em></div><div class="bar"><i id="xpBar"></i></div></div>
       <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><b id="fameNum">0</b><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
+      <div class="stats" id="hStats"></div>
       <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
       <div class="mini"><div><span>레벨</span><b id="mLvl">1</b></div><div><span>처치</span><b id="mKill">0</b></div><div><span>용병</span><b id="mAlly">0</b></div></div>
-      <div class="stats" id="hStats"></div>
       <dl class="facts">
         <dt>종족</dt><dd id="hRace"></dd>
-        <dt>재산</dt><dd id="hWealth"></dd>
-        <dt>특성</dt><dd><div class="chips" id="hTraits"></div></dd>
       </dl>
       <div class="party"><h4>동료</h4><div class="pchips" id="party"></div></div>
+      <div class="pvpBox"><h4>PvP 스탯 <span style="float:right;font-weight:400">월드랭킹 대전 전용</span></h4><div class="pvpRow" id="hPvp"></div><div class="pvRace" id="hRaceRel"></div><button type="button" class="pvpBtn" id="pvpBtn">대전 미리보기</button></div>
     </section>
 
     <section class="front" aria-label="토벌 전선">
@@ -373,6 +498,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
         <button class="btn ghost" id="rollBtn" type="button">다시 태어나기</button>
         <button class="btn ghost" id="pauseBtn" type="button" disabled>일시정지 ❚❚</button>
         <button class="btn" id="leaveBtn" type="button" hidden>사냥 마치고 다음 세계로</button>
+        <div class="travel" id="travel" hidden><span>이전 세계 사냥터로 떠나기</span><div id="travelBtns"></div></div>
       </div>
       <div class="zone zb"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3H21v6.5L10 20.5l-2-2L19 7.5V5h-2.5L5.5 16l-2-2z" fill="currentColor" opacity=".9"/><path d="M4 17l3 3-2 2-3-3z" fill="currentColor"/></svg>전투<small>길목마다 결정을 내린다</small></div><div class="zbody"><div id="stage"></div></div></div>
     </section>
@@ -380,7 +506,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
       <div class="gearBody" data-tab="shop">
         <div class="pane pShop"><div class="zone zs"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
-        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div class="items"><div id="hItems"></div></div></div></div></div>
+        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div id="mythBox"></div><div class="items"><div id="hItems"></div></div></div></div></div>
       </div>
     </section>
     <div class="logWrap"><h4>토벌 일지</h4><ul class="log" id="log"><li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li></ul></div>
@@ -388,7 +514,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
   <h2>지난 용사들</h2>
   <div class="histWrap"><table class="hist"><thead><tr><th>용사</th><th>종족</th><th>재산</th><th>세계</th><th>최후</th><th style="text-align:right">토벌률</th><th style="text-align:right">상위</th></tr></thead><tbody id="hist"></tbody></table></div>
-  <p class="note">각 세계의 마지막 지배자를 쓰러뜨리면 정복으로 다음 세계가 열리고, 같은 용사로 이어서 들어갈 수 있다. 다음 세계 입구에서 용사가 저장되므로, 그곳에서 쓰러져도 입구부터 다시 도전할 수 있다. 행운과 매력이 높을수록 행운의 일격과 매혹이 자주 터진다(35에서 30%, 40 이상 50%, 마지막 지배자 제외). 모든 지역의 지배자까지 쓰러뜨려 100%를 채우면 완전 정복으로 기록된다. 평정하지 못한 지역이 많을수록 마지막 지배자가 강해진다. 명성이 30 미만이면 히로인을 만날 수 없고, 150 이상이 되어야 열리는 숨은 장소도 있다. 아이템은 일반(흰색), 희귀(파랑), 영웅(노랑), 전설(황금) 네 등급이다. 승리확률은 내 전투력과 적 전투력의 비율로 기본값이 정해지고, 행운·명성(100마다 +1%p)·아이템이 더해진다. 명성이 높을수록 회유도 쉬워진다. 소지품은 금화를 받고 팔 수 있다. 성수는 상점에 나오면 금화로 자동 구매된다(최대 2병). 부활의 깃털은 명성으로 팔며, 남은 부활이 0회일 때만 자동으로 산다. 지배자 앞에서는 명성이나 금화로 결전을 준비할 수 있고, 동료와 용병은 지배자전에서 합동 공격으로 승률을 보탠다. 마지막 지배자에게는 세 번까지 도전할 수 있다. 상점은 지역마다 새로 열리고, 명성으로 사는 물건은 그만큼 명성이 줄어든다. 상위 %는 매번 가장 무난한 선택을 하는 용사 2,000명과 비교한 값이다. 기록은 이 브라우저에만 남는다.</p>
+  <p class="note">각 세계의 마지막 지배자를 쓰러뜨리면 정복으로 다음 세계가 열리고, 같은 용사로 이어서 들어갈 수 있다. 공허의 옥좌까지 정복하기 전에 쓰러지면 여정은 끝나고, 새 용사로 지상계부터 다시 시작해야 한다. 행운과 매력이 높을수록 행운의 일격과 매혹이 자주 터진다(35에서 30%, 40 이상 50%, 마지막 지배자 제외). 모든 지역의 지배자까지 쓰러뜨려 100%를 채우면 완전 정복으로 기록된다. 평정하지 못한 지역이 많을수록 마지막 지배자가 강해진다. 명성이 30 미만이면 히로인을 만날 수 없고, 150 이상이 되어야 열리는 숨은 장소도 있다. 아이템은 일반(흰색), 희귀(파랑), 영웅(노랑), 전설(황금) 네 등급이다. 승리확률은 내 전투력과 적 전투력의 비율로 기본값이 정해지고, 행운·명성(100마다 +1%p)·아이템이 더해진다. 명성이 높을수록 회유도 쉬워진다. 소지품은 금화를 받고 팔 수 있다. 성수는 상점에 나오면 금화로 자동 구매된다(최대 2병). 부활의 깃털은 명성으로 팔며, 남은 부활이 0회일 때만 자동으로 산다. 지배자 앞에서는 운명의 여신과 가위바위보로 축복이나 저주를 받을 수 있고, 동료와 용병은 지배자전에서 합동 공격으로 승률을 보탠다. 마지막 지배자에게는 세 번까지 도전할 수 있다. 상점은 지역마다 새로 열리고, 명성으로 사는 물건은 그만큼 명성이 줄어든다. 상위 %는 매번 가장 무난한 선택을 하는 용사 2,000명과 비교한 값이다. 기록은 이 브라우저에만 남는다.</p>
 </div>
 
 <div class="modalBg" id="rankModal" hidden role="dialog" aria-modal="true" aria-labelledby="rankTitle">
@@ -400,8 +526,21 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <button class="mode" type="button" data-rk="kills" aria-pressed="true">처치한 악마</button>
       <button class="mode" type="button" data-rk="power" aria-pressed="false">최종 전투력</button>
       <button class="mode" type="button" data-rk="reach_score" aria-pressed="false">도달 기록</button>
+      <button class="mode" type="button" data-rk="world" aria-pressed="false">월드랭킹 (PvP)</button>
     </div>
-    <div class="tblWrap"><table class="rankTbl"><thead><tr><th>순위</th><th>닉네임</th><th>용사</th><th id="rkCol" style="text-align:right">처치</th><th>날짜</th></tr></thead><tbody id="rankBody"><tr><td colspan="5">불러오는 중…</td></tr></tbody></table></div>
+    <div class="tblWrap"><table class="rankTbl"><thead><tr><th>순위</th><th>닉네임</th><th>용사</th><th id="rkCol" style="text-align:right">처치</th><th id="rkCol2">날짜</th></tr></thead><tbody id="rankBody"><tr><td colspan="5">불러오는 중…</td></tr></tbody></table></div>
+  </div>
+</div>
+<div class="modalBg" id="duelModal" hidden role="dialog" aria-modal="true" aria-labelledby="duelTitle">
+  <div class="modal">
+    <button class="x" type="button" id="duelClose" aria-label="닫기">×</button>
+    <h2 id="duelTitle">월드랭킹 대전</h2>
+    <p class="lead">월드랭킹에서는 끝없는 전장 5층마다 순위 위아래 10위 안의 용사와 붙는다. 한 번에 상대 4명과 붙고, 순위는 2.5 × (승 − 패)만큼 움직인다 (3승 1패 +5위, 4승 +10위). 상대는 그 용사가 마지막으로 등록한 카드로 싸운다.</p>
+    <div id="worldBox"></div>
+    <h3 style="margin-top:14px">연습 대전 <small style="font-weight:400;color:var(--muted)">가짜 상대 5명 · 기록에 남지 않는다</small></h3>
+    <table class="pvTbl"><tr><th>상성</th><td>암살 &gt; 부활 &gt; 축복 &gt; 저주 &gt; 암살</td></tr><tr><th>규칙</th><td id="pvpRule"></td></tr></table>
+    <ul class="duelList" id="duelList"></ul>
+    <button type="button" class="btn" id="duelAgain">다시 붙기</button>
   </div>
 </div>
 <div class="modalBg" id="helpModal" hidden role="dialog" aria-modal="true" aria-labelledby="helpTitle">
@@ -413,7 +552,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>목표</h3>
     <ul>
       <li>각 세계의 <b>마지막 지배자</b>를 쓰러뜨리면 그 세계를 <b>정복</b>하고 다음 세계가 열린다.</li>
-      <li>정복한 용사는 능력치·아이템·동료를 그대로 가지고 다음 세계로 이어서 들어갈 수 있다. 세계 입구에서 자동 저장되어, 쓰러져도 입구부터 다시 도전할 수 있다.</li>
+      <li>정복한 용사는 능력치·아이템·동료를 그대로 가지고 다음 세계로 이어서 들어갈 수 있다. 단, <b>공허의 옥좌까지 정복하기 전에 쓰러지면 여정은 끝</b>이다. 저장 지점은 끝없는 전장(그리고 거기서 떠난 사냥터)에서만 쓸 수 있다.</li>
       <li>모든 지역의 지배자까지 쓰러뜨려 토벌률 100%를 채우면 <b>완전 정복</b>이다.</li>
       <li>세계는 지상계 → 지하 세계 → 마계 → 심연 → 공허의 옥좌 순서다. 다음 세계일수록 적이 훨씬 강해진다. 강하게 들어온 용사일수록 적도 조금 더 강해지므로, 유리하지만 압도할 수는 없다.</li>
       <li><b>사냥터</b>: 지상계~심연의 마지막 지배자를 쓰러뜨리면 그 세계의 사냥터에 들어갈 수 있다. 층마다 적이 8%씩 강해지고, 층마다 수문장을 쓰러뜨리면 장비가 확정으로 나온다. 충분히 강해졌다 싶으면 언제든 왼쪽 버튼으로 다음 세계로 떠난다. 다음 세계는 훨씬 강하니, 사냥터에서 장비와 강화를 갖추고 넘어가는 것이 정석이다.</li>
@@ -422,20 +561,47 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
     <h3>진행</h3>
     <ul>
-      <li>한 지역은 <b>전투 → 탐험 → 전투 → 휴식 → 전투 → 탐험 → 결전 준비 → 지배자</b> 순서다.</li>
+      <li>한 지역은 <b>전투 → 탐험 → 전투 → (야영) → 전투 → 탐험 → 지배자</b> 순서다. 야영은 두 지역에 한 번이고, 세계의 마지막 지배자 앞에서만 <b>운명의 내기</b>가 열린다.</li>
       <li><b>전투</b>: 싸운다(승리확률), 도망간다(민첩), 회유한다(매력·지능·명성) 중 고른다.</li>
       <li><b>탐험</b>: 샅샅이 뒤지면 아이템·기연·뜻밖의 만남이 많지만 함정도 많다.</li>
       <li><b>휴식</b>: 생명력을 회복한다. 푹 자면 많이 회복하지만 습격당할 수 있다.</li>
-      <li>생명력이 0이 되면 전사한다. 성수나 부활 효과가 있으면 한 번 버틴다.</li>
+      <li>생명력이 0이 되면 전사한다. 성수나 부활 효과가 있으면 한 번 버틴다. <b>성수와 부활의 깃털은 각각 1개까지만</b> 지닐 수 있고, 더 얻으면 금화로 바뀐다.</li>
+      <li>야영은 <b>두 지역에 한 번</b>만 할 수 있다. 지배자를 쓰러뜨리면 생명력이 50% 회복된다.</li>
     </ul>
 
     <h3>스킬</h3>
     <ul>
-      <li><b>레벨 3부터 2레벨마다</b>(3·5·7…) 1번, 세계를 정복할 때 1번 스킬을 고른다. 한 판에 고르는 횟수가 많지 않으니 신중하게 고르자. 무작위로 나온 3개 중 1개를 고르고, 같은 스킬은 3랭크까지 올린다.</li>
+      <li><b>2·4·6·8·10레벨</b>에 한 번씩, 그 뒤로는 <b>13·16·19…처럼 3레벨마다</b> 스킬을 고른다. 세계를 정복할 때도 1번 고른다. 레벨 옆 경험치 막대에서 다음 스킬 레벨을 볼 수 있다.</li>
+      <li>스킬 습득의 기본 확률은 <b>기술마다 55~85%</b>로 다르게 제시된다. 행운 5당 +2%p, 실패할 때마다 쌓이는 <b>깨달음</b> 1개당 +5%p(최대 95%). 실패하면 그 기회는 사라지고, 성공하면 깨달음은 초기화된다.</li>
       <li>스킬은 <b>전투·생존·성장·재물</b> 네 계열로 나뉜다. 한 계열의 랭크 합이 <b>3</b>과 <b>6</b>이 되면 숙련 보너스가 붙는다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵다.</li>
       <li>스킬은 언제나 직접 고른다. 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
     </ul>
     <div class="tblWrap"><table id="helpSkills"></table></div>
+    <h3>조합</h3>
+    <ul>
+      <li>종족마다 <b>조합</b>이 3개씩 있다. 조건은 <b>종족 + 특정 스킬 + 특정 전설 아이템</b>이다.</li>
+      <li>그중 하나는 <b>전설 조합</b>이다. 타고난 <b>특성</b>까지 맞아야 하는 대신 효과가 압도적이다.</li>
+      <li>조합 아이템은 정해진 세계에서만 나온다. 한 번이라도 손에 넣으면(발견·구매·가문의 유산, 바로 팔려도) 조건을 채운 것으로 친다.</li>
+      <li>세 조건이 모이는 순간 <b>영구히 각성</b>한다. 아이템을 바꾸거나 다음 세계로 가도 효과가 남는다.</li>
+      <li>용사 명부의 조합 칸에서 모든 조건과 지금 갖춘 조건을 볼 수 있다.</li>
+    </ul>
+    <h3>신화 아이템 (엔드게임)</h3>
+    <ul>
+      <li>공허의 옥좌까지 정복한 뒤 <b>끝없는 전장</b>에서만 합성할 수 있다.</li>
+      <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 2,000</b>. 성공 확률은 <b>25%</b>이고, 실패하면 재료가 모두 사라진다.</li>
+      <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고 낮으면 사라진다. 신화는 강화할 수 없지만 효과가 압도적이다.</li>
+      <li>영웅·전설 장비는 같은 이름이라도 능력치가 조금씩 다르다.</li>
+    </ul>
+    <h3>PvP 스탯 (월드랭킹 대전)</h3>
+    <ul>
+      <li>암살·부활·축복·저주 네 가지. 몬스터 전투에는 영향이 없다. 처음엔 모두 0이고, 승리할 때마다 0.1% 확률로 넷 중 하나가 +1(사냥으로는 총합 40까지). 신화 아이템마다 하나가 +10~20(그리스도의 부활 → 부활, 제우스의 암살 → 암살, 오딘의 저주 → 저주, 석가모니의 축복 → 축복).</li>
+      <li><b>5 이상</b>인 스탯만 효과가 있다. 상성: <b>암살 &gt; 부활 &gt; 축복 &gt; 저주 &gt; 암살</b>.</li>
+      <li>한쪽만 상성이 있으면 상대 전투력 <b>80% 감소</b>. 둘 다 상성이 있으면(꼬임) <b>유효 스탯 개수</b>가 많은 쪽이 상대 전투력 80% 감소. 개수가 같으면 상성에 쓰이지 않은 나머지 스탯 총합 차이 1점당 +10%, 나머지가 없으면(모든 상성이 꼬임) 전체 스탯 총합 차이 1점당 +10%. 상성이 없으면 가장 높은 스탯 차이 1점당 +10%. 한쪽만 유효 스탯이 있으면 그쪽 총합 1점당 +10%.</li>
+      <li>마지막 승패는 <b>체급 = 전투력^0.7 × 최대 생명력^0.3</b>에 위 보정을 곱해 정한다. 승률 = 1 ÷ (1 + (상대 ÷ 나)²), 최소 10% · 최대 90%.</li>
+      <li><b>종족 상성</b>: 반천사 → 망자 → 인간 → 고블린 → 드워프 → 오크 → 엘프 → 하플링 → 용인족 → 반천사 (화살표 방향이 이긴다). 지는 쪽은 PvP 스탯 4개가 20% 줄어든 뒤 판정한다.</li>
+      <li>끝없는 전장에서는 <b>5층마다 자동 저장</b>된다. 쓰러지면 마지막 5층 지점에서 다시 시작한다. 단, <b>강화와 신화 합성 결과는 저장 지점에도 즉시 반영</b>되어 불러오기로 되돌릴 수 없다.</li>
+      <li>끝없는 전장에서는 <b>지상계~심연의 사냥터로 떠날 수 있다</b>. 그 세계의 아이템(조합 아이템 포함)을 노릴 수 있고, 사냥을 마치면 떠났던 층으로 돌아온다.</li>
+    </ul>
     <h3>세계 특성</h3>
     <p>지상계를 뺀 세계마다 특성이 있어, 한 가지 빌드가 끝까지 통하지 않는다. 세계에 들어가기 전에 확인하고 스킬을 고르자.</p>
     <div class="tblWrap"><table id="helpTraits"></table></div>
@@ -448,6 +614,12 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>불리한 싸움에서 이길수록 좋은 등급의 아이템과 각성(능력치 상승) 보상이 커진다.</li>
     </ul>
 
+    <h3>종족 · 재산 · 특성</h3>
+    <ul>
+      <li>종족마다 능력치 보정과 고유 효과가 있다. 예: 오크 전투력 +10%·회유 -10%p, 엘프 회유·도망 +10%p, 드워프 생명력 +20%·강화 +5%p, 고블린 금화 +40%·상점 -10%.</li>
+      <li>재산이 많을수록 시작 금화와 기본 장비가 좋고, 부유층·귀족·왕족은 <b>가문의 유산</b>으로 장비를 갖고 출정한다.</li>
+      <li>용사 명부의 종족·재산·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
+    </ul>
     <h3>능력치</h3>
     <div class="tblWrap"><table>
       <tr><th>힘·지능·민첩·체력</th><td>전투력을 올린다. 지능은 회유·함정 회피, 민첩은 도망, 체력은 최대 생명력에도 쓰인다.</td></tr>
@@ -463,6 +635,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>세계마다 장비 세트가 다르다. 지상계 → 지하 세계(망자의 뼈칼 등) → 마계(타락한 마검 등) → 심연 → 공허 순서로 수치가 크게 오른다. 소지품에는 등급, 어느 세계 장비인지, 어디서 얻었는지(전투 승리·지배자 처치·탐험·의뢰·상점 등)가 표시된다.</li>
       <li>같은 부위(각 능력치, 전투력, 승리확률, 도망 확률)는 <b>하나만</b> 착용한다. 더 좋은 것이 들어오면 자동으로 교체되고 기존 것은 금화로 팔린다.</li>
       <li><b>강화</b>: 소지품의 강화 버튼으로 금화를 써서 +1~+10까지 올린다. +2까지는 조금씩 오르다가 <b>+3부터 크게</b> 커지고, 전설 장비는 +10이면 25배가 된다. 등급이 낮을수록 강화 효율이 낮다(일반 15%, 희귀 35%, 영웅 70%, 전설 100%). 대신 <b>+1부터는 실패하면 장비가 무조건 부서진다.</b> 버튼 아래에 성공했을 때의 효과가 미리 표시된다.</li>
+      <li><b>전설 장비 강화</b>는 강화비에 더해 <b>보유 금화의 10%</b>가 든다. 금화를 쌓아 두기보다 쓰는 편이 낫다.</li>
     </ul>
     <div class="tblWrap"><table>
       <tr><th>현재 단계</th><td>+0</td><td>+1</td><td>+2</td><td>+3</td><td>+4</td><td>+5</td><td>+6</td><td>+7</td><td>+8</td><td>+9</td></tr>
@@ -474,13 +647,13 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>금화 · 명성 · 상점</h3>
     <ul>
       <li>상점은 지역마다 새로 열린다. 금화로는 일반·희귀 장비와 성수를, 명성으로는 상위 장비와 부활의 깃털을 산다.</li>
-      <li>성수(최대 2병)와 부활의 깃털(남은 부활이 0일 때, 드물게 등장)만 자동으로 산다. 장비는 직접 사야 한다.</li>
+      <li>성수(1병 없을 때)와 부활의 깃털(남은 부활이 0일 때, 드물게 등장)만 자동으로 산다. 장비는 직접 사야 한다.</li>
       <li>명성은 승리·지배자 처치·의뢰 완수로 오르고, 패배·도망으로 조금 내려간다. 명성이 30 이상이어야 히로인을 만나고, 높을수록 왕이나 대주교의 의뢰가 들어오며, 150 이상이면 숨은 장소가 열린다.</li>
     </ul>
 
     <h3>동료 · 용병 · 의뢰 · 혼인</h3>
     <ul>
-      <li>길 위에서 드물게 <b>히로인·친구·펫</b>을 만난다. 버프를 주거나 죽음에서 한 번 구해준다.</li>
+      <li>길 위에서 드물게 <b>히로인(7명)·친구(5명)·펫(5마리)</b>을 만난다. 저마다 효과가 다르고, 합류 여부는 표시된 확률로 정해진다. 의뢰를 완수하면 <b>배우자 후보(10명)</b> 중 한 명과 혼담이 오갈 때가 있다.</li>
       <li>회유에 성공한 적은 <b>용병</b>이 된다(최대 12명, 1명당 전투력 +4%, 지휘 스킬로 늘어난다). 전투에서 지면 용병이 쓰러진다.</li>
       <li>명성이 쌓이면 <b>의뢰</b>가 들어온다. 완수하면 아이템과 큰 능력치 보상을 받고, 명성과 매력이 충분하면 의뢰인의 가족과 <b>혼인</b>할 수 있다(전투력 +15%).</li>
     </ul>
@@ -488,7 +661,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>지배자</h3>
     <ul>
       <li>마지막 지배자와는 도망이나 회유 없이 <b>싸우는 것만</b> 가능하다.</li>
-      <li>지배자 앞에서 <b>결전 준비</b>를 한다. 명성으로 축복을 받거나 금화로 용병단을 고용하면 승률이 오른다. 동료와 용병은 합동 공격으로 승률을 보탠다.</li>
+      <li>세계의 마지막 지배자 앞에서 운명의 여신이 <b>가위바위보 내기</b>를 건다. 이기면 축복(승률 +8%p, 마지막 지배자 +10%p), 지면 저주(-5%p, 마지막 -6%p), 비기면 그대로다. 행운이 높을수록 이길 확률이 오른다. 거절해도 된다. 동료와 용병은 합동 공격으로 승률을 보탠다.</li>
       <li>지배자를 쓰러뜨리면 그 지역의 남은 악마가 흩어져 지역이 평정된다. 지면 한 번 더 도전할 수 있고(마지막 지배자는 세 번까지, 생존 숙련으로 늘어난다), 도망치면 그 지역은 미평정으로 남는다.</li>
       <li>평정하지 못한 지역이 많을수록 마지막 지배자가 강해진다.</li>
     </ul>
@@ -500,6 +673,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li><b>배속</b> 1×~8×, <b>일시정지</b>(스페이스바), 선택지는 숫자 키 1~3으로도 고를 수 있다.</li>
       <li>제목 아래 <b>배경음</b> 버튼으로 신나는 배경음악을 켜고 끌 수 있다. 깊은 세계로 갈수록 음이 높아져 긴장감이 커진다.</li>
       <li>아주 드물게(천 명 중 한 명) <b>히든 영웅</b>이 태어난다.</li>
+      <li><b>월드랭킹</b>(공개 배포판): 끝없는 전장에 들어서면 영웅 정보의 <b>PvP 스탯 → 월드랭킹 대전</b>에서 등록할 수 있다. 등록할 때마다 새로 넘은 5층마다 앞뒤 10위 안의 상대 4명과 대전하고, 순위가 2.5 × (승 − 패)만큼 움직인다. 이름 옆에 '봇'이 붙은 용사는 연습 상대다.</li>
       <li><b>랭킹</b>(공개 배포판): 여정이 끝나면 닉네임으로 기록을 등록할 수 있다. 처치한 악마, 최종 전투력, 도달 기록 세 가지로 순위를 매긴다. 지상계에서 시작한 용사만 오른다.</li>
     </ul>
   </div>
@@ -525,7 +699,7 @@ async function issueSeed(){
   return {seed:(Math.random()*2**32)>>>0,token:null};
 }
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
-let stage=Math.min(unlocked,store.get('stage',0)), hero=null, run=null, mode=(m=>m==='manual'?'manual':'key')(store.get('mode','key')), autoT=null, lastOut=null, prevStats=null;
+let stage=0, hero=null, run=null, mode=(m=>m==='manual'?'manual':'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
 const dist={};
 function getDist(st){if(dist[st])return dist[st];const a=[];for(let i=1;i<=2000;i++){const h=makeHero((i*2246822519+st*977)>>>0);a.push(pct(autoRun(h,st,i*104729+st)));}a.sort((x,y)=>x-y);return dist[st]=a;}
@@ -539,18 +713,31 @@ function renderStages(){
   STAGES.forEach((s,i)=>{if(s.hunt!=null)return;const b=document.createElement('button');b.className='stage';b.type='button';
     if(s.endless){b.setAttribute('aria-pressed',i===stage);b.disabled=true;b.title='공허의 옥좌를 정복한 용사만 이어서 들어갈 수 있다';
       b.innerHTML=`∞ ${s.name} <small>${best[i]?'최고 '+best[i]+'층':conq[4]?'정복한 용사로 입장':'잠김'}</small>`;nav.appendChild(b);return;}
-    b.setAttribute('aria-pressed',i===stage);b.disabled=i>unlocked||busy;
+    b.setAttribute('aria-pressed',i===stage);b.disabled=i!==0||busy;b.title=i===0?'':'새 용사는 지상계에서만 출정한다. 정복한 용사로 이어서 들어갈 수 있다.';
     const bv=best[i],cq=conq[i],hb=i<4?best[HUNT_BASE+i]:0;b.innerHTML=`${i+1}. ${s.name} <small>${i>unlocked?'잠김':cq===2?'완전 정복':cq===1?'정복 · 최고 '+pfmt(bv)+'%':(bv!=null?'최고 '+pfmt(bv)+'%':'도전 전')}${hb?` · 사냥터 ${hb}층`:''}</small>`;
     if(stage>=HUNT_BASE&&worldOf(stage)===i) b.setAttribute('aria-pressed','true');
     b.onclick=()=>{stage=i;store.set('stage',i);run=null;renderAll();};nav.appendChild(b);});
 }
-async function newHero(){clearTimeout(autoT);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('goBtn').disabled=true;const g=await issueSeed();heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();}
+async function newHero(){TRACK.st.heroes++;setTimeout(()=>TRACK.ev('hero',{race:hero&&hero.race.name,traits:hero&&hero.traits.map(t=>t.name).join(',')}),1200);clearTimeout(autoT);stage=0;store.set('stage',0);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('goBtn').disabled=true;const g=await issueSeed();heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); $('hName').textContent=h.name; $('hSub').textContent=`${h.race.name} ${h.job}`;
-  $('hRace').innerHTML=`${h.race.name}<em>${h.race.note}</em>`;
-  $('hWealth').innerHTML=`${h.wealth.name}<em>${h.wealth.desc}</em>`;
-  $('hTraits').innerHTML=h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}">${t.name}</span>`).join('');
+  {const ri=raceInfo(h.race);$('hRace').innerHTML=`<span class="tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name} <i class="qi">?</i></span><em>${h.race.note}</em>`;}
+  $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 재산 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
+  {const ri=raceInfo(h.race);$('hTags').innerHTML=`<span class="rc tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name}</span>`+h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');}
+  $('hTraits').innerHTML=h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');
+  {const cr=run||null;const L=COMBOS.filter(c=>c.race===h.race.name);const W=i=>STAGES[i]?STAGES[i].name:'';
+   $('hCombo').innerHTML=L.length?L.map(c=>{const st=cr?{skill:sk(cr,c.sk)>0,item:!!(cr.got&&cr.got.includes(c.item))}:{skill:false,item:false};const trOk=!c.tr||h.traits.some(t=>t.name===c.tr);const done=!!(cr&&cr.combos&&cr.combos.includes(c.id));
+     const tag=(ok,lab,v,t)=>`<span class="cc ${ok?'ok':''}"${tipAttr(lab,[t])}>${ok?'✓':'○'} ${lab} <b>${esc(v)}</b></span>`;
+     return `<div class="cmb ${done?'on':''} ${c.god?'god':''} ${trOk?'':'no'}"><div class="cmh">${c.god?'<span class="gtag">전설 조합</span>':''}<span class="tipt"${tipAttr((done?'✦ ':'')+c.name,[done?'각성 완료: 효과가 영구히 적용 중':'세 조건을 모두 갖추면 영구히 각성한다',c.d])}>${done?'✦ ':''}${esc(c.name)}</span><em>${esc(c.d)}</em></div>
+       <div class="ccs">${tag(true,'종족',c.race,'용사의 종족. 이미 갖췄다.')}${c.tr?(trOk?tag(true,'특성',c.tr,'타고난 특성. 이미 갖췄다.'):`<span class="cc x"${tipAttr('특성',['타고난 특성이라 이 용사는 갖출 수 없다. 다시 태어나야 한다.'])}>✕ 특성 <b>${esc(c.tr)}</b></span>`):''}${tag(done||st.skill,'스킬',SKILL_BY[c.sk].name,'이 스킬을 1랭크 이상 익히면 채워진다.')}${tag(done||st.item,'아이템',c.item+' · '+W(c.it[2]),`${W(c.it[2])}에서만 나오는 전설 아이템. 발견·구매로 한 번이라도 손에 넣으면 채워진다.`)}</div></div>`;}).join(''):'<span style="color:var(--muted);font-size:12px">이 종족에는 조합이 없다</span>';}
+  {const ps=run?pvpStats(run):{ass:0,rev:0,cur:0,bls:0};const IC={ass:'🗡',rev:'✚',cur:'☠',bls:'✦'};
+   $('hPvp').innerHTML=PVP_KEYS.map(k=>`<span class="pv pv-${k} ${ps[k]>=5?'on':''}"${tipAttr(PVP_NAME[k]+' '+ps[k],[PVP_DESC[k],ps[k]>=5?'유효 (5 이상)':'5 미만이라 아직 효과 없음','몬스터 전투에는 영향이 없다. 승리할 때마다 0.1% 확률로 넷 중 하나 +1 (사냥으로는 총합 40까지), 신화 아이템마다 +10~20.'])}><i>${IC[k]}</i>${PVP_NAME[k]}<b>${ps[k]}</b></span>`).join('');}
+  {const L=COMBOS.filter(c=>c.race===h.race.name);const done=run?L.filter(c=>run.combos&&run.combos.includes(c.id)).length:0;const godOk=L.some(c=>c.god&&h.traits.some(t=>t.name===c.tr));
+   $('cmbSum').textContent=L.length?`각성 ${done}/${L.length}${godOk?' · 전설 조합 가능':''}`:'이 종족에는 없음';}
+  {const t=run||null;const lv=t?t.lvl:1,xp=t?t.xp:0,need=lv*10;$('xpLv').textContent=lv;$('xpBar').style.width=Math.min(100,xp/need*100)+'%';
+   $('xpTxt').textContent=`경험치 ${Math.floor(xp)} / ${need} · 다음 스킬 Lv ${nextPickLevel(lv)}`;}
+  {const rr=raceRel(h.race.name);$('hRaceRel').innerHTML=rr?`종족 상성: <b class="s">${esc(rr.strong)}</b>에 강함 · <b class="w">${esc(rr.weak)}</b>에 약함 (약하면 PvP 스탯 -20%)`:'종족 상성 없음';}
   $('hStats').innerHTML=STAT_KEYS.map(k=>{const v=st[k],w=Math.min(100,v/30*100),c=v>=16?'hi':v<=7?'lo':'';const up=prevStats&&v>prevStats[k];
     return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i class="${c}" style="width:${w}%"></i></div><b class="${up?'up':''}">${v}</b></div>`}).join('');
   const tmp=run||newRun(h,stage,1);
@@ -558,30 +745,33 @@ function renderHero(){
   const hb=$('hpBar');hb.style.width=(Math.max(0,tmp.hp)/tmp.maxHp*100)+'%';hb.className=tmp.hp/tmp.maxHp<0.35?'low':'';
   $('fameNum').textContent=fmt(tmp.fame); $('fameTitle').textContent=fameTitle(tmp.fame);
   const slots=[['히로인','heroine','명성 30 이상일 때만 만날 수 있다'],['친구','friend','길 위에서 우연히 만난다'],['펫','pet','길 위에서 우연히 만난다']];
-  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}" title="${esc(c?c.d:hint)}"><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
-    `<span class="pc ${tmp.spouse?'on':''}" title="${tmp.spouse?'전투력 +15%, 최대 생명력 +20%':'명성 높은 영웅에게 들어오는 의뢰를 완수하면 혼담이 오간다'}"><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
+  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
+    `<span class="pc ${tmp.spouse?'on':''}"${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
   $('skillBox').innerHTML=ROLES.map(role=>{const rk=roleRanks(tmp,role),m=mastery(tmp,role);const mine=SKILLS.filter(k=>k.role===role&&sk(tmp,k.id));
     const bar=Array.from({length:SKV.mT2},(_,i)=>`<i class="${i<rk?'f':''}"></i>`).join('');
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
-    return `<div class="role ${m?'on':''}" title="${esc(tip)}"><span>${role}${m?`<b>★${m}</b>`:''}</span><div class="sks">${mine.length?mine.map(k=>`<em title="${esc(k.d(sk(tmp,k.id)))}">${k.name}${sk(tmp,k.id)>1?' '+sk(tmp,k.id):''}</em>`).join(''):'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
+    const chips=mine.map(k=>{const rk2=sk(tmp,k.id);return `<em${tipAttr(`${k.name} ${rk2}랭크 · ${k.role}`,[`현재: ${k.d(rk2)}`,rk2<SK_MAX?`다음 랭크: ${k.d(rk2+1)}`:'최고 랭크'])}>${k.name}${rk2>1?' '+rk2:''}</em>`;}).join('');
+    return `<div class="role ${m?'on':''}"${tipAttr(role+' 계열 숙련',tip.split('\n'))}><span>${role}${m?`<b>★${m}</b>`:''}</span><div class="sks">${mine.length?chips:'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
   $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmt(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies;
   const its=run?run.items:[]; const rv=tmp.revive;
   const canSell=run&&!run.dead&&!run.over;
   {const SO=['mult','str','agi','int','con','win','flee','luk','cha'];
-   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it)));
+   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||((b.it.plus||0)-(a.it.plus||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it))));
    const cons={};its.forEach((it,idx)=>{if(slotOf(it))return;const k=it.heal?'성수':it.revive?'부활의 깃털':it.name;(cons[k]=cons[k]||[]).push(idx);});
    const rows=eq.map(({it:i,idx})=>{const ce=canSell&&canEnhance(i);const pl=i.plus||0;const cost=ce?enhCost(run,i):0;
-     const enh=canEnhance(i)?`<button type="button" class="enh" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'} title="+${pl}→+${pl+1} 성공 ${Math.round(ENH_RATE[pl]*100)}%${pl>=1?' · 실패하면 파괴':' · 실패해도 그대로'}">강화 ${Math.round(ENH_RATE[pl]*100)}%·${fmt(cost)}</button>`:'';
+     const er=run?enhRate(run,pl):{rate:ENH_RATE[pl],parts:[['기본',ENH_RATE[pl]]]};const erTxt=er.parts.map(([k,v],j)=>j?`${k} +${Math.round(v*100)}%p`:`${k} ${Math.round(v*100)}%`).join(' + ')+(er.capped?' (최대 95%)':'');
+     const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmt(cost)} = 강화비 ${fmt(cp.base)} + 보유 금화 10% ${fmt(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmt(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmt(cost)}</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
-     return `<div class="irow" title="${esc(tip)}"><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}</span><span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'}>판매 ${fmt(sellPrice(run,i))}</button></div><div class="is">${i.src?`획득: ${esc(i.src)}${i.where?' · '+esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
+     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}>${itemName(i)}</span>${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'}>판매 ${fmt(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
+  renderMyth();
   $('hItems').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.sell;const r=sell(run,ix);if(r){logAct(['s',ix]);logSell(r);prevStats=null;renderAll();}});
   $('hPower').textContent=fmt(power(tmp)/tmp.stageCarry*10);
   $('gGold').textContent=fmt(tmp.gold);$('sGold').textContent=fmt(tmp.gold);$('gFame').textContent=fmt(tmp.fame);
-  {const hpR=Math.max(0,tmp.hp)/tmp.maxHp;$('hStrip').innerHTML=`<div class="nm">${esc(h.name)}<small>${h.race.name} ${h.job} · Lv ${tmp.lvl}</small></div><div class="nums"><span class="p">전투력 ${fmt(power(tmp)/tmp.stageCarry*10)}</span><span>HP ${Math.max(0,tmp.hp)}/${tmp.maxHp}</span><span>부활 ${revives(tmp)}</span></div><div class="hpb"><i class="${hpR<0.35?'low':''}" style="width:${hpR*100}%"></i></div><div class="more">능력치·동료·스킬은 아래 용사 명부에서 볼 수 있다</div>`;}
+  {const hpR=Math.max(0,tmp.hp)/tmp.maxHp;const cL=COMBOS.filter(c=>c.race===h.race.name);const cDone=cL.filter(c=>tmp.combos&&tmp.combos.includes(c.id)).length;$('hStrip').innerHTML=`<div class="nm">${esc(h.name)}<small>${h.race.name} ${h.job} · Lv ${tmp.lvl}</small></div><div class="tg"><span class="rc">${h.race.name}</span>${h.traits.map(t=>`<span class="${t.good===false?'bd':t.good?'gd':''}">${t.name}</span>`).join('')}${cL.length?`<span class="cb">조합 ${cDone}/${cL.length}${cL.some(c=>c.god&&(!c.tr||h.traits.some(t=>t.name===c.tr)))?' · 전설 조합 가능':''}</span>`:''}</div><div class="nums"><span class="p">전투력 ${fmt(power(tmp)/tmp.stageCarry*10)}</span><span>HP ${Math.max(0,tmp.hp)}/${tmp.maxHp}</span><span>부활 ${revives(tmp)}</span></div><div class="hpb"><i class="${hpR<0.35?'low':''}" style="width:${hpR*100}%"></i></div><div class="more">능력치·동료·스킬은 아래 용사 명부에서 볼 수 있다</div>`;}
   {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&wouldUpgrade(run,o.item)).length:0;$('shopBadge').textContent=n?String(n):'';}
   renderShop(tmp);
 }
@@ -590,13 +780,32 @@ function renderShop(t){
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
   $('shopTitle').textContent=`${STAGES[stage].regions[run.region][0]}의 상인`;
   box.innerHTML=run.shop.map((o,i)=>{const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
-    const up=wouldUpgrade(run,it);return `<div class="srow ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}"><span class="nm g${it.grade||0}">${it.name}</span><span class="iv">${it.d}</span><button type="button" class="${o.cur}" data-buy="${i}" ${o.sold||have<o.price||!up?'disabled':''}>${o.sold?'구매함':!up?'보유품 우위':(o.cur==='gold'?'금화 ':'명성 ')+fmt(o.price)}</button></div>`}).join('');
-  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();}});
+    const up=wouldUpgrade(run,it);return `<div class="srow ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}"><span class="nm g${it.grade||0}">${it.name}</span>${qTag(it)}<span class="iv">${it.d}</span><button type="button" class="${o.cur}" data-buy="${i}" ${o.sold||have<o.price||!up||holdFull(run,it)?'disabled':''}>${o.sold?'구매함':holdFull(run,it)?'1개 보유 중':!up?'보유품 우위':(o.cur==='gold'?'금화 ':'명성 ')+fmt(o.price)}</button></div>`}).join('');
+  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';
 function shownPower(){return Math.round(power(run)/run.stageCarry*10);}
 function previewPower(it){if(!(it.mult||['str','int','agi','con'].includes(it.stat)))return null;const r=previewPowerAt(run,run.items.indexOf(it));return r&&[Math.round(r[0]/run.stageCarry*10),Math.round(r[1]/run.stageCarry*10)];}
-function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const r=enhance(run,idx);if(!r)return;logAct(['e',idx]);prevStats=null;
+function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHTML='';return;}
+  const st=STAGES[run.stage];const c=mythCheck(run);const own=run.mythics||[];
+  if(!(st.endless&&st.hunt==null)&&!own.length){box.innerHTML='';return;}
+  const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}"${tipAttr(m.name+' · '+m.slot,[m.d,has?'장착 중':'아직 없다'])}><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?esc(m.name):'비어 있음'}</span>`;}).join('');
+  const matNames=c.mats.map(i=>itemName(run.items[i]));
+  const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
+  box.innerHTML=`<div class="myth"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
+    <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
+    <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 사라진다. 신화는 강화할 수 없다.</p></div>`;
+  const b=$('mythBtn');if(b)b.onclick=doMyth;}
+function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
+  const b=$('mythBtn');if(b&&!b.dataset.arm){b.dataset.arm='1';b.textContent=`정말 바칠까? 실패하면 ${c.mats.map(i=>itemName(run.items[i])).join(', ')} 모두 사라진다 · 한 번 더 누르기`;b.classList.add('arm');setTimeout(()=>{if(b.isConnected&&b.dataset.arm){delete b.dataset.arm;b.textContent='신화 합성 시도';b.classList.remove('arm');}},4000);return;}
+  const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=mythFuseSync(run,ckOk?ck.snap:null);if(!r)return;if(ckOk)store.set('ckpt',ck);logAct(['M']);TRACK.st.myth++;TRACK.ev('myth');prevStats=null;
+  const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
+  const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! ${r.m.name}이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?`신화 합성 성공! 그러나 이미 지닌 ${r.m.name}(+${r.old})보다 약한 +${r.v}가 나와 흩어졌다.`:`신화 합성 성공! ${r.m.name} (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
+  li.className=!r.ok||r.dup?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
+  if(r.ok&&!r.dup)showToast(r.upgrade?'신화 강화 · '+r.m.slot:'신화 탄생 · '+r.m.slot,`${r.m.name} · PvP ${PVP_NAME[r.m.pvp]} +${r.v}`,'ok',2200,3);
+  else showToast(r.ok?'신화 합성 성공 · 중복':'신화 합성 실패',r.ok?`이미 지닌 +${r.old}보다 약한 +${r.v}라 사라졌다`:'전설 장비 4개가 사라졌다','bad',1600);
+  renderAll();}
+function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)store.set('ckpt',ck);if(!r)return;logAct(['e',idx]);TRACK.st.enh++;TRACK.ev(null);prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
   let txt,cls;
   if(r.destroyed){const pw1=shownPower();txt=`+${r.from} ${r.name}이(가) 강화에 실패해 산산조각 났다.${pw1!==pw0?` 전투력 ${fmt(pw0)} → ${fmt(pw1)}`:''}`;cls='bad';}
@@ -604,12 +813,55 @@ function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPo
   else if(r.to<r.from){txt=`강화 실패. ${r.name} +${r.from} → +${r.to}`;cls='bad';}
   else {txt=`강화 실패. ${r.name}은(는) +${r.from} 그대로다.`;cls='bad';}
   enhMsg=`<span class="${r.ok?'ok':'no'}">${txt}</span>`;
+  showToast(r.destroyed?'강화 실패 · 장비 파괴':r.ok?`강화 성공 · +${r.to}`:r.to<r.from?`강화 실패 · +${r.from} → +${r.to}`:'강화 실패 · 그대로',`${r.name}${r.destroyed?'이(가) 산산조각 났다':r.ok?' · '+itemDesc(r.it):r.to<r.from?'이(가) 한 단계 떨어졌다':'은(는) 그대로다'}`,r.destroyed?'bad':r.ok?'ok':'warn',...(r.ok?[[1000,1100,1300,1800][r.from>=9?3:r.from>=6?2:r.from>=3?1:0],r.from>=9?3:r.from>=6?2:r.from>=3?1:0]:[]));
   li.innerHTML=`<span class="t">${progTxt()}</span><div><b>강화</b> · ${txt}<div class="fx"><span class="${cls}">금화 -${fmt(r.cost)}</span></div></div>`;lg.prepend(li);
   renderAll();}
+// ===== 플레이 기록(테스트용): 어디서 그만두는지 남긴다. claude.ai에서 '참여자' 이상으로 공유받은 사람만 저장된다 =====
+const TRACK=(()=>{const sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  const st={v:ENGINE_VERSION,start:Date.now(),last:Date.now(),activeMs:0,decisions:0,heroes:0,runs:0,deaths:0,clears:[],maxWorld:0,maxPct:0,maxFloor:0,help:0,rank:0,duel:0,myth:0,enh:0,where:'',events:[]};
+  let ref=null,busy=false,again=false,lastWrite=0,lastAct=Date.now();
+  function where(){try{if(!run)return hero?`용사 확인 중 (${hero.race.name})`:'시작 화면';const n=run.queue&&run.queue[0];return `${STAGES[run.stage].name} ${floorOf(run)?floorOf(run)+'층':pfmt(pct(run))+'%'} · ${n?(n.type==='event'?'사건:'+(n.kind||''):n.type):'-'}${run.dead?' · 전사':''}`;}catch(e){return '';}}
+  function ev(k,o){const now=Date.now();if(now-lastAct<120000)st.activeMs+=now-lastAct;lastAct=now;st.last=now;st.where=where();
+    if(k)st.events.push({t:Math.round((now-st.start)/1000),k,...(o||{}),at:st.where});if(st.events.length>80)st.events.splice(0,st.events.length-80);
+    try{store.set('track_last',st);}catch(e){} save(k==='hide'||k==='death'||k==='clear');}
+  async function save(now){if(!ref)return;if(!now&&Date.now()-lastWrite<15000){clearTimeout(save.t);save.t=setTimeout(()=>save(true),15000);return;}
+    if(busy){again=true;return;}busy=true;lastWrite=Date.now();try{await ref.set(JSON.parse(JSON.stringify(st)));}catch(e){}busy=false;if(again){again=false;save(true);}}
+  (async()=>{try{if(!window.claude||!claude.use)return;const [d,u]=await Promise.all([claude.use('db'),claude.use('user')]);if(!d||!u)return;const id=await u.id();if(!id)return;
+    ref=d.doc('play/'+id+'/s/'+sid);save(true);}catch(e){}})();
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)ev('hide');else ev('back');});
+  return {ev,st,decide(){st.decisions++;if(run){const w=Math.min(5,worldOf(run.stage));st.maxWorld=Math.max(st.maxWorld,w);if(!STAGES[run.stage].endless)st.maxPct=Math.max(st.maxPct,+pct(run).toFixed(3));else st.maxFloor=Math.max(st.maxFloor,floorOf(run));}
+      if(st.decisions%10===0)ev('d'+st.decisions);else ev(null);}};})();
+let toastT=null;
+function qTag(it){return '';if(!it||!it.q)return '';const p=Math.round(it.q*100);return `<span class="qt ${p>=110?'hi':p<=90?'lo':''}" title="품질: 기본 능력치의 ${p}%">${p}%</span>`;}
+function showResult(n,res){const ef=(res.effects||[]).filter(e=>e&&e.x&&/^(good|bad|item|fame|comp)/.test(e.t||''));
+  let head,kind='ok';
+  if(n.type==='battle'){const O={win:['승리','ok'],talk:['회유 성공','ok'],talkFailWin:['승리','ok'],flee:['도망','warn'],lose:['패배','bad'],fleeFail:['도망 실패','bad'],talkFail:['회유 실패','bad']}[res.outcome]||['전투 종료','warn'];head=O[0];kind=O[1];}
+  else if(n.type==='explore'){head='탐험 결과';kind=ef.some(e=>/^item/.test(e.t))?'ok':ef.some(e=>e.t==='bad')&&!ef.some(e=>e.t==='good')?'bad':'warn';}
+  else {head='야영';kind='warn';}
+  const pick=[...ef.filter(e=>/^item/.test(e.t)),...ef.filter(e=>e.t==='good'||e.t==='comp'),...ef.filter(e=>e.t==='bad'),...ef.filter(e=>e.t==='fame')].slice(0,4).map(e=>e.x);
+  showToast(head,pick.length?pick.join(' · '):(res.text||'아무 일도 없었다'),kind,1200,0,true);}
+function srcCls(t){return /상점/.test(t)?'s-shop':/지배자|수문장/.test(t)?'s-boss':/탐험|보물/.test(t)?'s-exp':/의뢰/.test(t)?'s-quest':/유산/.test(t)?'s-heir':/약탈/.test(t)?'s-rob':'s-war';}
+function burst(){let b=$('burst');if(b)b.remove();b=document.createElement('div');b.id='burst';let h='<div class="fl"></div>';const C=['#ffd36b','#fff','#ff9ad5','#6bc7ff','#6bffb0','#ff7a6b','#c07bff'];
+  for(let k=0;k<36;k++){const a=k/36*Math.PI*2+Math.random()*.2,d=160+Math.random()*260;h+=`<i style="--dx:${Math.round(Math.cos(a)*d)}px;--dy:${Math.round(Math.sin(a)*d)}px;background:${C[k%C.length]};box-shadow:0 0 8px ${C[k%C.length]};animation-delay:${Math.round(Math.random()*120)}ms"></i>`;}
+  b.innerHTML=h;document.body.appendChild(b);setTimeout(()=>b.remove(),1500);}
+let evtT=null,comboQ=[],comboBusy=false;
+function flushCombos(){if(!run||!run.comboNews||!run.comboNews.length)return;comboQ.push(...run.comboNews);run.comboNews=[];if(!comboBusy)nextCombo();}
+function nextCombo(){const id=comboQ.shift();if(!id){comboBusy=false;return;}comboBusy=true;const c=COMBO_BY[id];let t=$('comboFx');if(!t){t=document.createElement('div');t.id='comboFx';t.setAttribute('role','status');t.setAttribute('aria-live','assertive');document.body.appendChild(t);}
+  t.className='comboFx';t.innerHTML=`<div class="cbox"><div class="ck">✦ 조합 각성 ✦</div><div class="cn">${esc(c.name)}</div><div class="cd">${esc(c.d)}</div><div class="cc">${esc(c.race)} · ${esc(SKILL_BY[c.sk].name)} · ${esc(c.item)}</div></div>`;
+  t.hidden=false;void t.offsetWidth;t.classList.add('show');burst();setTimeout(burst,500);setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{t.hidden=true;nextCombo();},250);},2400);}
+function showEvent(ev){let t=$('evt');if(!t){t=document.createElement('div');t.id='evt';t.setAttribute('role','status');t.setAttribute('aria-live','polite');document.body.appendChild(t);}
+  const k=ev.ok===true?'ok':ev.ok===false?'bad':'mid';t.className='evt '+k;
+  t.innerHTML=`<span class="ei">${k==='ok'?'✓':k==='bad'?'✕':'='}</span><span class="et"><b>${esc(ev.head)}</b>${ev.sub?`<span>${esc(ev.sub)}</span>`:''}</span>`;
+  t.hidden=false;void t.offsetWidth;t.classList.add('show');clearTimeout(evtT);evtT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{t.hidden=true;},250);},1400);}
+function showToast(head,sub,kind,ms,tier,small){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');document.body.appendChild(t);}
+  t.className='toast '+kind+(tier?' t'+tier:'')+(small?' sm':'');t.innerHTML=`${tier?`<span class="tier">${['','★ 고급 강화 ★','★★ 정예 강화 ★★','★★★ 전설의 강화 ★★★'][tier]}</span>`:''}<b>${esc(head)}</b><span>${esc(sub)}</span>`;if(tier===3)burst();t.hidden=false;void t.offsetWidth;t.classList.add('show');
+  clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{t.hidden=true;},200);},ms||1000);}
 function logSell(r){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>판매</b> · ${r.it.name}을(를) 팔았다.<div class="fx"><span class="good">금화 +${fmt(r.g)}</span></div></div>`;lg.prepend(li);}
 function logBuy(items,why){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
   items.forEach(it=>{const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${why?'자동 구매':'구매'}</b> · ${why||'상점에서 물건을 샀다.'}<div class="fx"><span class="g${it.grade}">${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})</span></div></div>`;lg.prepend(li);});}
-function traitHtml(st){const t=WORLD_TRAITS[worldOf(st)];return t?`<br><span class="trait">세계 특성 · ${t.name}: ${t.d}</span>`:'';}
+// 설명 말풍선: data-tt(제목) + data-tl(줄들, ¦로 구분). 마우스를 올리거나 눌러서 연다.
+function tipAttr(title,lines){return ` data-tt="${esc(title)}" data-tl="${esc((lines||[]).filter(Boolean).join('¦'))}" tabindex="0"`;}
+function traitHtml(st){const t=WORLD_TRAITS[worldOf(st)];return t?`<br><span class="trait tipt"${tipAttr('세계 특성 · '+t.name,[t.d,'세계마다 특성이 달라 같은 빌드가 끝까지 통하지 않는다. 스킬을 고를 때 참고하자.'])}>세계 특성 · ${t.name}: ${t.d}</span>`:'';}
 function renderTrack(){
   const s=STAGES[stage]; $('demonCount').textContent=fmt(run&&run.kills||0);
   if(s.endless){const tr=$('track');tr.querySelectorAll('.tick').forEach(t=>t.remove());const f=run?floorOf(run):0;const bf=best[stage]||0;
@@ -655,7 +907,11 @@ function breakdown(n){const w=n.parts;if(!w)return '';const P=power(run)/run.sta
   return `<div style="font-size:12.5px;color:var(--muted);margin-top:6px;font-family:var(--mono)">내 전투력 <span style="color:var(--pw)">${fmt(P)}</span> vs 적 ${fmt(E)} (${w.ratio.toFixed(2)}배)<br>${parts.join(' · ')}</div>`;}
 const ART_PAL=[['#7a9a4a','#4d6630','#f4e05c'],['#9c8a7a','#5e4e44','#ff6a3a'],['#a05ac8','#5e2f7c','#ffd36a'],['#3a5fa8','#1f3466','#9ff2ff'],['#2a2430','#14101a','#ffcf5a'],['#b03a2e','#5e1a14','#ffe38a']];
 function hashStr(t){let h=2166136261;for(const ch of t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
-function monsterArt(name,st,boss){
+const MON_IMG={"임프": "001", "고블린": "002", "해골 병사": "003", "구울": "004", "하피": "005", "늑대인간": "006", "가고일": "007", "오우거": "008", "저주받은 기사": "009", "서큐버스": "010", "망령": "011", "재의 병사": "012", "지옥견": "013", "켄타우로스 학살자": "014", "역병 파리떼": "015", "뼈 거인": "016", "불꽃 악귀": "017", "고문관": "018", "색욕의 사도": "019", "탐식의 괴물": "020", "황금 골렘": "021", "나태의 망령": "022", "질투의 뱀": "023", "분노의 투사": "024", "교만의 천사": "025", "공허 포식자": "026", "이름 없는 것": "027", "시간의 망령": "028", "별을 삼킨 짐승": "029", "심연의 눈알": "030", "최후의 근위병": "031", "거울 속의 나": "032", "원초의 그림자": "033", "되살아난 임프 군단": "034", "망령 기사단": "035", "죄악의 화신": "036", "공허 포식자 무리": "037", "지옥견 떼": "038", "타락한 성기사단": "039", "임프 대장": "040", "타락한 촌장": "041", "바다 마귀": "042", "구미호": "043", "정글의 락샤사": "044", "라바나의 후예": "045", "이프리트": "046", "모래 골렘왕": "047", "흡혈 백작": "048", "타락한 성기사장": "049", "서리 거인": "050", "설원의 마왕": "051", "웬디고": "052", "고대 악마": "053", "케르베로스": "054", "뱃사공의 망령": "055", "자살나무 정령": "056", "재의 기사": "057", "이단 심문관": "058", "배신자들의 군주": "059", "켄타우로스 왕": "060", "파리 대왕": "061", "기만의 대공": "062", "금고지기": "063", "지옥 검투사": "064", "루시퍼의 그림자": "065", "하데스의 섭정": "066", "아스모데우스": "067", "벨제붑": "068", "맘몬": "069", "벨페고르": "070", "레비아탄": "071", "사탄": "072", "루시퍼": "073", "칠대죄의 합일체": "074", "이름 없는 자": "075", "종말의 시계공": "076", "별을 삼킨 자": "077", "바라보는 자": "078", "태초의 악": "079", "최후의 근위대장": "080", "또 하나의 나": "081", "악의 근원": "082", "영지를 습격하는 오우거 군단": "008", "금서를 훔친 리치": "066", "왕도를 위협하는 마룡": "071", "대성당 지하의 고위 악마": "053"};
+function monsterArt(name,st,boss){let k=MON_IMG[name],ghost=false;if(!k&&/의 망령$/.test(name)){k=MON_IMG[name.replace(/의 망령$/,'')];ghost=!!k;}
+  if(!k)return monsterPixel(name,st,boss);
+  return `<img class="mimg${ghost?' ghost':''}" src="mon/m${k}.webp" alt="${esc(name)}" decoding="async" onerror="this.nextElementSibling.hidden=false;this.remove()"><span class="mpx" hidden>${monsterPixel(name,st,boss)}</span>`;}
+function monsterPixel(name,st,boss){
   const r=rng(hashStr(name+st));const W=boss?13:11,H=boss?13:11,half=Math.ceil(W/2);
   const pal=ART_PAL[worldOf(st)]; const hue=Math.floor(r()*40)-20;
   const g=[];for(let y=0;y<H;y++){g.push([]);for(let x=0;x<half;x++){
@@ -676,20 +932,27 @@ function monsterArt(name,st,boss){
 }
 const SPEEDS=[1,2,4,8];
 let speed=(v=>SPEEDS.includes(v)?v:v>8?8:1)(store.get('speed',1)), paused=false;
-store.set('speed',speed); store.set('mode',mode); // 예전 설정(16배속, 전부 자동, 지배자만)을 새 설정으로 옮긴다
+store.set('speed',speed); store.set('mode2',mode); // 예전 설정(16배속, 전부 자동, 지배자만)을 새 설정으로 옮긴다
 function stepMs(n){const base=n.type==='battle'?(n.boss?9000:7000):n.type==='explore'?5000:n.type==='rest'||n.type==='prep'?4000:4500;const sf=[1,1.35,1.8,2,2.6][stage]||1;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches?300:base*sf/speed;}
 const PHASES={prep:['무기를 손질한다','작전을 세운다','결전의 문 앞에 선다'],battle:['적과 거리를 좁힌다','칼날이 부딪친다','승부가 기울기 시작한다'],explore:['주변을 살핀다','깊숙이 들어간다','무언가가 보인다'],rest:['모닥불을 피운다','밤이 깊어간다','동이 튼다'],event:['다가간다','이야기를 나눈다']};
 const MODES=[['manual','전부 직접'],['key','중요한 것만']];
 function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MODES.map(([k,l])=>`<button class="mode" type="button" data-m="${k}" aria-pressed="${mode===k}">${l}</button>`).join('')}<button class="mode" type="button" data-pause="1" aria-pressed="${paused}" style="${paused?'border-color:var(--ember);color:var(--ember)':''}">${paused?'재개 ▶':'일시정지 ❚❚'}</button><span class="speed">${SPEEDS.map(v=>`<button class="mode" type="button" data-sp="${v}" aria-pressed="${speed===v}">${v}×</button>`).join('')}</span></div>`;}
-function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode',mode);clearTimeout(autoT);renderStage();});
+function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode2',mode);clearTimeout(autoT);renderStage();});
   document.querySelectorAll('[data-pause]').forEach(b=>b.onclick=togglePause);
   document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{speed=+b.dataset.sp;store.set('speed',speed);clearTimeout(autoT);renderStage();});}
-function decide(id,auto){
+function decide(id,auto){const f0=run&&STAGES[run.stage].endless&&STAGES[run.stage].hunt==null?floorOf(run):0;
   if(!run||run.dead||run.over)return;
   const c=current(run);const n=c.node;const opt=c.options.find(o=>o.id===id);if(!opt||opt.disabled)return;
   prevStats={...run.stats};
   const res=choose(run,id); lastOut=res; logAct(['c',id]);
+  if(n.type==='battle'&&n.boss&&res.outcome){const O={win:['승리','ok'],talk:['회유 성공','ok'],talkFailWin:['승리','ok'],flee:['도망','warn'],lose:['패배','bad'],fleeFail:['도망 실패','bad'],talkFail:['회유 실패 · 패배','bad']}[res.outcome];if(O)showToast(O[0],`${n.final?'마지막 지배자 ':'지배자 '}${n.name}`,O[1],1000);}
+  if(res.event&&!res.event.sub&&n.type==='battle'&&n.quest)res.event.sub=n.name;
+  if(f0&&!run.dead){const f1=floorOf(run);if(f1>f0&&(f1-1)%5===0){saveCheckpoint();showEvent({ok:null,head:`${f1-1}층 돌파 · 자동 저장`,sub:'쓰러져도 여기서 다시 시작한다'});}}
+  if(res.event)showEvent(res.event);
+  else if(!auto&&!n.boss&&!n.quest&&(n.type==='battle'||n.type==='explore'||n.type==='rest'))showResult(n,res);
+  flushCombos();
+  TRACK.decide();if(run.dead){TRACK.st.deaths++;TRACK.ev('death');}if(run.conquered&&!TRACK.st.clears.includes(STAGES[run.stage].name)){TRACK.st.clears.push(STAGES[run.stage].name);TRACK.ev('clear',{w:STAGES[run.stage].name});}
   addLog(n,opt,res,auto);
   if(run.dead||run.over) finish(n);
   renderAll();
@@ -745,28 +1008,64 @@ function rankBoxHtml(){
   const nick=store.get('nick','');
   return `<div class="rankBox"><b>랭킹에 등록</b><div class="msg">서버가 이 용사의 모든 행동을 처음부터 다시 재생해 결과를 검증한다. 같은 용사는 마지막 등록 기록으로 갱신된다.</div>
     <div class="row"><input id="rankNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nick)}" autocomplete="nickname"><button class="btn" type="button" id="rankSubmit">등록</button><button class="btn ghost" type="button" id="rankOpen2">랭킹 보기</button></div>
-    <div class="msg" id="rankMsg"></div></div>`;
+    <div class="msg" id="rankMsg"></div><div class="wRes" id="rankWorld"></div></div>`;
 }
-function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=submitRun;const o=$('rankOpen2');if(o)o.onclick=()=>openRank('kills');}
+function inEndless(){return !!(run&&!run.dead&&(run.stage===5||run.huntFrom===5));}
+function worldBoxHtml(){
+  if(!RANK.on) return '<div class="rankBox"><div class="msg">서버에 연결된 공개 페이지에서만 월드랭킹 대전을 할 수 있다.</div></div>';
+  if(!run||!((run.maxFloorE||0)>=1)) return '<div class="rankBox"><div class="msg">끝없는 전장에 들어선 용사만 월드랭킹에 오른다.</div></div>';
+  if(!runToken||!runLog||runLog[0][2]!==0) return '<div class="rankBox"><div class="msg">서버가 발급한, 지상계에서 시작한 용사만 월드랭킹에 오른다.</div></div>';
+  const fl=run.maxFloorE||0,ms=Math.floor(fl/5);const nick=store.get('nick','');
+  return `<div class="rankBox"><b>월드랭킹 등록 · 대전</b><div class="msg">지금까지 최고 ${fl}층 → 대전 ${ms}회 분량. 서버가 기록을 처음부터 다시 재생해 검증한 뒤, 아직 치르지 않은 5층 단위 대전을 한꺼번에 치른다. 등록한 시점의 카드가 다른 용사들의 상대가 된다.</div>
+    <div class="row"><input id="wNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nick)}" autocomplete="nickname"><button class="btn" type="button" id="wSubmit">등록하고 대전</button><button class="btn ghost" type="button" id="wOpen">월드랭킹 보기</button></div>
+    <div class="msg" id="wMsg"></div><div class="wRes" id="wRes"></div></div>`;
+}
+function bindWorldBox(){const b=$('wSubmit');if(b)b.onclick=()=>submitRun('w');const o=$('wOpen');if(o)o.onclick=()=>{closeDuel();openRank('world');};}
+function worldHtml(w){if(!w)return '';
+  const head=w.isNew?`첫 등록 → ${w.startRank}위로 배치`:`${w.startRank}위에서 출발`;
+  if(!w.rounds.length)return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명</div><div class="wRounds">${head}. 새로 넘은 5층 구간이 없어 대전은 없었다 (카드만 갱신).</div>`;
+  const tw=w.rounds.reduce((a,r)=>a+r.w,0),tl=w.rounds.reduce((a,r)=>a+r.l,0);
+  const st=c=>PVP_KEYS.filter(k=>c[k]).map(k=>PVP_NAME[k]+' '+c[k]).join(' · ')||'PvP 스탯 없음';
+  const byM={};for(const m of w.matches)(byM[m.milestone]=byM[m.milestone]||[]).push(m);
+  return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명 · 대전 ${w.rounds.length}회 ${tw}승 ${tl}패</div>
+   <div class="wRounds">${head}.<br>${w.rounds.map(r=>`${r.floor}층: ${r.w}승 ${r.l}패 → ${r.delta>0?'+'+r.delta:r.delta}위 (${r.from}위 → ${r.to}위)`).join('<br>')}</div>
+   ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}</span></div><div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
+function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('kills');}
 let lastSubmitted=null;
-async function submitRun(){
-  const nick=($('rankNick').value||'').trim().slice(0,12);const msg=$('rankMsg');
+async function submitRun(which){const W=which==='w';
+  const nick=($(W?'wNick':'rankNick').value||'').trim().slice(0,12);const msg=$(W?'wMsg':'rankMsg');
   if(!nick){msg.className='msg err';msg.textContent='닉네임을 입력해 주세요.';return;}
-  store.set('nick',nick);const btn=$('rankSubmit');btn.disabled=true;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
+  store.set('nick',nick);const btn=$(W?'wSubmit':'rankSubmit');btn.disabled=true;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
   try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:rankHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,log:runLog})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
     lastSubmitted=heroSeed;const k=j.ranks||{};
     msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
+    const wr=$(W?'wRes':'rankWorld');if(wr)wr.innerHTML=worldHtml(j.world);if(W)btn.disabled=false;
   }catch(e){msg.className='msg err';msg.textContent='서버에 연결하지 못했다. 잠시 후 다시 시도해 주세요.';btn.disabled=false;}
 }
 let rankCol='kills';
-async function openRank(col){rankCol=col||rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
+async function openRank(col){TRACK.st.rank++;TRACK.ev('rank');rankCol=col||rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
+const FAKE_FOES=['검은 늑대 카르','은빛 성녀 라엘','망치왕 도르간','그림자 유','붉은 마녀 베라','철벽 바론','폭풍의 아샤','저주꾼 모르','불사의 렌','축복받은 이나'];
+function openDuel(){TRACK.st.duel++;TRACK.ev('duel');if(!run)return;$('duelModal').hidden=false;$('worldBox').innerHTML=worldBoxHtml();bindWorldBox();runDuels();$('duelClose').focus();}
+function runDuels(){$('pvpRule').textContent=PVP_RULE;const me=pvpCard(run);me.name='나';const R=Math.random;const mults=[0.5,1,2,4,8];
+  const foes=mults.map((m,i)=>{const f={name:FAKE_FOES[Math.floor(R()*FAKE_FOES.length)],race:RACE_RING[Math.floor(R()*RACE_RING.length)],power:Math.round(me.power*m),hp:Math.round(me.hp*(0.5+R()*2)),ass:0,rev:0,cur:0,bls:0};
+    for(let z=0;z<3;z++){const k=PVP_KEYS[Math.floor(R()*4)];f[k]+=R()<0.3?20:Math.floor(R()*9);}return f;});
+  $('duelList').innerHTML=foes.map(f=>{const d=duel(me,f,R);const st=c=>PVP_KEYS.filter(k=>c[k]).map(k=>PVP_NAME[k]+' '+c[k]).join(' · ')||'PvP 스탯 없음';
+    return `<li><div class="dh"><span>vs ${esc(f.name)} <small style="font-weight:400;color:var(--muted)">${esc(f.race)} · 전투력 ${fmt(f.power)} · 생명력 ${fmt(f.hp)}</small></span><span class="${d.win?'w':'l'}">${d.win?'승리':'패배'} · ${d.how}</span></div>
+      <div class="ds">나: ${st(me)} / 상대: ${st(f)}</div><ol>${d.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`;}).join('');}
+function closeDuel(){$('duelModal').hidden=true;$('pvpBtn').focus();}
 function closeRank(){$('rankModal').hidden=true;$('rankBtn').focus();}
 async function loadRank(){
   document.querySelectorAll('[data-rk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rk===rankCol));
-  $('rkCol').textContent={kills:'처치',power:'전투력',reach_score:'도달'}[rankCol];
+  $('rkCol').textContent={kills:'처치',power:'전투력',reach_score:'도달',world:'전투력 · 생명력'}[rankCol];$('rkCol2').textContent=rankCol==='world'?'PvP 스탯 · 층':'날짜';
   const body=$('rankBody');body.innerHTML='<tr><td colspan="5">불러오는 중…</td></tr>';
+  if(rankCol==='world'){try{const r=await fetch(`${RANK.url}/rest/v1/pvp_cards?select=seed,nickname,hero,race,power,hp,ass,rev,bls,cur,floor,is_bot&order=ladder.desc&limit=100`,{headers:rankHeaders()});
+    const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
+    if(!rows.length){body.innerHTML='<tr><td colspan="5">아직 아무도 끝없는 전장에 오르지 않았다.</td></tr>';return;}
+    body.innerHTML=rows.map((x,i)=>{const st=PVP_KEYS.filter(k=>x[k]).map(k=>PVP_NAME[k]+x[k]).join(' ')||'-';
+      return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td><small>${esc(st)} · ${x.floor}층</small></td></tr>`;}).join('');
+  }catch(e){body.innerHTML='<tr><td colspan="5">월드랭킹을 불러오지 못했다.</td></tr>';}return;}
   try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,hero,race,kills,power,reach,updated_at&order=${rankCol}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
     if(!rows.length){body.innerHTML='<tr><td colspan="5">아직 등록된 용사가 없다. 첫 기록의 주인공이 되어 보자.</td></tr>';return;}
@@ -785,7 +1084,7 @@ function loadCheckpoint(){const c=ckptInfo();if(!c)return;clearTimeout(autoT);ph
   lastOut=null;verdictHtml='';paused=false;prevStats=null;
   $('log').innerHTML=`<li><span class="t">0.000%</span><div><b>저장 지점</b> · ${hero.name}이(가) ${STAGES[stage].name} 입구에서 다시 일어섰다.</div></li>`;
   renderAll();}
-function ckptButton(){const c=ckptInfo();if(!c)return '';return `<div class="actions" style="margin-top:12px"><button class="btn ghost" type="button" id="ckptBtn">저장 지점에서 다시: ${esc(c.heroName)} · ${STAGES[c.stage].name} ${STAGES[c.stage].hunt!=null?'1층':'입구'}</button></div>`;}
+function ckptButton(){const c=ckptInfo();if(!c)return '';if(!(c.stage===5||(c.snap&&c.snap.huntFrom===5)))return '';return `<div class="actions" style="margin-top:12px"><button class="btn ghost" type="button" id="ckptBtn">저장 지점에서 다시: ${esc(c.heroName)} · ${STAGES[c.stage].name} ${STAGES[c.stage].hunt!=null?'1층':'입구'}</button></div>`;}
 function startHunt(){
   if(!run||!enterHunt(run))return; logAct(['h']);
   stage=run.stage; store.set('stage',stage); lastOut=null; verdictHtml=''; paused=false; saveCheckpoint();
@@ -801,6 +1100,10 @@ function leaveHuntNow(){
   const lg=$('log'); const li=document.createElement('li'); li.innerHTML=`<span class="t">0.000%</span><div><b>${STAGES[stage].name}</b> · ${hero.name}이(가) 사냥을 마치고 새로운 세계에 발을 들였다.</div>`; lg.prepend(li);
   renderAll();
 }
+function travelTo(k){if(!run||!canTravel(run))return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
+  const f=floorOf(run);if(!travelHunt(run,k))return;logAct(['T',k]);
+  stage=run.stage;store.set('stage',stage);lastOut=null;verdictHtml='';paused=false;saveCheckpoint();
+  const lg=$('log');const li=document.createElement('li');li.innerHTML=`<span class="t">1층</span><div><b>${STAGES[stage].name}</b> · ${hero.name}이(가) 끝없는 전장 ${f}층을 떠나 사냥에 나섰다. 언제든 돌아갈 수 있다.</div>`;lg.prepend(li);renderAll();}
 function nextStage(){
   if(!run||!advanceStage(run))return; logAct(['n']);
   stage=run.stage; store.set('stage',stage); lastOut=null; verdictHtml=''; paused=false; saveCheckpoint();
@@ -815,9 +1118,10 @@ function renderAll(){
   $('rollBtn').disabled=!!busy;
   if(busy){$('goBtn').disabled=true;$('goBtn').textContent='토벌 중';}
   syncPause();
-  {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt)lb.textContent=`사냥 마치고 ${STAGES[STAGES[run.stage].hunt+1].name}로`;}
+  {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt)lb.textContent=run.huntFrom===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[STAGES[run.stage].hunt+1].name}로`;}
+  {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
-$('goBtn').onclick=()=>{if(run||!hero)return;clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));
+$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));
   {const ck=ckptInfo();try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!(ck&&k==='fh2_'+logKey(ck.seed)))localStorage.removeItem(k);}}catch(e){}}
   runLog=[['start',heroSeed,stage]];persistLog();lastOut=null;verdictHtml='';$('log').innerHTML='';renderAll();};
 $('rollBtn').onclick=newHero;
@@ -827,12 +1131,12 @@ $('rollBtn').onclick=newHero;
 // 세계가 바뀌면 조성·음계·템포가 바뀐다(지상계 장조 → 지하 도리안 → 마계 단조 → 심연 프리지안 → 공허 화성단음계).
 const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,bar=0,s16=0,nextT=0,cyc=0,th=null,wNow=-1,seed=1;
   const THEMES=[
-    {root:60,sc:[0,2,4,5,7,9,11],bpm:102,A:[0,4,5,3],B:[3,4,2,5]},
-    {root:57,sc:[0,2,3,5,7,9,10],bpm:98,A:[0,6,3,4],B:[3,4,0,6]},
-    {root:62,sc:[0,2,3,5,7,8,10],bpm:96,A:[0,5,6,4],B:[3,6,0,4]},
-    {root:59,sc:[0,1,3,5,7,8,10],bpm:92,A:[0,1,5,6],B:[3,1,0,5]},
-    {root:61,sc:[0,2,3,5,7,8,11],bpm:90,A:[0,5,3,4],B:[5,6,3,4]},
-    {root:64,sc:[0,2,4,5,7,9,10],bpm:106,A:[0,6,3,4],B:[5,4,6,0]}];
+    {style:'adventure',root:60,sc:[0,2,4,5,7,9,11],bpm:102,A:[0,4,5,3],B:[3,4,2,5]},   // 지상계: 밝은 모험
+    {style:'dirge',root:57,sc:[0,2,3,5,7,8,10],bpm:76,A:[0,5,3,4],B:[5,3,6,4]},        // 지하 세계: 하프와 합창, 느린 장송곡
+    {style:'march',root:52,sc:[0,1,3,5,7,8,10],bpm:120,A:[0,1,0,6],B:[5,6,1,0]},       // 마계: 몰아치는 행진
+    {style:'abyss',root:50,sc:[0,2,3,5,7,8,10],bpm:62,A:[0,5,3,6],B:[0,5,3,6]},        // 심연: 드론과 종소리, 북 없음
+    {style:'throne',root:55,sc:[0,2,3,5,7,8,11],bpm:82,A:[0,5,3,4],B:[5,6,3,4]},       // 공허의 옥좌: 장엄한 오르간과 팀파니
+    {style:'endless',root:57,sc:[0,2,3,5,7,9,10],bpm:86,A:[0,3,4,5,2,6],B:[0,3,4,5,2,6]}]; // 끝없는 전장: 오래 들어도 질리지 않게 계속 변하는 곡
   // 훅: [16분음 위치, 코드음 번호(0 근음·1 3음·2 5음, 3 이상은 한 옥타브 위)]
   const HOOK=[[[0,4],[3,3],[6,2],[8,3],[11,4],[14,3]],[[0,2],[2,1],[4,2],[7,4],[10,3]],[[0,4],[3,3],[6,2],[8,3],[11,5],[14,4]],[[0,3],[4,2],[6,1],[8,0],[12,2]]];
   const BRIDGE=[[[0,2],[6,3],[8,4]],[[0,3],[8,2],[12,1]],[[0,2],[4,3],[6,4],[8,5],[12,4]],[[0,3],[8,2]]];
@@ -860,7 +1164,7 @@ const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,ba
     g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.018,t+len*0.3);g.gain.linearRampToValueAtTime(0.0001,t+len);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+len+0.05);}));}
   function swing(t,st){return st%2===1?t+SPB()*0.18:t;}
   // 한 16분음 단위를 연주한다. 바퀴(32마디) 안의 위치에 따라 편성이 바뀐다.
-  function play(t){const b=bar%32,sec=b<8?'A':b<16?'A2':b<24?'B':'A3',st=s16,tt=swing(t,st),sp=SPB();
+  function playAdventure(t){const b=bar%32,sec=b<8?'A':b<16?'A2':b<24?'B':'A3',st=s16,tt=swing(t,st),sp=SPB();
     const prog=sec==='B'?th.B:th.A, ch=chord(prog[(b>>1)%4]), barLen=sp*16;
     const breakdown=sec==='B'&&b<20, full=sec!=='A';
     // 드럼
@@ -885,9 +1189,57 @@ const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,ba
         voice(tt,ct(ch,Math.max(0,k))+12,'square',0.05,0.01,Math.min(len*0.9,sp*6),2300,dly,true);
         if(sec==='A3'&&cyc>=1) voice(tt,ct(ch,Math.max(0,k))+24,'triangle',0.018,0.01,Math.min(len*0.8,sp*4),3000);}}
   }
+  function bell(t,m,peak,dec){voice(t,m,'sine',peak,0.004,dec,6000,dly);voice(t,m+19,'sine',peak*0.25,0.002,dec*0.4,8000);}
+  function tom(t,f0,v,dec){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*0.55,t+dec*0.6);env(g,t,0.004,v,dec);o.connect(g);g.connect(out);o.start(t);o.stop(t+dec+0.05);}
+  function choir(t,ch,len,v){ch.forEach(m=>{const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='triangle';o.frequency.value=hz(m+12);f.type='lowpass';f.frequency.value=1400;
+    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v,t+len*0.4);g.gain.linearRampToValueAtTime(0.0001,t+len);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+len+0.05);});}
+  // 지하 세계: 하프 아르페지오 + 합창 + 낮은 북. 멜로디는 훅의 절반만
+  function playDirge(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]);
+    if(st===0&&b%2===0)choir(t,ch,sp*32,0.03);
+    if(st%2===0){const k=[0,1,2,3,4,3,2,1][st/2];voice(t,ct(ch,k),'triangle',0.06,0.003,sp*3,2600,dly);}
+    if((st===0)||(st===10&&b%2===1))tom(t,70,0.4,0.5);
+    if(st===0)voice(t,ch[0]-24,'sine',0.18,0.02,sp*14,400);
+    if(b%8>=4){const hit=HOOK[b%4].find(n=>n[0]===st&&n[0]%4===0);if(hit)voice(t,ct(ch,hit[1])+12,'sine',0.05,0.04,sp*5,3000,dly,true);}}
+  // 마계: 곧은 8분 베이스 오스티나토, 4박 킥, 백비트, 톱니 리드
+  function playMarch(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]),drop=b%16===15&&st>=8;
+    if(!drop&&st%4===0)kick(t,1);
+    if(!drop&&(st===4||st===12))nz(t,'bandpass',1500,0.2,0.16);
+    if(st%2===0)nz(t,'highpass',9000,0.03,0.03);
+    if(drop&&st%2===0)tom(t,140-(st-8)*8,0.35,0.15);
+    if(st%2===0)voice(t,ch[st%8===6?2:0]-24,'sawtooth',0.07,0.004,sp*1.5,500+((b%4)*150));
+    if(st===0&&b%2===0)pad(t,ch,sp*32);
+    if(b%8>=4||b>=24){const hit=HOOK[(b+2)%4].find(n=>n[0]===st);if(hit){const nx=HOOK[(b+2)%4].find(n=>n[0]>st);voice(t,ct(ch,hit[1])+12,'sawtooth',0.035,0.006,Math.min(((nx?nx[0]:16)-st)*sp*0.8,sp*4),1800,dly);}}}
+  // 심연: 북 없이 드론과 종소리. 음이 드물고 무작위라 반복감이 적다
+  function playAbyss(t){const b=bar%32,st=s16,sp=SPB(),ch=chord(th.A[(b>>2)%4]);
+    if(st===0&&b%4===0){choir(t,[ch[0]-12,ch[2]-12],sp*64,0.065);}
+    if(st%4===0&&R()<0.22){const k=Math.floor(R()*6);bell(t,ct(ch,k)+12,0.075,sp*10);}
+    if(st===8&&b%8===6)nz(t,'lowpass',300,0.06,1.2);}
+  // 공허의 옥좌: 오르간 화음과 팀파니, 느리고 장엄한 선율
+  function playThrone(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]);
+    if(st===0&&b%2===0){ch.forEach(m=>[-4,4].forEach(d=>{const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='square';o.frequency.value=hz(m);o.detune.value=d;f.type='lowpass';f.frequency.value=1100;
+      g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.012,t+0.3);g.gain.setValueAtTime(0.012,t+sp*30);g.gain.linearRampToValueAtTime(0.0001,t+sp*32);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+sp*32+0.05);}));}
+    if(st===0||(st===12&&b%2===1))tom(t,st===0?62:82,0.5,0.7);
+    if(b%4===3&&st>=8&&st%2===0)tom(t,90,0.15+0.04*(st-8),0.18);
+    if(st===0)voice(t,ch[0]-24,'triangle',0.16,0.02,sp*15,500);
+    if(b>=8){const hit=BRIDGE[b%4].find(n=>n[0]===st);if(hit)choir(t,[ct(ch,hit[1])+12],sp*6,0.05);}}
+  // 끝없는 전장: 2마디마다 화음이 무작위로 이어지고, 짧은 동기를 8마디 쓰다 새로 만든다. 16마디마다 악기 구성이 바뀐다
+  let eCh=0,eMotif=null,eLayers=null;
+  function newMotif(){const m=[];let k=2+Math.floor(R()*2);const n=4+Math.floor(R()*3);const pos=[0,2,4,6,8,10,12,14].filter(()=>R()<0.6).slice(0,n);if(!pos.length)pos.push(0);
+    for(const p of pos){k=Math.max(0,Math.min(6,k+(R()<0.5?-1:1)*(R()<0.7?1:2)));m.push([p,k]);}return m;}
+  function playEndless(t){const b=bar,st=s16,sp=SPB();
+    if(st===0&&b%2===0){const moves=[[3,4,2],[4,5,1],[5,2,3],[0,4,2],[2,5,0],[1,4,0],[0,3,5]];const opts=moves[eCh]||[0];eCh=opts[Math.floor(R()*opts.length)]%7;}
+    if(st===0&&b%8===0)eMotif=newMotif();
+    if(st===0&&b%16===0)eLayers={drum:R()<0.75,arp:R()<0.55,lead:R()<0.8,pad:true};
+    const ch=chord(th.A[eCh%th.A.length]),L=eLayers||{drum:true,arp:false,lead:true,pad:true};
+    if(L.pad&&st===0&&b%2===0)pad(t,ch,sp*32);
+    if(st===0||st===10)voice(t,ch[st===10?2:0]-24,'triangle',0.17,0.01,sp*(st===0?8:5),600);
+    if(L.drum){if(st===0||(st===8&&R()<0.6))kick(t,0.55);if(st===4||st===12)nz(t,'bandpass',1200,0.07,0.12);if(st%2===0)nz(t,'highpass',7000,st%4===2?0.025:0.012,0.03);}
+    if(L.arp&&st%4===2){const k=[0,1,2,3][(st>>2)%4];voice(t,ct(ch,k)+12,'sine',0.03,0.003,sp*2.5,3500,dly);}
+    if(L.lead&&eMotif&&b%4!==3){const hit=eMotif.find(n=>n[0]===st);if(hit){let k=hit[1];if(b%8>=4&&R()<0.3)k+=R()<0.5?1:-1;voice(t,ct(ch,Math.max(0,k))+12,'sine',0.055,0.02,sp*3,2800,dly,true);}}}
+  function play(t){const sty=th.style;if(sty==='dirge')playDirge(t);else if(sty==='march')playMarch(t);else if(sty==='abyss')playAbyss(t);else if(sty==='throne')playThrone(t);else if(sty==='endless')playEndless(t);else playAdventure(t);}
   function adv(){s16++;if(s16>=16){s16=0;bar++;
       if(bar%8===0){const w=worldNow();if(w!==wNow){wNow=w;th=THEMES[w];bar=0;}} // 세계가 바뀌면 다음 8마디 경계에서 새 편곡으로
-      if(bar>=32){bar=0;cyc++;}}}
+      if(bar>=32&&th.style!=='endless'){bar=0;cyc++;}}}
   function tick(){while(nextT<ctx.currentTime+0.15){play(nextT);nextT+=SPB();adv();}}
   return {get on(){return on;},start(){try{if(!ctx)setup();ctx.resume();}catch(e){return false;}on=true;wNow=worldNow();th=THEMES[wNow];bar=0;s16=0;cyc=0;seed=7;nextT=ctx.currentTime+0.08;
       out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setValueAtTime(0,ctx.currentTime);out.gain.linearRampToValueAtTime(0.85,ctx.currentTime+1.5);
@@ -895,26 +1247,40 @@ const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,ba
     stop(){if(!ctx)return;on=false;const t=ctx.currentTime;out.gain.cancelScheduledValues(t);out.gain.setValueAtTime(out.gain.value,t);out.gain.linearRampToValueAtTime(0,t+0.6);setTimeout(()=>{if(!on){clearInterval(timer);ctx.suspend();}},700);}};})();
 function syncBgm(){const b=$('bgmBtn');b.setAttribute('aria-pressed',BGM.on);b.textContent=BGM.on?'♪ 배경음 끄기':'♪ 배경음 켜기';}
 $('bgmBtn').onclick=()=>{if(BGM.on){BGM.stop();store.set('bgm',0);}else{if(BGM.start())store.set('bgm',1);}syncBgm();};
-if(store.get('bgm',0)){const kick=()=>{document.removeEventListener('pointerdown',kick);document.removeEventListener('keydown',kick);if(!BGM.on){BGM.start();syncBgm();}};document.addEventListener('pointerdown',kick);document.addEventListener('keydown',kick);}
+if(store.get('bgm',1)){const kick=(ev)=>{if(ev&&ev.target&&ev.target.closest&&ev.target.closest('#bgmBtn'))return;document.removeEventListener('pointerdown',kick);document.removeEventListener('keydown',kick);if(!BGM.on){BGM.start();syncBgm();}};document.addEventListener('pointerdown',kick);document.addEventListener('keydown',kick);}
 document.addEventListener('visibilitychange',()=>{});
 let helpWasPaused=false;
 function fillHelpSkills(){const t=$('helpSkills');if(!t||t.dataset.done)return;t.dataset.done=1;
   t.innerHTML=ROLES.map(role=>`<tr><th>${role}<br><small style="font-weight:400">숙련 3: ${MASTERY[role](1)}<br>숙련 6: ${MASTERY[role](2)}</small></th><td>${SKILLS.filter(k=>k.role===role).map(k=>`<b>${k.name}</b> ${k.d(1)}`).join('<br>')}</td></tr>`).join('');
   $('helpTraits').innerHTML=[1,2,3,4].map(w=>`<tr><th>${STAGES[w].name}</th><td><b>${WORLD_TRAITS[w].name}</b> · ${WORLD_TRAITS[w].d}</td></tr>`).join('');}
-function openHelp(){fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
+function openHelp(){TRACK.st.help++;TRACK.ev('help');fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}
 $('helpBtn').onclick=openHelp;
 if(RANK.on){$('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank();}
 $('rankClose').onclick=closeRank;$('rankModal').addEventListener('click',e=>{if(e.target.id==='rankModal')closeRank();});
 document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{rankCol=b.dataset.rk;loadRank();});
-document.addEventListener('keydown',e=>{if(!$('rankModal').hidden&&e.key==='Escape')closeRank();},true);$('helpClose').onclick=closeHelp;
+document.addEventListener('keydown',e=>{if(!$('rankModal').hidden&&e.key==='Escape')closeRank();},true);$('helpClose').onclick=closeHelp;$('pvpBtn').onclick=openDuel;$('cmbHead').onclick=()=>$('cmbBox').classList.toggle('open');$('duelClose').onclick=closeDuel;$('duelAgain').onclick=runDuels;document.addEventListener('keydown',e=>{if(!$('duelModal').hidden&&e.key==='Escape')closeDuel();},true);
 $('helpModal').addEventListener('click',e=>{if(e.target.id==='helpModal')closeHelp();});
 document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key==='Escape')closeHelp();if(e.key!=='Tab')e.stopImmediatePropagation();},true);
+
+// 설명 말풍선: 마우스를 올리면 뜨고, 눌러도(휴대폰) 뜬다. 바깥을 누르면 닫힌다.
+{const box=document.createElement('div');box.className='tipBox';box.hidden=true;box.setAttribute('role','tooltip');document.body.appendChild(box);
+ let cur=null,pinned=false;
+ const show=el=>{cur=el;const t=el.dataset.tt,l=(el.dataset.tl||'').split('¦').filter(Boolean);
+   box.innerHTML=`<b>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');box.hidden=false;
+   const r=el.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;let x=Math.min(Math.max(12,r.left),innerWidth-bw-12),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);box.style.left=x+'px';box.style.top=y+'px';};
+ const hide=()=>{box.hidden=true;cur=null;pinned=false;};
+ document.addEventListener('mouseover',e=>{if(pinned)return;const el=e.target.closest&&e.target.closest('[data-tt]');if(el){if(el!==cur)show(el);}else if(cur)hide();});
+ document.addEventListener('click',e=>{const el=e.target.closest&&e.target.closest('[data-tt]');if(el&&!e.target.closest('button')){if(pinned&&cur===el){hide();}else{show(el);pinned=true;}}else if(cur)hide();});
+ document.addEventListener('focusin',e=>{const el=e.target.closest&&e.target.closest('[data-tt]');if(el)show(el);});
+ document.addEventListener('focusout',()=>{if(!pinned)hide();});
+ window.addEventListener('scroll',()=>{if(cur&&document.contains(cur))show(cur);else if(cur)hide();},{passive:true});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cur)hide();});}
 $('pauseBtn').onclick=togglePause;
 let gearTab=store.get('gearTab','shop');function setGearTab(t){gearTab=t;store.set('gearTab',t);document.querySelector('.gearBody').dataset.tab=t;document.querySelectorAll('[data-gt]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gt===t));}
 document.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>setGearTab(b.dataset.gt));setGearTab(gearTab);
 
-$('leaveBtn').onclick=leaveHuntNow;
+$('leaveBtn').onclick=leaveHuntNow;$('travel').addEventListener('click',e=>{const b=e.target.closest('[data-tv]');if(b)travelTo(+b.dataset.tv);});
 document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(e.key===' '&&!isImportant(run,current(run),mode)){e.preventDefault();togglePause();return;}if(!isImportant(run,current(run),mode))return;const k=+e.key;if(k>=1&&k<=3){const c=current(run);const o=c.options[k-1];if(o)decide(o.id);}});
 newHero();
 if(!store.get('seenHelp',0)) openHelp();

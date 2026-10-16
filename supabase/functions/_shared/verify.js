@@ -48,7 +48,7 @@ export function cleanNickname(raw) {
   return s;
 }
 
-const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L']);
+const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L', 'M', 'T']);
 
 // 요청 본문을 검사하고 기록을 재생한다. 성공하면 { row, summary }, 실패하면 Error를 던진다.
 export async function verifySubmission(body, secret, now = Date.now()) {
@@ -93,5 +93,5 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     version: ENGINE_VERSION,
     updated_at: new Date(now).toISOString(),
   };
-  return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach } };
+  return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };
 }

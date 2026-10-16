@@ -86,6 +86,17 @@ jobs:
           export SERVICE=$(echo "$J" | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
           echo "::add-mask::$SERVICE"
           node tools/e2e.mjs
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: 월드랭킹(봇 100명, 대전, 권한)을 실제 DB로 점검하고 시험 카드를 지운다
+        run: |
+          J=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json)
+          export SUPABASE_URL="https://$PROJECT_REF.supabase.co"
+          export ANON=$(echo "$J" | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          export SERVICE_KEY=$(echo "$J" | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE_KEY"
+          deno run --allow-net --allow-env tools/world-e2e.ts
       - uses: oven-sh/setup-bun@v2
       - name: 사파리 엔진(JavaScriptCore)으로 둔 기록을 서버 엔진(V8)으로 재생해 일치 확인
         run: |
