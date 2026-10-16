@@ -41,7 +41,10 @@ h1 span{color:var(--brass)}
 .stages{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
 .stage{font:inherit;font-size:13px;border:1px solid var(--line);background:transparent;color:var(--fg);padding:7px 12px;border-radius:2px;cursor:pointer;display:flex;gap:8px;align-items:baseline}
 .stage small{font-family:var(--mono);color:var(--muted);font-size:11px}
-.stage[aria-pressed="true"]{border-color:var(--brass);background:rgba(210,166,78,.1)}
+.stage[aria-pressed="true"]{border-color:var(--wc,var(--brass));background:color-mix(in srgb,var(--wc,#d2a64e) 14%,transparent)}
+.stage{border-left:3px solid var(--wc,var(--line))} .stage>b{color:var(--wc);font-weight:600}
+.wbtn{color:var(--wc)!important;border-color:var(--wc)!important;background:color-mix(in srgb,var(--wc) 10%,transparent)!important}
+.wbtn.solid{color:#14121a!important;background:var(--wc)!important}
 .stage:disabled{cursor:not-allowed;color:var(--muted);opacity:.55}
 button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);outline-offset:2px}
 
@@ -707,14 +710,16 @@ const isEndless=()=>!!STAGES[stage].endless;
 function progTxt(){return run&&STAGES[run.stage].endless?`${floorOf(run)}층`:pfmt(run?pct(run):0)+'%';}
 function topPct(st,p){if(STAGES[st].endless)return 0;const a=getDist(st);let lo=0,hi=a.length;while(lo<hi){const m=(lo+hi)>>1;if(a[m]<p)lo=m+1;else hi=m;}return Math.max(0.05,(a.length-lo)/a.length*100);}
 const pfmt=p=>p>=100?'100':p.toFixed(p<10?3:2);
+// 세계마다 고유 색 (지상계 초록, 지하 세계 청록, 마계 붉은색, 심연 보라, 공허의 옥좌 은백, 끝없는 전장 금색)
+const WCOL=['#78c27a','#4fb3c8','#e0644f','#a47be0','#d9d6ea','#e2b04a'];
 
 function renderStages(){
   const nav=$('stages');nav.innerHTML='';const busy=run&&!run.dead&&!run.over;
-  STAGES.forEach((s,i)=>{if(s.hunt!=null)return;const b=document.createElement('button');b.className='stage';b.type='button';
+  STAGES.forEach((s,i)=>{if(s.hunt!=null)return;const b=document.createElement('button');b.className='stage';b.type='button';b.style.setProperty('--wc',WCOL[i]||'');
     if(s.endless){b.setAttribute('aria-pressed',i===stage);b.disabled=true;b.title='공허의 옥좌를 정복한 용사만 이어서 들어갈 수 있다';
-      b.innerHTML=`∞ ${s.name} <small>${best[i]?'최고 '+best[i]+'층':conq[4]?'정복한 용사로 입장':'잠김'}</small>`;nav.appendChild(b);return;}
+      b.innerHTML=`<b>∞ ${s.name}</b> <small>${best[i]?'최고 '+best[i]+'층':conq[4]?'정복한 용사로 입장':'잠김'}</small>`;nav.appendChild(b);return;}
     b.setAttribute('aria-pressed',i===stage);b.disabled=i!==0||busy;b.title=i===0?'':'새 용사는 지상계에서만 출정한다. 정복한 용사로 이어서 들어갈 수 있다.';
-    const bv=best[i],cq=conq[i],hb=i<4?best[HUNT_BASE+i]:0;b.innerHTML=`${i+1}. ${s.name} <small>${i>unlocked?'잠김':cq===2?'완전 정복':cq===1?'정복 · 최고 '+pfmt(bv)+'%':(bv!=null?'최고 '+pfmt(bv)+'%':'도전 전')}${hb?` · 사냥터 ${hb}층`:''}</small>`;
+    const bv=best[i],cq=conq[i],hb=i<4?best[HUNT_BASE+i]:0;b.innerHTML=`<b>${i+1}. ${s.name}</b> <small>${i>unlocked?'잠김':cq===2?'완전 정복':cq===1?'정복 · 최고 '+pfmt(bv)+'%':(bv!=null?'최고 '+pfmt(bv)+'%':'도전 전')}${hb?` · 사냥터 ${hb}층`:''}</small>`;
     if(stage>=HUNT_BASE&&worldOf(stage)===i) b.setAttribute('aria-pressed','true');
     b.onclick=()=>{stage=i;store.set('stage',i);run=null;renderAll();};nav.appendChild(b);});
 }
@@ -756,7 +761,7 @@ function renderHero(){
   const its=run?run.items:[]; const rv=tmp.revive;
   const canSell=run&&!run.dead&&!run.over;
   {const SO=['mult','str','agi','int','con','win','flee','luk','cha'];
-   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||((b.it.plus||0)-(a.it.plus||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it))));
+   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it)))||(a.idx-b.idx));
    const cons={};its.forEach((it,idx)=>{if(slotOf(it))return;const k=it.heal?'성수':it.revive?'부활의 깃털':it.name;(cons[k]=cons[k]||[]).push(idx);});
    const rows=eq.map(({it:i,idx})=>{const ce=canSell&&canEnhance(i);const pl=i.plus||0;const cost=ce?enhCost(run,i):0;
      const er=run?enhRate(run,pl):{rate:ENH_RATE[pl],parts:[['기본',ENH_RATE[pl]]]};const erTxt=er.parts.map(([k,v],j)=>j?`${k} +${Math.round(v*100)}%p`:`${k} ${Math.round(v*100)}%`).join(' + ')+(er.capped?' (최대 95%)':'');
@@ -1118,8 +1123,8 @@ function renderAll(){
   $('rollBtn').disabled=!!busy;
   if(busy){$('goBtn').disabled=true;$('goBtn').textContent='토벌 중';}
   syncPause();
-  {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt)lb.textContent=run.huntFrom===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[STAGES[run.stage].hunt+1].name}로`;}
-  {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
+  {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt){const to=run.huntFrom===5?5:STAGES[run.stage].hunt+1;lb.textContent=to===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[to].name}로`;lb.className='btn wbtn solid';lb.style.setProperty('--wc',WCOL[to]);}}
+  {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
 $('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));
   {const ck=ckptInfo();try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!(ck&&k==='fh2_'+logKey(ck.seed)))localStorage.removeItem(k);}}catch(e){}}
