@@ -1,0 +1,18 @@
+name: check
+on:
+  push:
+    branches: [check]
+jobs:
+  urls:
+    runs-on: ubuntu-latest
+    steps:
+      - name: root page 200
+        run: test "$(curl -s -o /dev/null -w '%{http_code}' https://sekhwan.github.io/fate-hero/)" = 200
+      - name: index.html 200
+        run: test "$(curl -s -o /dev/null -w '%{http_code}' https://sekhwan.github.io/fate-hero/index.html)" = 200
+      - name: no-slash redirect
+        run: curl -s -o /dev/null -w '%{http_code}' https://sekhwan.github.io/fate-hero | grep -q 30
+      - name: engine 1.5.0
+        run: curl -fsS https://sekhwan.github.io/fate-hero/engine.js | grep -q "ENGINE_VERSION='1.5.0'"
+      - name: monster image
+        run: test "$(curl -s -o /dev/null -w '%{http_code}' https://sekhwan.github.io/fate-hero/mon/m001.webp)" = 200
