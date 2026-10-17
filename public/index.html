@@ -69,7 +69,9 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .hp .bar{height:8px;background:rgba(255,255,255,.06);margin-top:4px;position:relative}
 .hp .bar i{position:absolute;inset:0 auto 0 0;background:var(--holy);transition:width .4s}
 .hp .bar i.low{background:var(--ember)}
-.mini{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.merc{display:flex;align-items:baseline;gap:8px;border:1px solid rgba(160,200,120,.45);padding:7px 10px;margin:-6px 0 14px;background:rgba(255,255,255,.02)} .merc span{font-size:12px;color:var(--muted)} .merc b{font-family:var(--mono);font-size:18px;color:#a8d07a} .merc em{font-style:normal;font-size:11.5px;color:var(--muted);margin-left:auto;flex:1 1 auto;text-align:right;min-width:0} .merc span,.merc b{white-space:nowrap;flex:none;display:inline}
+.spTag{display:inline-block;font-size:10.5px;padding:0 6px;border:1px dashed var(--g3);border-radius:8px;color:var(--g3);margin-left:4px}
+.mini{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:14px}
 .mini div{border:1px solid var(--line);padding:6px 8px}
 .mini span{display:block;font-size:11px;color:var(--muted)}
 .mini b{font-family:var(--mono);font-weight:500;font-size:15px}
@@ -389,11 +391,11 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .irow button.enh{border-color:color-mix(in srgb,var(--zg) 70%,transparent);color:var(--zg)}
 
 /* 소지품·상점 한 줄형 */
-.irow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
+.irow{display:grid;grid-template-columns:minmax(min(9em,100%),1fr) auto;gap:2px 8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line)}
 .irow .in{display:flex;align-items:baseline;gap:8px;min-width:0;flex-wrap:wrap}
 .irow .nm,.srow .nm{font-size:13.5px;font-weight:500} .nm.g0{color:var(--g0)} .nm.g1{color:var(--g1)} .nm.g2{color:var(--g2)} .nm.g3{color:var(--g3)}
 .irow .iv,.srow .iv{font-size:12px;color:var(--muted)}
-.irow .ib{display:flex;gap:4px}
+.irow .ib{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .irow .is{grid-column:1/-1;font-size:11px;color:var(--muted);opacity:.85} .irow .is:empty{display:none}
 .irow .ip{grid-column:1/-1;font-size:11.5px;color:var(--muted)} .irow .ip b{color:var(--pw);font-weight:600} .irow .ip .br{color:var(--ember)}
 .irow button,.srow button,.crow button{font:inherit;font-size:11.5px;font-family:var(--mono);border:1px solid var(--line);background:transparent;color:var(--fg);padding:4px 7px;border-radius:2px;cursor:pointer;white-space:nowrap}
@@ -478,9 +480,10 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
       <div class="xp"><div class="row"><span>레벨 <b id="xpLv">1</b></span><em id="xpTxt"></em></div><div class="bar"><i id="xpBar"></i></div></div>
       <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><b id="fameNum">0</b><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
+      <div class="merc" id="mercBox"><span>용병</span><b id="mAlly">0</b><em id="mercTxt"></em></div>
       <div class="stats" id="hStats"></div>
       <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
-      <div class="mini"><div><span>레벨</span><b id="mLvl">1</b></div><div><span>처치</span><b id="mKill">0</b></div><div><span>용병</span><b id="mAlly">0</b></div></div>
+      <div class="mini"><div><span>레벨</span><b id="mLvl">1</b></div><div><span>처치</span><b id="mKill">0</b></div></div>
       <dl class="facts">
         <dt>종족</dt><dd id="hRace"></dd>
       </dl>
@@ -591,7 +594,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>신화 아이템 (엔드게임)</h3>
     <ul>
       <li>공허의 옥좌까지 정복한 뒤 <b>끝없는 전장</b>에서만 합성할 수 있다.</li>
-      <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 2,000</b>. 성공 확률은 <b>25%</b>이고, 실패하면 재료가 모두 사라진다.</li>
+      <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 10,000</b>. 성공 확률은 <b>70%</b>이고, 실패하면 재료가 모두 사라진다.</li>
+      <li><b>예비 전설</b>: 전설 장비는 착용품보다 약하거나 같은 부위가 있어도 버리지 않고 예비로 보관한다(최대 8개). 예비 전설은 효과가 없지만 강화해서 신화 합성 재료로 쓸 수 있고, 착용품보다 강해지면 자동으로 바꿔 낀다. 합성에는 예비 전설이 먼저 쓰인다.</li>
       <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고 낮으면 사라진다. 신화는 강화할 수 없지만 효과가 압도적이다.</li>
       <li>영웅·전설 장비는 같은 이름이라도 능력치가 조금씩 다르다.</li>
     </ul>
@@ -687,7 +691,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 <script>
 
 const $=id=>document.getElementById(id);
-const fmt=n=>Math.round(n).toLocaleString('ko-KR');
+const fmt=n=>fmtG(n); // 10만 이상은 만·억·조·경… 단위
+const fmtS=fmt;
 const store={get(k,d){try{const v=localStorage.getItem('fh2_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('fh2_'+k,JSON.stringify(v))}catch(e){}}};
 // ===== 랭킹 연동 (config.js의 FATE_CONFIG가 있을 때만 켜진다) =====
 const RANK=(()=>{const c=window.FATE_CONFIG||{};const url=(c.supabaseUrl||'').replace(/\/$/,'');return {on:!!(url&&c.anonKey),url,key:c.anonKey||''};})();
@@ -757,27 +762,27 @@ function renderHero(){
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
     const chips=mine.map(k=>{const rk2=sk(tmp,k.id);return `<em${tipAttr(`${k.name} ${rk2}랭크 · ${k.role}`,[`현재: ${k.d(rk2)}`,rk2<SK_MAX?`다음 랭크: ${k.d(rk2+1)}`:'최고 랭크'])}>${k.name}${rk2>1?' '+rk2:''}</em>`;}).join('');
     return `<div class="role ${m?'on':''}"${tipAttr(role+' 계열 숙련',tip.split('\n'))}><span>${role}${m?`<b>★${m}</b>`:''}</span><div class="sks">${mine.length?chips:'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
-  $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmt(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies;
+  $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmtS(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies+' / '+mercCap(tmp);$('mercTxt').textContent=`1명당 전투력 +${Math.round((0.04+SKV.command*sk(tmp,'command'))*cmb(tmp,'cmd',1)*100)}% · 지금 +${Math.round((0.04+SKV.command*sk(tmp,'command'))*cmb(tmp,'cmd',1)*tmp.allies*100)}%`;
   const its=run?run.items:[]; const rv=tmp.revive;
   const canSell=run&&!run.dead&&!run.over;
   {const SO=['mult','str','agi','int','con','win','flee','luk','cha'];
-   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it)))||(a.idx-b.idx));
+   const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it)))||((a.it.spare?1:0)-(b.it.spare?1:0))||(a.idx-b.idx));
    const cons={};its.forEach((it,idx)=>{if(slotOf(it))return;const k=it.heal?'성수':it.revive?'부활의 깃털':it.name;(cons[k]=cons[k]||[]).push(idx);});
    const rows=eq.map(({it:i,idx})=>{const ce=canSell&&canEnhance(i);const pl=i.plus||0;const cost=ce?enhCost(run,i):0;
      const er=run?enhRate(run,pl):{rate:ENH_RATE[pl],parts:[['기본',ENH_RATE[pl]]]};const erTxt=er.parts.map(([k,v],j)=>j?`${k} +${Math.round(v*100)}%p`:`${k} ${Math.round(v*100)}%`).join(' + ')+(er.capped?' (최대 95%)':'');
-     const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmt(cost)} = 강화비 ${fmt(cp.base)} + 보유 금화 10% ${fmt(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmt(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmt(cost)}</button>`:'';
+     const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmtS(cost)} = 강화비 ${fmtS(cp.base)} + 보유 금화 10% ${fmtS(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmtS(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmtS(cost)}</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
-     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}>${itemName(i)}</span>${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'}>판매 ${fmt(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
+     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}>${itemName(i)}</span>${i.spare?'<span class="spTag" title="효과 없음 · 강화해서 신화 합성 재료로 쓰거나, 착용품보다 강해지면 자동으로 바꿔 낀다">예비</span>':''}${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
   renderMyth();
   $('hItems').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.sell;const r=sell(run,ix);if(r){logAct(['s',ix]);logSell(r);prevStats=null;renderAll();}});
   $('hPower').textContent=fmt(power(tmp)/tmp.stageCarry*10);
-  $('gGold').textContent=fmt(tmp.gold);$('sGold').textContent=fmt(tmp.gold);$('gFame').textContent=fmt(tmp.fame);
+  $('gGold').textContent=fmtS(tmp.gold);$('sGold').textContent=fmtS(tmp.gold);$('gFame').textContent=fmt(tmp.fame);
   {const hpR=Math.max(0,tmp.hp)/tmp.maxHp;const cL=COMBOS.filter(c=>c.race===h.race.name);const cDone=cL.filter(c=>tmp.combos&&tmp.combos.includes(c.id)).length;$('hStrip').innerHTML=`<div class="nm">${esc(h.name)}<small>${h.race.name} ${h.job} · Lv ${tmp.lvl}</small></div><div class="tg"><span class="rc">${h.race.name}</span>${h.traits.map(t=>`<span class="${t.good===false?'bd':t.good?'gd':''}">${t.name}</span>`).join('')}${cL.length?`<span class="cb">조합 ${cDone}/${cL.length}${cL.some(c=>c.god&&(!c.tr||h.traits.some(t=>t.name===c.tr)))?' · 전설 조합 가능':''}</span>`:''}</div><div class="nums"><span class="p">전투력 ${fmt(power(tmp)/tmp.stageCarry*10)}</span><span>HP ${Math.max(0,tmp.hp)}/${tmp.maxHp}</span><span>부활 ${revives(tmp)}</span></div><div class="hpb"><i class="${hpR<0.35?'low':''}" style="width:${hpR*100}%"></i></div><div class="more">능력치·동료·스킬은 아래 용사 명부에서 볼 수 있다</div>`;}
-  {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&wouldUpgrade(run,o.item)).length:0;$('shopBadge').textContent=n?String(n):'';}
+  {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&(wouldUpgrade(run,o.item)||canKeepSpare(run,o.item))).length:0;$('shopBadge').textContent=n?String(n):'';}
   renderShop(tmp);
 }
 function renderShop(t){
@@ -785,7 +790,7 @@ function renderShop(t){
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
   $('shopTitle').textContent=`${STAGES[stage].regions[run.region][0]}의 상인`;
   box.innerHTML=run.shop.map((o,i)=>{const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
-    const up=wouldUpgrade(run,it);return `<div class="srow ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}"><span class="nm g${it.grade||0}">${it.name}</span>${qTag(it)}<span class="iv">${it.d}</span><button type="button" class="${o.cur}" data-buy="${i}" ${o.sold||have<o.price||!up||holdFull(run,it)?'disabled':''}>${o.sold?'구매함':holdFull(run,it)?'1개 보유 중':!up?'보유품 우위':(o.cur==='gold'?'금화 ':'명성 ')+fmt(o.price)}</button></div>`}).join('');
+    const up0=wouldUpgrade(run,it),spk=!up0&&canKeepSpare(run,it),up=up0||spk;return `<div class="srow ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}"><span class="nm g${it.grade||0}">${it.name}</span>${qTag(it)}<span class="iv">${it.d}</span><button type="button" class="${o.cur}" data-buy="${i}" ${o.sold||have<o.price||!up||holdFull(run,it)?'disabled':''}>${o.sold?'구매함':holdFull(run,it)?'1개 보유 중':!up?'보유품 우위':(spk?'예비 보관 · ':'')+(o.cur==='gold'?'금화 ':'명성 ')+fmtS(o.price)}</button></div>`}).join('');
   box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';
@@ -819,7 +824,7 @@ function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPo
   else {txt=`강화 실패. ${r.name}은(는) +${r.from} 그대로다.`;cls='bad';}
   enhMsg=`<span class="${r.ok?'ok':'no'}">${txt}</span>`;
   showToast(r.destroyed?'강화 실패 · 장비 파괴':r.ok?`강화 성공 · +${r.to}`:r.to<r.from?`강화 실패 · +${r.from} → +${r.to}`:'강화 실패 · 그대로',`${r.name}${r.destroyed?'이(가) 산산조각 났다':r.ok?' · '+itemDesc(r.it):r.to<r.from?'이(가) 한 단계 떨어졌다':'은(는) 그대로다'}`,r.destroyed?'bad':r.ok?'ok':'warn',...(r.ok?[[1000,1100,1300,1800][r.from>=9?3:r.from>=6?2:r.from>=3?1:0],r.from>=9?3:r.from>=6?2:r.from>=3?1:0]:[]));
-  li.innerHTML=`<span class="t">${progTxt()}</span><div><b>강화</b> · ${txt}<div class="fx"><span class="${cls}">금화 -${fmt(r.cost)}</span></div></div>`;lg.prepend(li);
+  li.innerHTML=`<span class="t">${progTxt()}</span><div><b>강화</b> · ${txt}<div class="fx"><span class="${cls}">금화 -${fmtS(r.cost)}</span></div></div>`;lg.prepend(li);
   renderAll();}
 // ===== 플레이 기록(테스트용): 어디서 그만두는지 남긴다. claude.ai에서 '참여자' 이상으로 공유받은 사람만 저장된다 =====
 const TRACK=(()=>{const sid=Date.now().toString(36)+Math.random().toString(36).slice(2,7);
@@ -861,7 +866,7 @@ function showEvent(ev){let t=$('evt');if(!t){t=document.createElement('div');t.i
 function showToast(head,sub,kind,ms,tier,small){let t=$('toast');if(!t){t=document.createElement('div');t.id='toast';t.setAttribute('role','status');t.setAttribute('aria-live','polite');document.body.appendChild(t);}
   t.className='toast '+kind+(tier?' t'+tier:'')+(small?' sm':'');t.innerHTML=`${tier?`<span class="tier">${['','★ 고급 강화 ★','★★ 정예 강화 ★★','★★★ 전설의 강화 ★★★'][tier]}</span>`:''}<b>${esc(head)}</b><span>${esc(sub)}</span>`;if(tier===3)burst();t.hidden=false;void t.offsetWidth;t.classList.add('show');
   clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{t.hidden=true;},200);},ms||1000);}
-function logSell(r){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>판매</b> · ${r.it.name}을(를) 팔았다.<div class="fx"><span class="good">금화 +${fmt(r.g)}</span></div></div>`;lg.prepend(li);}
+function logSell(r){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>판매</b> · ${r.it.name}을(를) 팔았다.<div class="fx"><span class="good">금화 +${fmtS(r.g)}</span></div></div>`;lg.prepend(li);}
 function logBuy(items,why){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
   items.forEach(it=>{const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${why?'자동 구매':'구매'}</b> · ${why||'상점에서 물건을 샀다.'}<div class="fx"><span class="g${it.grade}">${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})</span></div></div>`;lg.prepend(li);});}
 // 설명 말풍선: data-tt(제목) + data-tl(줄들, ¦로 구분). 마우스를 올리거나 눌러서 연다.
@@ -886,8 +891,8 @@ function probCls(p){return p>=0.6?'hi':p>=0.25?'mid':'lo';}
 function pctTxt(p){return p<0.1?(p*100).toFixed(1):Math.round(p*100);}
 function renderStage(){
   const box=$('stage');
-  if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{const cb=$('ckptBtn');if(cb)cb.onclick=loadCheckpoint;}return;}
-  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;const cb=$('ckptBtn');if(cb)cb.onclick=loadCheckpoint;return;}
+  if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{const cb=$('ckptBtn');if(cb)cb.onclick=()=>loadCheckpoint();const cb1=$('ckptBtn1');if(cb1)cb1.onclick=()=>loadCheckpoint(true);}return;}
+  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;const cb=$('ckptBtn');if(cb)cb.onclick=()=>loadCheckpoint();const cb1=$('ckptBtn1');if(cb1)cb1.onclick=()=>loadCheckpoint(true);return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
   if(!isImportant(run,c,mode)){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
@@ -1080,16 +1085,17 @@ async function loadRank(){
 }
 function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name,at:Date.now()});logAct(['S']);}
 function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}
-function loadCheckpoint(){const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
+function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
   heroSeed=c.seed>>>0;hero=makeHero(heroSeed);
   const saved=store.get(logKey(heroSeed),null);if(saved&&Array.isArray(saved.log)){runLog=saved.log;runToken=saved.token;}else{runLog=null;runToken=null;}
   const loads=(runLog?runLog.filter(a=>a[0]==='L').length:0)+1;
-  run=restoreRun(c.snap,hero,mixSeed(heroSeed,100+loads));logAct(['L']);
+  run=restoreRun(c.snap,hero,mixSeed(heroSeed,100+loads),fromStart);logAct(fromStart?['L',1]:['L']);
   stage=c.stage;store.set('stage',stage);
   lastOut=null;verdictHtml='';paused=false;prevStats=null;
-  $('log').innerHTML=`<li><span class="t">0.000%</span><div><b>저장 지점</b> · ${hero.name}이(가) ${STAGES[stage].name} 입구에서 다시 일어섰다.</div></li>`;
+  $('log').innerHTML=`<li><span class="t">0.000%</span><div><b>저장 지점</b> · ${hero.name}이(가) ${STAGES[stage].name} ${STAGES[stage].endless&&STAGES[stage].hunt==null?floorOf(run)+'층':'입구'}에서 다시 일어섰다.</div></li>`;
   renderAll();}
-function ckptButton(){const c=ckptInfo();if(!c)return '';if(!(c.stage===5||(c.snap&&c.snap.huntFrom===5)))return '';return `<div class="actions" style="margin-top:12px"><button class="btn ghost" type="button" id="ckptBtn">저장 지점에서 다시: ${esc(c.heroName)} · ${STAGES[c.stage].name} ${STAGES[c.stage].hunt!=null?'1층':'입구'}</button></div>`;}
+function ckptButton(){const c=ckptInfo();if(!c)return '';if(!(c.stage===5||(c.snap&&c.snap.huntFrom===5)))return '';const endF=STAGES[c.stage].endless&&STAGES[c.stage].hunt==null&&c.snap.region>0?c.snap.region+1:0;
+  return `<div class="actions" style="margin-top:12px;flex-wrap:wrap"><button class="btn ghost" type="button" id="ckptBtn">저장 지점에서 다시: ${esc(c.heroName)} · ${STAGES[c.stage].name} ${endF?endF+'층':STAGES[c.stage].hunt!=null?'1층':'입구'}</button>${endF?`<button class="btn ghost" type="button" id="ckptBtn1">1층부터 다시</button>`:''}</div>`;}
 function startHunt(){
   if(!run||!enterHunt(run))return; logAct(['h']);
   stage=run.stage; store.set('stage',stage); lastOut=null; verdictHtml=''; paused=false; saveCheckpoint();
