@@ -30,6 +30,19 @@ function safeEqual(a, b) {
   return d === 0;
 }
 
+// 주사위 묶음: 서버 호출 한 번에 용사 후보 BATCH_N개. i번째 후보의 seed = mixSeed(base, i)
+export const BATCH_N = 50;
+export async function signBatch(secret, base, n, ts) {
+  const key = await hmacKey(secret);
+  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero-batch|${ENGINE_VERSION}|${base >>> 0}|${n}|${ts}`)));
+}
+export async function issueBatch(secret, now = Date.now()) {
+  const buf = new Uint32Array(1);
+  crypto.getRandomValues(buf);
+  const base = buf[0] >>> 0;
+  return { batch: 1, base, n: BATCH_N, ts: now, token: await signBatch(secret, base, BATCH_N, now) };
+}
+
 // 새 용사의 seed와 서명을 만든다.
 export async function issueRun(secret, now = Date.now()) {
   const buf = new Uint32Array(1);
@@ -59,8 +72,17 @@ export async function verifySubmission(body, secret, now = Date.now()) {
   if (!Number.isInteger(ts)) throw new Error('잘못된 발급 시각');
   if (now - ts > LIMITS.tokenMaxAgeMs) throw new Error('등록 기한이 지난 용사다');
   if (ts - now > 5 * 60 * 1000) throw new Error('잘못된 발급 시각');
-  const expect = await signRun(secret, seed, ts);
-  if (!safeEqual(expect, token)) throw new Error('서버가 발급하지 않은 용사다');
+  if (body.batch) {
+    const { base, i, n } = body.batch;
+    if (!Number.isInteger(base) || base < 0 || base > 0xffffffff || !Number.isInteger(n) || n < 1 || n > 1000 || !Number.isInteger(i) || i < 0 || i >= n)
+      throw new Error('잘못된 주사위 묶음');
+    const expect = await signBatch(secret, base, n, ts);
+    if (!safeEqual(expect, token)) throw new Error('서버가 발급하지 않은 용사다');
+    if ((E.mixSeed(base, i) >>> 0) !== seed) throw new Error('주사위 묶음과 용사가 맞지 않다');
+  } else {
+    const expect = await signRun(secret, seed, ts);
+    if (!safeEqual(expect, token)) throw new Error('서버가 발급하지 않은 용사다');
+  }
   const nick = cleanNickname(nickname);
   if (!nick) throw new Error('닉네임은 1~12자로 입력해 주세요');
   if (!Array.isArray(log) || log.length < 2) throw new Error('기록이 비어 있다');

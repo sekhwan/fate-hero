@@ -54,6 +54,37 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 @media (max-width:840px){.grid{display:flex;flex-direction:column;align-items:stretch}.grid>.front{order:1}.grid>.gear{order:2}.grid>.roster{order:3;margin-top:16px}.grid>.logWrap{order:4}}
 .roster{background:var(--panel);border:1px solid var(--line);padding:20px;position:relative}
 .roster::before{content:"용사 명부";position:absolute;top:-9px;left:14px;background:var(--bg);padding:0 8px;font-size:11px;letter-spacing:.14em;color:var(--brass)}
+ #nearFx{position:fixed;inset:0;pointer-events:none;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0}
+#nearFx.on{animation:nfBg 1.7s ease-out forwards}
+@keyframes nfBg{0%{opacity:1;background:rgba(160,0,0,.55)}18%{background:rgba(120,0,0,.35)}35%{background:radial-gradient(circle,rgba(255,230,150,.55),rgba(0,0,0,0) 70%)}80%{opacity:1}100%{opacity:0}}
+#nearFx .nfIn{text-align:center;transform:scale(.6);opacity:0} #nearFx.on .nfIn{animation:nfTx 1.7s cubic-bezier(.2,.9,.3,1.2) forwards}
+@keyframes nfTx{0%{transform:scale(.6);opacity:0}25%{transform:scale(1.15);opacity:1}40%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:scale(1.05)}}
+#nearFx b{display:block;font-family:var(--display);font-size:64px;color:#ffe08a;text-shadow:0 0 24px rgba(255,200,80,.9),0 2px 0 #7a4a00} #nearFx span{display:block;font-size:16px;color:#fff;margin-top:6px;text-shadow:0 1px 4px #000}
+#nearFx.revive b{color:#fff3c0} @media (max-width:600px){#nearFx b{font-size:44px}}
+#log li.near{border-left:3px solid #ffd45a;background:rgba(255,200,80,.08)} #log li.near::before{content:'✦ 쓰러질 뻔했다';display:block;grid-column:1/-1;font-size:11px;font-weight:700;color:#ffd45a;letter-spacing:.05em}
+.myName{font-weight:800;background:linear-gradient(90deg,#ff5f6d,#ffc371,#fff36b,#6bff95,#5fd7ff,#8c7bff,#ff6bd6,#ff5f6d);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:myFlow 3s linear infinite;filter:drop-shadow(0 0 4px rgba(255,255,255,.25))}
+@keyframes myFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
+@media (prefers-reduced-motion:reduce){.myName{animation:none}}
+.hrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .hrow .hname{margin-right:auto} .dGroup{display:inline-flex;align-items:center;gap:10px;margin-left:auto}
+.dBtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13.5px;font-weight:700;padding:8px 14px;border:0;border-radius:6px;cursor:pointer;white-space:nowrap;color:#2a1a00;
+  background:linear-gradient(180deg,#ffe27a,#f4b42c 55%,#e0901a);box-shadow:0 0 0 1px #ffd45a inset,0 3px 0 #9c5d0a,0 0 18px rgba(255,196,60,.45);animation:dGlow 2.4s ease-in-out infinite}
+.dBtn:hover{filter:brightness(1.08)} .dBtn:active{transform:translateY(2px);box-shadow:0 0 0 1px #ffd45a inset,0 1px 0 #9c5d0a,0 0 12px rgba(255,196,60,.4)}
+@keyframes dGlow{0%,100%{box-shadow:0 0 0 1px #ffd45a inset,0 3px 0 #9c5d0a,0 0 12px rgba(255,196,60,.35)}50%{box-shadow:0 0 0 1px #ffd45a inset,0 3px 0 #9c5d0a,0 0 24px rgba(255,196,60,.7)}}
+#rollBtn{color:#2a1a00!important;background:linear-gradient(180deg,#ffe27a,#f4b42c 55%,#e0901a)!important;border-color:#ffd45a!important;font-weight:700} [hidden].dBtn,[hidden]#rollBtn,[hidden].bigDie{display:none!important}
+.die{flex:none;vertical-align:-3px}
+.bigDie{display:inline-flex;gap:4px;filter:drop-shadow(0 0 8px rgba(255,210,90,.55))} .bigDie .dc{display:inline-flex;width:36px;height:36px} .bigDie svg{width:36px;height:36px}
+.bigDie .dc.tumble{animation:tumble .36s cubic-bezier(.3,.7,.4,1);animation-delay:calc(var(--k)*25ms)} .bigDie .dc:nth-child(2).tumble{animation-name:tumble2} .bigDie .dc:nth-child(3).tumble{animation-name:tumble3}
+@keyframes tumble2{0%{transform:translate(0,0) rotate(0)}30%{transform:translate(3px,-12px) rotate(-240deg) scale(1.15)}60%{transform:translate(-2px,0) rotate(-450deg)}100%{transform:none}}
+@keyframes tumble3{0%{transform:translate(0,0) rotate(0)}35%{transform:translate(-3px,-7px) rotate(300deg) scale(1.1)}65%{transform:translate(1px,0) rotate(500deg)}85%{transform:translateY(-2px) rotate(530deg)}100%{transform:none}}
+.bigDie.land{animation:land .45s ease-out} @keyframes land{0%{filter:drop-shadow(0 0 2px rgba(255,210,90,.4))}40%{filter:drop-shadow(0 0 14px rgba(255,220,110,.95))}100%{filter:drop-shadow(0 0 8px rgba(255,210,90,.55))}}
+.tumble{animation:tumble .36s cubic-bezier(.3,.7,.4,1)}
+@keyframes tumble{0%{transform:translateY(0) rotate(0) scale(1)}30%{transform:translateY(-9px) rotate(220deg) scale(1.15)}60%{transform:translateY(0) rotate(420deg) scale(.95)}80%{transform:translateY(-3px) rotate(510deg)}100%{transform:translateY(0) rotate(540deg) scale(1)}}
+@media (max-width:840px){.bigDie{display:none}}
+@keyframes dieSpin{0%{transform:rotate(0) scale(1)}50%{transform:rotate(200deg) scale(1.25)}100%{transform:rotate(360deg) scale(1)}}
+.roster.rolling .hname,.roster.rolling .htags,.roster.rolling .stats,.roster.rolling .facts{animation:slotBlur .45s ease-out}
+@keyframes slotBlur{0%{filter:blur(3px);transform:translateY(-6px);opacity:.3}100%{filter:none;transform:none;opacity:1}}
+@media (min-width:841px){.mobOnly{display:none!important}}
+@media (max-width:840px){.hrow .dGroup{display:none}}
 .hname{font-family:var(--display);font-size:32px;line-height:1.1;margin:4px 0 2px}
 .hsub{color:var(--muted);font-size:13px}
 .roster .facts{margin-top:14px}
@@ -459,7 +490,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   <header>
     <div>
       <h1>운명의 <span>용사</span></h1>
-      <p class="tag">종족도, 재산도, 재능도 고를 수 없다. 고를 수 있는 건 매 순간의 결정뿐. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
+      <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
       <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="helpBtn" type="button" id="helpBtn">게임 방법 보기</button><button class="helpBtn" type="button" id="rankBtn" hidden>랭킹 보기</button><button class="helpBtn" type="button" id="bgmBtn" aria-pressed="false">♪ 배경음 켜기</button></div>
     </div>
     <div class="counter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
@@ -469,11 +500,11 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
   <div class="grid">
     <section class="roster" aria-label="용사 정보">
-      <div class="hname" id="hName"></div>
+      <div class="hrow"><div class="hname" id="hName"></div><span class="dGroup"><span class="bigDie" id="bigDie" aria-hidden="true"></span><button class="dBtn" id="rollBtn2" type="button">랜덤 영웅 뽑기</button></span></div>
       <div class="hsub" id="hSub"></div>
       <div class="htags" id="hTags"></div>
       <dl class="facts top">
-        <dt>재산</dt><dd id="hWealth"></dd>
+        <dt>신분</dt><dd id="hWealth"></dd>
       </dl>
       <div id="hTraits" hidden></div>
       <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
@@ -500,8 +531,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="trackLbl"><span id="tFrom"></span><span id="tTo"></span></div>
       <div class="hstrip" id="hStrip"></div>
       <div class="actions">
-        <button class="btn" id="goBtn" type="button">토벌 출정</button>
-        <button class="btn ghost" id="rollBtn" type="button">다시 태어나기</button>
+        <button class="btn" id="goBtn" type="button">이 운명으로 출정</button>
+        <button class="btn ghost mobOnly" id="rollBtn" type="button"><svg class="die" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="8" r="1.6" fill="currentColor"/><circle cx="16" cy="16" r="1.6" fill="currentColor"/><circle cx="12" cy="12" r="1.6" fill="currentColor"/><circle cx="16" cy="8" r="1.6" fill="currentColor"/><circle cx="8" cy="16" r="1.6" fill="currentColor"/></svg> 랜덤 영웅 뽑기</button>
         <button class="btn ghost" id="pauseBtn" type="button" disabled>일시정지 ❚❚</button>
         <button class="btn" id="leaveBtn" type="button" hidden>사냥 마치고 다음 세계로</button>
         <div class="travel" id="travel" hidden><span>이전 세계 사냥터로 떠나기</span><div id="travelBtns"></div></div>
@@ -519,7 +550,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   </div>
 
   <h2>지난 용사들</h2>
-  <div class="histWrap"><table class="hist"><thead><tr><th>용사</th><th>종족</th><th>재산</th><th>세계</th><th>최후</th><th style="text-align:right">토벌률</th><th style="text-align:right">상위</th></tr></thead><tbody id="hist"></tbody></table></div>
+  <div class="histWrap"><table class="hist"><thead><tr><th>용사</th><th>종족</th><th>신분</th><th>세계</th><th>최후</th><th style="text-align:right">토벌률</th><th style="text-align:right">상위</th></tr></thead><tbody id="hist"></tbody></table></div>
   <p class="note">각 세계의 마지막 지배자를 쓰러뜨리면 정복으로 다음 세계가 열리고, 같은 용사로 이어서 들어갈 수 있다. 공허의 옥좌까지 정복하기 전에 쓰러지면 여정은 끝나고, 새 용사로 지상계부터 다시 시작해야 한다. 행운과 매력이 높을수록 행운의 일격과 매혹이 자주 터진다(35에서 30%, 40 이상 50%, 마지막 지배자 제외). 모든 지역의 지배자까지 쓰러뜨려 100%를 채우면 완전 정복으로 기록된다. 평정하지 못한 지역이 많을수록 마지막 지배자가 강해진다. 명성이 30 미만이면 히로인을 만날 수 없고, 150 이상이 되어야 열리는 숨은 장소도 있다. 아이템은 일반(흰색), 희귀(파랑), 영웅(노랑), 전설(황금) 네 등급이다. 승리확률은 내 전투력과 적 전투력의 비율로 기본값이 정해지고, 행운·명성(100마다 +1%p)·아이템이 더해진다. 명성이 높을수록 회유도 쉬워진다. 소지품은 금화를 받고 팔 수 있다. 성수는 상점에 나오면 금화로 자동 구매된다(최대 2병). 부활의 깃털은 명성으로 팔며, 남은 부활이 0회일 때만 자동으로 산다. 지배자 앞에서는 운명의 여신과 가위바위보로 축복이나 저주를 받을 수 있고, 동료와 용병은 지배자전에서 합동 공격으로 승률을 보탠다. 마지막 지배자에게는 세 번까지 도전할 수 있다. 상점은 지역마다 새로 열리고, 명성으로 사는 물건은 그만큼 명성이 줄어든다. 상위 %는 매번 가장 무난한 선택을 하는 용사 2,000명과 비교한 값이다. 기록은 이 브라우저에만 남는다.</p>
 </div>
 
@@ -621,11 +652,12 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>불리한 싸움에서 이길수록 좋은 등급의 아이템과 각성(능력치 상승) 보상이 커진다.</li>
     </ul>
 
-    <h3>종족 · 재산 · 특성</h3>
+    <h3>종족 · 신분 · 특성</h3>
     <ul>
       <li>종족마다 능력치 보정과 고유 효과가 있다. 예: 오크 전투력 +10%·회유 -10%p, 엘프 회유·도망 +10%p, 드워프 생명력 +20%·강화 +5%p, 고블린 금화 +40%·상점 -10%.</li>
-      <li>재산이 많을수록 시작 금화와 기본 장비가 좋고, 부유층·귀족·왕족은 <b>가문의 유산</b>으로 장비를 갖고 출정한다.</li>
-      <li>용사 명부의 종족·재산·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
+      <li>신분마다 아주 드물게(탐험 사건 1만 번에 한 번꼴) 그 신분에게만 일어나는 <b>히든 이벤트</b>가 퀴즈로 찾아온다. 이 게임에 대한 객관식 문제를 맞히면 신분에 맞는 큰 보상을 받고, 틀리면 기회가 사라진다.</li>
+      <li>신분이 높을수록 시작 금화와 기본 장비가 좋고, 부유층·귀족·왕족은 <b>가문의 유산</b>으로 장비를 갖고 출정한다.</li>
+      <li>용사 명부의 종족·신분·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
     </ul>
     <h3>능력치</h3>
     <div class="tblWrap"><table>
@@ -642,7 +674,6 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>세계마다 장비 세트가 다르다. 지상계 → 지하 세계(망자의 뼈칼 등) → 마계(타락한 마검 등) → 심연 → 공허 순서로 수치가 크게 오른다. 소지품에는 등급, 어느 세계 장비인지, 어디서 얻었는지(전투 승리·지배자 처치·탐험·의뢰·상점 등)가 표시된다.</li>
       <li>같은 부위(각 능력치, 전투력, 승리확률, 도망 확률)는 <b>하나만</b> 착용한다. 더 좋은 것이 들어오면 자동으로 교체되고 기존 것은 금화로 팔린다.</li>
       <li><b>강화</b>: 소지품의 강화 버튼으로 금화를 써서 +1~+10까지 올린다. +2까지는 조금씩 오르다가 <b>+3부터 크게</b> 커지고, 전설 장비는 +10이면 25배가 된다. 등급이 낮을수록 강화 효율이 낮다(일반 15%, 희귀 35%, 영웅 70%, 전설 100%). 대신 <b>+1부터는 실패하면 장비가 무조건 부서진다.</b> 버튼 아래에 성공했을 때의 효과가 미리 표시된다.</li>
-      <li><b>전설 장비 강화</b>는 강화비에 더해 <b>보유 금화의 10%</b>가 든다. 금화를 쌓아 두기보다 쓰는 편이 낫다.</li>
     </ul>
     <div class="tblWrap"><table>
       <tr><th>현재 단계</th><td>+0</td><td>+1</td><td>+2</td><td>+3</td><td>+4</td><td>+5</td><td>+6</td><td>+7</td><td>+8</td><td>+9</td></tr>
@@ -700,12 +731,39 @@ function rankHeaders(){const h={'apikey':RANK.key,'Content-Type':'application/js
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let heroSeed=0, runToken=null, runLog=null;
 function logKey(seed){return 'rl_'+seed;}
-function persistLog(){if(runLog)store.set(logKey(heroSeed),{token:runToken,log:runLog});}
+function persistLog(){if(runLog)store.set(logKey(heroSeed),{token:runToken,log:runLog,rolls:hero&&hero.rolls||0});}
 function logAct(a){if(!runLog)return;runLog.push(a);persistLog();}
+// 주사위 묶음: 서버에서 용사 후보 50개를 한 번에 받아 두고 하나씩 꺼낸다 (굴릴 때마다 서버를 부르지 않는다)
 async function issueSeed(){
-  if(RANK.on){try{const r=await fetch(RANK.url+'/functions/v1/start-run',{method:'POST',headers:rankHeaders(),body:'{}'});if(r.ok){const j=await r.json();return {seed:j.seed>>>0,token:{token:j.token,ts:j.ts}};}}catch(e){}}
+  if(RANK.on){
+    let q=store.get('seedq',null);
+    if(!q||!q.batch||q.next>=q.n||q.v!==ENGINE_VERSION||Date.now()-q.ts>20*24*3600*1000){q=null;
+      try{const r=await fetch(RANK.url+'/functions/v1/start-run',{method:'POST',headers:rankHeaders(),body:'{"batch":1}'});if(r.ok){const j=await r.json();
+        if(j.batch)q={batch:1,base:j.base>>>0,n:j.n,ts:j.ts,token:j.token,next:0,v:ENGINE_VERSION};
+        else return {seed:j.seed>>>0,token:{token:j.token,ts:j.ts}};}}catch(e){}}
+    if(q){const i=q.next++;store.set('seedq',q);return {seed:mixSeed(q.base,i)>>>0,token:{token:q.token,ts:q.ts,batch:{base:q.base,i,n:q.n}}};}
+  }
   return {seed:(Math.random()*2**32)>>>0,token:null};
 }
+// 실제 주사위처럼 눈이 바뀌며 구르는 모션 (약 0.36초). 결과는 모션이 끝난 뒤 보여 준다.
+const DIE_ROLL_MS=360;
+const PIPS={1:[[12,12]],2:[[7.5,7.5],[16.5,16.5]],3:[[7,7],[12,12],[17,17]],4:[[7.5,7.5],[16.5,7.5],[7.5,16.5],[16.5,16.5]],5:[[7,7],[17,7],[12,12],[7,17],[17,17]],6:[[7.5,6.5],[16.5,6.5],[7.5,12],[16.5,12],[7.5,17.5],[16.5,17.5]]};
+function dieInner(n){return `<rect x="2" y="2" width="20" height="20" rx="4.5" fill="#fff8e6" stroke="#f4b42c" stroke-width="1.6"/>${PIPS[n].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${n===1?2.6:1.8}" fill="#2a1a00"/>`).join('')}`;}
+function dieSvg(n){return `<svg class="die" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">${dieInner(n)}</svg>`;}
+// 주사위 1개가 구르다 무작위 눈으로 멈춘다 (영웅 능력치와는 무관한 연출)
+const DICE_N=1;
+function diceHtml(faces){return faces.map((n,k)=>`<span class="dc" style="--k:${k}">${dieSvg(n)}</span>`).join('');}
+function setDiceFaces(n){$('bigDie').innerHTML=diceHtml(Array(DICE_N).fill(n));document.querySelectorAll('#rollBtn .die').forEach(x=>x.innerHTML=dieInner(n));}
+function rollDieAnim(){const rnd=()=>1+Math.floor(Math.random()*6);
+  if($('bigDie').children.length!==DICE_N)setDiceFaces(rnd());
+  const cells=[...$('bigDie').children];const icons=[...document.querySelectorAll('#rollBtn .die')];
+  const tick=()=>{cells.forEach(c=>{c.firstElementChild.innerHTML=dieInner(rnd());});icons.forEach(x=>x.innerHTML=dieInner(rnd()));};
+  tick();const iv=setInterval(tick,55);
+  [...cells,...icons].forEach(e=>{e.classList.remove('tumble');void e.getBoundingClientRect();e.classList.add('tumble');});
+  return new Promise(res=>setTimeout(()=>{clearInterval(iv);const n=rnd();cells.forEach(c=>{c.firstElementChild.innerHTML=dieInner(n);c.classList.remove('tumble');});
+    icons.forEach(x=>{x.innerHTML=dieInner(n);x.classList.remove('tumble');});$('bigDie').classList.remove('land');void $('bigDie').offsetWidth;$('bigDie').classList.add('land');res();},DIE_ROLL_MS));}
+function showDice(h,anim){if(!anim)return;const ro=document.querySelector('.roster');ro.classList.remove('rolling');void ro.offsetWidth;ro.classList.add('rolling');
+  document.querySelectorAll('#rollBtn,#rollBtn2').forEach(b=>{b.classList.remove('rolling');void b.offsetWidth;b.classList.add('rolling');});setTimeout(()=>ro.classList.remove('rolling'),460);}
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
 let stage=0, hero=null, run=null, mode=(m=>m==='manual'?'manual':'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
@@ -728,12 +786,12 @@ function renderStages(){
     if(stage>=HUNT_BASE&&worldOf(stage)===i) b.setAttribute('aria-pressed','true');
     b.onclick=()=>{stage=i;store.set('stage',i);run=null;renderAll();};nav.appendChild(b);});
 }
-async function newHero(){TRACK.st.heroes++;setTimeout(()=>TRACK.ev('hero',{race:hero&&hero.race.name,traits:hero&&hero.traits.map(t=>t.name).join(',')}),1200);clearTimeout(autoT);stage=0;store.set('stage',0);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('goBtn').disabled=true;const g=await issueSeed();heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();}
+async function newHero(first){store.set('rolls',store.get('rolls',0)+1);TRACK.st.heroes++;setTimeout(()=>TRACK.ev('hero',{race:hero&&hero.race.name,traits:hero&&hero.traits.map(t=>t.name).join(',')}),1200);clearTimeout(autoT);stage=0;store.set('stage',0);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('rollBtn2').disabled=true;$('goBtn').disabled=true;const [g]=await Promise.all([issueSeed(),first===true?null:rollDieAnim()]);heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();showDice(hero,first!==true);}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); $('hName').textContent=h.name; $('hSub').textContent=`${h.race.name} ${h.job}`;
   {const ri=raceInfo(h.race);$('hRace').innerHTML=`<span class="tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name} <i class="qi">?</i></span><em>${h.race.note}</em>`;}
-  $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 재산 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
+  $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 신분 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
   {const ri=raceInfo(h.race);$('hTags').innerHTML=`<span class="rc tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name}</span>`+h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');}
   $('hTraits').innerHTML=h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');
   {const cr=run||null;const L=COMBOS.filter(c=>c.race===h.race.name);const W=i=>STAGES[i]?STAGES[i].name:'';
@@ -799,7 +857,7 @@ function previewPower(it){if(!(it.mult||['str','int','agi','con'].includes(it.st
 function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHTML='';return;}
   const st=STAGES[run.stage];const c=mythCheck(run);const own=run.mythics||[];
   if(!(st.endless&&st.hunt==null)&&!own.length){box.innerHTML='';return;}
-  const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}"${tipAttr(m.name+' · '+m.slot,[m.d,has?'장착 중':'아직 없다'])}><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?esc(m.name):'비어 있음'}</span>`;}).join('');
+  const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}"${tipAttr(m.name+' · '+m.slot,[m.d,has?'장착 중':'아직 없다'])}><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
   const matNames=c.mats.map(i=>itemName(run.items[i]));
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
   box.innerHTML=`<div class="myth"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
@@ -810,7 +868,7 @@ function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
   const b=$('mythBtn');if(b&&!b.dataset.arm){b.dataset.arm='1';b.textContent=`정말 바칠까? 실패하면 ${c.mats.map(i=>itemName(run.items[i])).join(', ')} 모두 사라진다 · 한 번 더 누르기`;b.classList.add('arm');setTimeout(()=>{if(b.isConnected&&b.dataset.arm){delete b.dataset.arm;b.textContent='신화 합성 시도';b.classList.remove('arm');}},4000);return;}
   const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=mythFuseSync(run,ckOk?ck.snap:null);if(!r)return;if(ckOk)store.set('ckpt',ck);logAct(['M']);TRACK.st.myth++;TRACK.ev('myth');prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
-  const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! ${r.m.name}이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?`신화 합성 성공! 그러나 이미 지닌 ${r.m.name}(+${r.old})보다 약한 +${r.v}가 나와 흩어졌다.`:`신화 합성 성공! ${r.m.name} (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
+  const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! <b class="myName">${r.m.name}</b>이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?`신화 합성 성공! 그러나 이미 지닌 <b class="myName">${r.m.name}</b>(+${r.old})보다 약한 +${r.v}가 나와 흩어졌다.`:`신화 합성 성공! <b class="myName">${r.m.name}</b> (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
   li.className=!r.ok||r.dup?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
   if(r.ok&&!r.dup)showToast(r.upgrade?'신화 강화 · '+r.m.slot:'신화 탄생 · '+r.m.slot,`${r.m.name} · PvP ${PVP_NAME[r.m.pvp]} +${r.v}`,'ok',2200,3);
   else showToast(r.ok?'신화 합성 성공 · 중복':'신화 합성 실패',r.ok?`이미 지닌 +${r.old}보다 약한 +${r.v}라 사라졌다`:'전설 장비 4개가 사라졌다','bad',1600);
@@ -964,6 +1022,7 @@ function decide(id,auto){const f0=run&&STAGES[run.stage].endless&&STAGES[run.sta
   flushCombos();
   TRACK.decide();if(run.dead){TRACK.st.deaths++;TRACK.ev('death');}if(run.conquered&&!TRACK.st.clears.includes(STAGES[run.stage].name)){TRACK.st.clears.push(STAGES[run.stage].name);TRACK.ev('clear',{w:STAGES[run.stage].name});}
   addLog(n,opt,res,auto);
+  {const nd=(res.effects||[]).find(e=>e.near);if(nd){nearDeathFx(nd);const li=$('log').firstElementChild;if(li)li.classList.add('near');}}
   if(run.dead||run.over) finish(n);
   renderAll();
 }
@@ -975,6 +1034,10 @@ function tickAuto(ms){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[]
   autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if(isImportant(run,c,mode)){renderStage();return;}
     if(c.node.type==='rest'){const b=autoShop(run);if(b.length)logBuy(b.map(x=>x.it),b[0].why);}
     decide(autoChoice(run,c),true);},ms||1000);}
+// 쓰러질 뻔한 순간: 화면 연출 + 기록 강조
+const NEAR_TXT={revive:['부활','죽음의 문턱에서 되살아났다'],potion:['기사회생','성수가 목숨을 붙잡았다'],saver:['구원','동료가 몸을 던져 구해냈다'],grit:['불굴','질긴 목숨으로 버텨냈다']};
+function nearDeathFx(e){const [h,sub]=NEAR_TXT[e.near]||['생존',e.x];let o=$('nearFx');if(!o){o=document.createElement('div');o.id='nearFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
+  o.className='nf '+e.near;o.innerHTML=`<div class="nfIn"><b>${h}</b><span>${esc(sub)}</span></div>`;void o.offsetWidth;o.classList.add('on');clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('on'),1700);}
 function addLog(n,opt,res,auto){
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
   const li=document.createElement('li'); if(auto) li.className='auto';
@@ -988,11 +1051,11 @@ function finish(n){
     const party=['heroine','friend','pet'].map(k=>run.comp[k]&&run.comp[k].name).filter(Boolean);
     if(s.hunt!=null){const nx=STAGES[s.hunt+1];
       verdictHtml=`<div class="verdict ${run.dead?'':'win'}"><h3>${s.name} ${f}층에서 ${run.dead?'쓰러졌다':'수문장에게 막혔다'}</h3><p>${f>prevBest?`사냥터 최고 기록 경신! (이전 ${prevBest}층) `:`사냥터 최고 기록 ${prevBest}층. `}처치한 악마 ${fmt(run.kills||0)}마리, 명성 ${fmt(run.fame)}.</p>${run.dead?'':`<div class="actions" style="margin-top:12px"><button class="btn" type="button" id="leaveHuntBtn">이 용사로 ${nx.name}에 들어간다</button></div>`}${ckptButton()}</div>`;
-      hist.unshift({n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:run.dead?`${f}층에서 전사`:`${f}층에서 멈춤`,p:0,f,t:0});hist=hist.slice(0,10);store.set('hist',hist);
-      $('goBtn').disabled=true;$('goBtn').textContent=run.dead?'전사':'사냥 끝';$('rollBtn').disabled=false;return;}
+      hist.unshift({d:hero.rolls||0,n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:run.dead?`${f}층에서 전사`:`${f}층에서 멈춤`,p:0,f,t:0});hist=hist.slice(0,10);store.set('hist',hist);
+      $('goBtn').disabled=true;$('goBtn').textContent=run.dead?'전사':'사냥 끝';$('rollBtn').disabled=false;$('rollBtn2').disabled=false;return;}
     verdictHtml=`<div class="verdict ${f>prevBest?'win':''}"><h3>끝없는 전장 ${f}층에서 여정이 끝났다</h3><p>${f>prevBest?`최고 기록 경신! (이전 ${prevBest}층) `:`최고 기록 ${prevBest}층. `}처치한 악마 ${fmt(run.kills||0)}마리, 명성 ${fmt(run.fame)}${party.length?', 동료 '+party.join(', '):''}.</p>${ckptButton()}</div>`;
-    hist.unshift({n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:`${f}층에서 끝`,p:0,f,t:0});hist=hist.slice(0,10);store.set('hist',hist);
-    $('goBtn').disabled=true;$('goBtn').textContent='여정 끝';$('rollBtn').disabled=false;return;}
+    hist.unshift({d:hero.rolls||0,n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:`${f}층에서 끝`,p:0,f,t:0});hist=hist.slice(0,10);store.set('hist',hist);
+    $('goBtn').disabled=true;$('goBtn').textContent='여정 끝';$('rollBtn').disabled=false;$('rollBtn2').disabled=false;return;}
   const p=pct(run),top=topPct(stage,p);
   if(best[stage]==null||p>best[stage]){best[stage]=p;store.set('best',best);}
   const won=run.conquered||run.cleared;
@@ -1008,8 +1071,8 @@ function finish(n){
     ?`<div class="verdict win"><h3>${last?'모든 악이 사라졌다':s.name+(run.cleared?' 완전 정복':' 정복')}</h3><p>${hero.name}은(는) ${s.regions[s.regions.length-1][1]}을(를) 쓰러뜨렸다. 토벌률 ${pfmt(p)}%${run.cleared?' (모든 지역 평정)':''}, 처치한 악마 ${fmt(run.kills||0)}마리. ${extra} 상위 ${top<1?top.toFixed(2):top.toFixed(1)}%.</p>${nextBtn}</div>${unlockMsg}`
     :run.over?`<div class="verdict"><h3>끝까지 살아남았지만 마지막 지배자를 넘지 못했다</h3><p>처치한 악마 ${fmt(run.kills||0)}마리, ${s.name}의 ${pfmt(p)}%. ${extra} 상위 ${top<1?top.toFixed(2):top.toFixed(1)}%.</p>${ckptButton()}</div>`
     :`<div class="verdict"><h3>${n.place}에서 쓰러지다</h3><p>${n.name}에게 목숨을 잃었다. 처치한 악마 ${fmt(run.kills||0)}마리, ${s.name}의 ${pfmt(p)}%. 결정 ${run.decisions}번, 불리한 싸움 승리 ${run.upsets}번. ${extra} 상위 ${top<1?top.toFixed(2):top.toFixed(1)}%.</p>${ckptButton()}</div>`;
-  hist.unshift({n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:end,p,t:top});hist=hist.slice(0,10);store.set('hist',hist);
-  $('goBtn').disabled=true;$('goBtn').textContent=won?'정복':run.over?'생존':'전사';$('rollBtn').disabled=false;
+  hist.unshift({d:hero.rolls||0,n:hero.name,r:hero.race.name,w:hero.wealth.name,s:s.name,e:end,p,t:top});hist=hist.slice(0,10);store.set('hist',hist);
+  $('goBtn').disabled=true;$('goBtn').textContent=won?'정복':run.over?'생존':'전사';$('rollBtn').disabled=false;$('rollBtn2').disabled=false;
 }
 function rankBoxHtml(){
   if(!RANK.on) return '';
@@ -1046,7 +1109,7 @@ async function submitRun(which){const W=which==='w';
   const nick=($(W?'wNick':'rankNick').value||'').trim().slice(0,12);const msg=$(W?'wMsg':'rankMsg');
   if(!nick){msg.className='msg err';msg.textContent='닉네임을 입력해 주세요.';return;}
   store.set('nick',nick);const btn=$(W?'wSubmit':'rankSubmit');btn.disabled=true;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
-  try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:rankHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,log:runLog})});
+  try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:rankHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,log:runLog,...(runToken.batch?{batch:runToken.batch}:{})})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
     lastSubmitted=heroSeed;const k=j.ranks||{};
@@ -1087,7 +1150,7 @@ function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),
 function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}
 function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
   heroSeed=c.seed>>>0;hero=makeHero(heroSeed);
-  const saved=store.get(logKey(heroSeed),null);if(saved&&Array.isArray(saved.log)){runLog=saved.log;runToken=saved.token;}else{runLog=null;runToken=null;}
+  const saved=store.get(logKey(heroSeed),null);if(saved&&Array.isArray(saved.log)){runLog=saved.log;runToken=saved.token;hero.rolls=saved.rolls||0;}else{runLog=null;runToken=null;}
   const loads=(runLog?runLog.filter(a=>a[0]==='L').length:0)+1;
   run=restoreRun(c.snap,hero,mixSeed(heroSeed,100+loads),fromStart);logAct(fromStart?['L',1]:['L']);
   stage=c.stage;store.set('stage',stage);
@@ -1121,21 +1184,21 @@ function nextStage(){
   const lg=$('log'); const li=document.createElement('li'); li.innerHTML=`<span class="t">0.000%</span><div><b>${STAGES[stage].name}</b> · ${hero.name}이(가) 새로운 세계에 발을 들였다.</div>`; lg.prepend(li);
   renderAll();
 }
-function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
+function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
   renderStages();renderHero();renderTrack();renderStage();renderHist();
   const busy=run&&!run.dead&&!run.over;
-  if(!run){$('goBtn').disabled=false;$('goBtn').textContent='토벌 출정';}
-  $('rollBtn').disabled=!!busy;
+  if(!run){$('goBtn').disabled=false;$('goBtn').textContent='이 운명으로 출정';}
+  $('rollBtn').disabled=!!busy;$('rollBtn2').disabled=!!busy;$('rollBtn').hidden=!!busy;$('rollBtn2').hidden=!!busy;$('bigDie').hidden=!!busy;
   if(busy){$('goBtn').disabled=true;$('goBtn').textContent='토벌 중';}
   syncPause();
   {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt){const to=run.huntFrom===5?5:STAGES[run.stage].hunt+1;lb.textContent=to===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[to].name}로`;lb.className='btn wbtn solid';lb.style.setProperty('--wc',WCOL[to]);}}
   {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
-$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));
+$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
   {const ck=ckptInfo();try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!(ck&&k==='fh2_'+logKey(ck.seed)))localStorage.removeItem(k);}}catch(e){}}
   runLog=[['start',heroSeed,stage]];persistLog();lastOut=null;verdictHtml='';$('log').innerHTML='';renderAll();};
-$('rollBtn').onclick=newHero;
+setDiceFaces(1+Math.floor(Math.random()*6));$('rollBtn').onclick=()=>newHero();$('rollBtn2').onclick=()=>newHero();
 // ===== 배경음: 외부 파일 없이 Web Audio로 합성하는 오리지널 모험 테마 =====
 // 오래 틀어 둬도 피곤하지 않게: 100BPM 안팎의 셔플 그루브, 부드러운 음색, 귀에 남는 4마디 훅.
 // 한 바퀴 32마디(A·A'·B·A'') 동안 편성이 바뀌고, 바퀴마다 멜로디 장식이 달라져 같은 소절이 그대로 반복되지 않는다.
@@ -1293,7 +1356,7 @@ document.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>setGearTab(b.dat
 
 $('leaveBtn').onclick=leaveHuntNow;$('travel').addEventListener('click',e=>{const b=e.target.closest('[data-tv]');if(b)travelTo(+b.dataset.tv);});
 document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(e.key===' '&&!isImportant(run,current(run),mode)){e.preventDefault();togglePause();return;}if(!isImportant(run,current(run),mode))return;const k=+e.key;if(k>=1&&k<=3){const c=current(run);const o=c.options[k-1];if(o)decide(o.id);}});
-newHero();
+newHero(true);
 if(!store.get('seenHelp',0)) openHelp();
 </script>
 
