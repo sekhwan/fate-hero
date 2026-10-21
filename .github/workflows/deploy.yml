@@ -67,7 +67,6 @@ jobs:
         uses: actions/deploy-pages@v4
   itch:
     # itch.io(lightsc/fate-hero)에도 같은 빌드를 올린다. 저장소 시크릿 BUTLERKEY(또는 BUTLER_API_KEY)가 있을 때만 동작한다.
-    needs: backend
     runs-on: ubuntu-latest
     env:
       BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY || secrets.BUTLERKEY }}
@@ -81,15 +80,10 @@ jobs:
       - if: steps.chk.outputs.go == '1'
         uses: actions/checkout@v4
       - if: steps.chk.outputs.go == '1'
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-      - if: steps.chk.outputs.go == '1'
-        name: config.js
+        name: config.js (공개 사이트에 이미 올라간 공개 설정을 그대로 쓴다)
         run: |
-          KEY=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
-          test -n "$KEY" && test "$KEY" != "null"
-          printf 'window.FATE_CONFIG = { supabaseUrl: "https://%s.supabase.co", anonKey: "%s" };\n' "$PROJECT_REF" "$KEY" > public/config.js
+          curl -fsS https://sekhwan.github.io/fate-hero/config.js -o public/config.js
+          grep -q supabaseUrl public/config.js
       - if: steps.chk.outputs.go == '1'
         name: butler로 itch.io에 올리기
         run: |
