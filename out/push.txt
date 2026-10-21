@@ -1,0 +1,3 @@
+• Scanning launch targets...
+creating build on remote server: itch.io API error (400): /wharf/builds: Please verify your account's email address before uploading a build
+exit 1
