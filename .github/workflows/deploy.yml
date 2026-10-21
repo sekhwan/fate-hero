@@ -66,12 +66,12 @@ jobs:
       - id: deployment
         uses: actions/deploy-pages@v4
   itch:
-    # itch.io에도 같은 빌드를 올린다. 저장소 시크릿 BUTLER_API_KEY와 변수 ITCH_TARGET(예: 사용자명/fate-hero)가 있을 때만 동작한다.
+    # itch.io(lightsc/fate-hero)에도 같은 빌드를 올린다. 저장소 시크릿 BUTLERKEY(또는 BUTLER_API_KEY)가 있을 때만 동작한다.
     needs: backend
     runs-on: ubuntu-latest
     env:
-      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
-      ITCH_TARGET: ${{ vars.ITCH_TARGET }}
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY || secrets.BUTLERKEY }}
+      ITCH_TARGET: ${{ vars.ITCH_TARGET || 'lightsc/fate-hero' }}
       SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
     steps:
       - name: 설정 확인
