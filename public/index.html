@@ -434,6 +434,36 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .irow button:disabled,.srow button:disabled,.crow button:disabled{opacity:.35;cursor:not-allowed}
 .crow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:7px 0;font-size:12.5px;border-bottom:1px solid var(--line)}
 .crow .cl{color:var(--muted);font-size:12px} .crow .cc{display:inline-flex;gap:6px;align-items:center}
+.stall{position:relative;border-color:#8a5a2b!important;background:linear-gradient(180deg,#2a1d14,#1f1712 60%,#1b1510)!important;box-shadow:inset 0 0 0 1px rgba(255,210,140,.06),0 6px 18px rgba(0,0,0,.35)}
+.stall .awning{height:12px;background:repeating-linear-gradient(90deg,#c0392b 0 22px,#f3e3c3 22px 44px);-webkit-mask:radial-gradient(circle at 11px 0,#000 11px,transparent 11.5px) 0 0/22px 16px repeat-x,linear-gradient(#000,#000) 0 0/100% 6px no-repeat;mask:radial-gradient(circle at 11px 0,#000 11px,transparent 11.5px) 0 0/22px 16px repeat-x,linear-gradient(#000,#000) 0 0/100% 6px no-repeat}
+.stall>.zh{background:linear-gradient(180deg,#6b4423,#4a2e17)!important;color:#ffe2a8!important;border-bottom:2px solid #2b190c!important;text-shadow:0 1px 0 #000;box-shadow:inset 0 1px 0 rgba(255,220,160,.25)}
+.stall>.zh small{color:#f3d9a4!important;opacity:.9}
+.wares{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;padding:2px 0}
+.ware{position:relative;display:flex;flex-direction:column;gap:2px;padding:7px 8px;border-radius:7px;background:linear-gradient(180deg,rgba(255,240,210,.07),rgba(255,240,210,.02));border:1px solid rgba(255,220,160,.18);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.ware.g1{border-color:color-mix(in srgb,var(--g1) 55%,transparent)} .ware.g2{border-color:color-mix(in srgb,var(--g2) 60%,transparent)}
+.ware.g3{border-color:var(--g3);box-shadow:0 0 14px rgba(232,169,58,.35),inset 0 0 18px rgba(232,169,58,.12)}
+.ware .wtop{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.ware .gb{white-space:nowrap;font-size:10px;font-weight:700;padding:0 6px;border-radius:9px;background:rgba(0,0,0,.35);color:var(--muted);letter-spacing:.04em}
+.ware.g1 .gb{color:var(--g1)} .ware.g2 .gb{color:var(--g2)} .ware.g3 .gb{color:#1d1206;background:var(--g3)}
+.ware .wt{font-style:normal;font-size:11px;white-space:nowrap} .wt.up{color:#7fe0a0;font-weight:700} .wt.sp{color:var(--g3)} .wt.no{color:var(--muted)}
+.ware .wn{font-size:13.5px;font-weight:700;line-height:1.25} .ware .wd{font-size:11.5px;color:#d9ccb4;flex:1;line-height:1.3}
+.ic{font-style:normal;margin-right:4px;font-size:.95em}
+.ware .wbody{display:flex;gap:8px;align-items:center;flex:1;margin-top:2px}
+.ware .wtx{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.ware .wico{flex:none;width:46px;height:46px;display:flex;align-items:center;justify-content:center;font-size:30px;line-height:1;border-radius:8px;background:radial-gradient(circle at 50% 40%,rgba(255,240,210,.14),rgba(0,0,0,.35));border:1px solid rgba(255,220,160,.2);box-shadow:inset 0 0 8px rgba(0,0,0,.5)}
+.ware.g1 .wico{border-color:color-mix(in srgb,var(--g1) 60%,transparent);box-shadow:inset 0 0 8px rgba(0,0,0,.5),0 0 6px color-mix(in srgb,var(--g1) 35%,transparent)}
+.ware.g2 .wico{border-color:color-mix(in srgb,var(--g2) 65%,transparent);box-shadow:inset 0 0 8px rgba(0,0,0,.5),0 0 8px color-mix(in srgb,var(--g2) 40%,transparent)}
+.ware.g3 .wico{border-color:var(--g3);box-shadow:inset 0 0 8px rgba(0,0,0,.5),0 0 12px rgba(232,169,58,.6);animation:icoGlow 2.2s ease-in-out infinite}
+@keyframes icoGlow{0%,100%{box-shadow:inset 0 0 8px rgba(0,0,0,.5),0 0 8px rgba(232,169,58,.45)}50%{box-shadow:inset 0 0 8px rgba(0,0,0,.5),0 0 16px rgba(255,190,80,.85)}}
+.ware .buy{margin-top:4px;display:flex;align-items:center;justify-content:space-between;gap:6px;width:100%;font:inherit;font-size:12px;font-weight:700;padding:4px 9px;border-radius:6px;cursor:pointer;border:1px solid #6b4a2a;color:#f3e6cc;background:linear-gradient(180deg,#4a3422,#33241a);box-shadow:0 2px 0 #1a120c}
+.ware .buy.c-gold b{color:#f4c542} .ware .buy.c-fame b{color:#d4b8ff}
+.ware .buy b{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono)} .ware .buy .cn{width:15px;height:15px}
+.ware .buy:hover:not(:disabled){filter:brightness(1.08)} .ware .buy:active:not(:disabled){transform:translateY(1px);box-shadow:none}
+.ware .buy:disabled{cursor:not-allowed;filter:grayscale(.85) brightness(.6);box-shadow:none}
+.autoNote{margin-top:7px;font-size:11.5px;color:#cdbb98;padding:5px 8px;border-radius:6px;background:rgba(0,0,0,.25)} .autoNote b{color:#7fe0a0}
+.ware .wneed{font-size:11px;color:#ff9a8e}
+.ware.sold{opacity:.5} .ware.sold::after{content:'판매 완료';position:absolute;top:38%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);font-weight:800;font-size:15px;white-space:nowrap;color:#ff6b5b;border:2px solid #ff6b5b;padding:2px 10px;border-radius:4px;background:rgba(20,10,8,.6)}
+.gtabs .gtShop{border-color:#8a5a2b;color:#ffcf7a} .gtabs .gtShop[aria-pressed="true"]{background:linear-gradient(180deg,#6b4423,#4a2e17);color:#ffe2a8;border-color:#c08040}
 .srow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--line)}
 .srow .iv{overflow:hidden;text-overflow:ellipsis;white-space:nowrap} .srow.sold{opacity:.4}
 .srow button.gold{border-color:rgba(210,166,78,.6);color:var(--brass)} .srow button.fame{border-color:rgba(200,162,255,.6);color:var(--fm)}
@@ -510,7 +540,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
       <div class="xp"><div class="row"><span>레벨 <b id="xpLv">1</b></span><em id="xpTxt"></em></div><div class="bar"><i id="xpBar"></i></div></div>
-      <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><b id="fameNum">0</b><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
+      <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.2 6.1 20.5l1.3-6.6L2.5 9.4l6.6-.8z" fill="#c8a2ff" stroke="#6a4aa0" stroke-width="1.2"/></svg><b id="fameNum">0</b></div><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
       <div class="merc" id="mercBox"><span>용병</span><b id="mAlly">0</b><em id="mercTxt"></em></div>
       <div class="stats" id="hStats"></div>
       <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
@@ -542,7 +572,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <section class="gear" aria-label="정비와 상점">
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
       <div class="gearBody" data-tab="shop">
-        <div class="pane pShop"><div class="zone zs"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
+        <div class="pane pShop"><div class="zone zs stall"><div class="awning" aria-hidden="true"></div><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
         <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div id="mythBox"></div><div class="items"><div id="hItems"></div></div></div></div></div>
       </div>
     </section>
@@ -656,7 +686,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <ul>
       <li>종족마다 능력치 보정과 고유 효과가 있다. 예: 오크 전투력 +10%·회유 -10%p, 엘프 회유·도망 +10%p, 드워프 생명력 +20%·강화 +5%p, 고블린 금화 +40%·상점 -10%.</li>
       <li>신분마다 아주 드물게(탐험 사건 1만 번에 한 번꼴) 그 신분에게만 일어나는 <b>히든 이벤트</b>가 퀴즈로 찾아온다. 이 게임에 대한 객관식 문제를 맞히면 신분에 맞는 큰 보상을 받고, 틀리면 기회가 사라진다.</li>
-      <li>신분이 높을수록 시작 금화와 기본 장비가 좋고, 부유층·귀족·왕족은 <b>가문의 유산</b>으로 장비를 갖고 출정한다.</li>
+      <li>신분이 높을수록 시작 금화와 기본 장비가 좋고, <b>가문의 유산</b>: 부유층은 희귀 장비 2개, 귀족은 영웅·희귀 장비와 <b>가문의 기사 2명</b>(용병), 왕족은 <b>전설·영웅·희귀 장비</b>와 <b>가문의 기사 1명</b>을 갖고 출정한다.</li>
       <li>용사 명부의 종족·신분·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
     </ul>
     <h3>능력치</h3>
@@ -692,6 +722,9 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>동료 · 용병 · 의뢰 · 혼인</h3>
     <ul>
       <li>길 위에서 드물게 <b>히로인(7명)·친구(5명)·펫(5마리)</b>을 만난다. 저마다 효과가 다르고, 합류 여부는 표시된 확률로 정해진다. 의뢰를 완수하면 <b>배우자 후보(10명)</b> 중 한 명과 혼담이 오갈 때가 있다.</li>
+      <li><b>신분과 동료</b>: 신분이 높을수록 만날 수 있는 동료가 많고 강하다(인간·나쁜 특성 없음 기준 히로인 빈털터리 2명 → 귀족 7명, 배우자 4명 → 10명). 합류·청혼 확률도 신분 한 단계마다 +5%p(빈털터리 -5%p, 왕족 +20%p).</li>
+      <li><b>나쁜 특성과 동료</b>: 겁쟁이·길치·허약 체질·저주받은 운명·술고래는 하나마다 합류·청혼 확률 -8%p. 일부는 아예 거부한다 — 겁쟁이(여기사 세라·무녀 하루·검사 카일·사냥꾼 카야·검성의 손녀 유나), 술고래(궁수 아리엔·수도사 한·성녀 마리엘), 저주받은 운명(성녀 엘리나·점성술사 시엘), 허약 체질(유나).</li>
+      <li><b>신분 조건</b>: 서민 이상(여기사 세라·대장장이 브론·노엘), 중산층 이상(무희 카르멘·성녀 엘리나·현자 오르빈·영주의 딸 리아·성녀 마리엘), 부유층 이상(무녀 하루·상단주의 딸 로사·검성의 손녀 유나), 귀족 이상(용의 공주 이브(용인족은 신분 무관)·공주 이사벨). 종족 거부: 성녀·무녀(망자·마족), 마녀 릴리스(반천사), 아리엔·리아(오크·고블린), 브론(엘프), 수도사 한(망자), 이사벨(오크·드워프·고블린·망자). 펫은 누구나 만난다.</li>
       <li>회유에 성공한 적은 <b>용병</b>이 된다(최대 12명, 1명당 전투력 +4%, 지휘 스킬로 늘어난다). 전투에서 지면 용병이 쓰러진다.</li>
       <li>명성이 쌓이면 <b>의뢰</b>가 들어온다. 완수하면 아이템과 큰 능력치 보상을 받고, 명성과 매력이 충분하면 의뢰인의 가족과 <b>혼인</b>할 수 있다(전투력 +15%).</li>
     </ul>
@@ -831,7 +864,7 @@ function renderHero(){
      const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmtS(cost)} = 강화비 ${fmtS(cp.base)} + 보유 금화 10% ${fmtS(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmtS(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmtS(cost)}</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
-     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}>${itemName(i)}</span>${i.spare?'<span class="spTag" title="효과 없음 · 강화해서 신화 합성 재료로 쓰거나, 착용품보다 강해지면 자동으로 바꿔 낀다">예비</span>':''}${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
+     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}><i class="ic">${itemIcon(i)}</i>${itemName(i)}</span>${i.spare?'<span class="spTag" title="효과 없음 · 강화해서 신화 합성 재료로 쓰거나, 착용품보다 강해지면 자동으로 바꿔 낀다">예비</span>':''}${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
@@ -843,12 +876,26 @@ function renderHero(){
   {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&(wouldUpgrade(run,o.item)||canKeepSpare(run,o.item))).length:0;$('shopBadge').textContent=n?String(n):'';}
   renderShop(tmp);
 }
+// 아이템 앞 그림 문자: 부위별
+const ITEM_ICON={str:'⚔️',con:'🛡️',agi:'👢',int:'📖',cha:'💍',luk:'🍀',mult:'💠',win:'🚩',flee:'💨'};
+function itemIcon(it){if(!it)return '';if(it.heal)return '🧪';if(it.revive)return '🪶';const k=slotOf(it);return ITEM_ICON[k]||'';}
 function renderShop(t){
   const box=$('shop');
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
   $('shopTitle').textContent=`${STAGES[stage].regions[run.region][0]}의 상인`;
-  box.innerHTML=run.shop.map((o,i)=>{const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
-    const up0=wouldUpgrade(run,it),spk=!up0&&canKeepSpare(run,it),up=up0||spk;return `<div class="srow ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}"><span class="nm g${it.grade||0}">${it.name}</span>${qTag(it)}<span class="iv">${it.d}</span><button type="button" class="${o.cur}" data-buy="${i}" ${o.sold||have<o.price||!up||holdFull(run,it)?'disabled':''}>${o.sold?'구매함':holdFull(run,it)?'1개 보유 중':!up?'보유품 우위':(spk?'예비 보관 · ':'')+(o.cur==='gold'?'금화 ':'명성 ')+fmtS(o.price)}</button></div>`}).join('');
+  const COIN='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f4c542" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.3" fill="none" stroke="#a87b1c" stroke-width="1.2"/></svg>',STAR='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.2 6.1 20.5l1.3-6.6L2.5 9.4l6.6-.8z" fill="#c8a2ff" stroke="#6a4aa0" stroke-width="1.2"/></svg>';
+  const auto=run.shop.filter(o=>o.item.heal||o.item.revive);
+  const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'';
+  box.innerHTML='<div class="wares">'+run.shop.map((o,i)=>{if(o.item.heal||o.item.revive)return '';const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
+    const up0=wouldUpgrade(run,it),spk=!up0&&canKeepSpare(run,it),up=up0||spk,full=holdFull(run,it),poor=have<o.price;
+    const tag=o.sold?'':full?'<em class="wt no">이미 지님</em>':up0?'<em class="wt up" title="착용품보다 좋음">▲ 더 좋음</em>':spk?'<em class="wt sp" title="예비 전설로 보관">예비 보관</em>':'<em class="wt no" title="보유품이 더 좋음">보유품 우위</em>';
+    const dis=o.sold||poor||!up||full;
+    return `<div class="ware g${it.grade||0} ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}">
+      <div class="wtop"><span class="gb">${g.name}</span>${tag}</div>
+      <div class="wbody"><div class="wico">${itemIcon(it)}</div><div class="wtx">
+      <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${it.d}</div></div></div>
+      <button type="button" class="buy c-${o.cur}" data-buy="${i}" ${dis?'disabled':''}>${o.sold?'판매 완료':`<span>구매</span><b>${o.cur==='gold'?COIN:STAR}${fmtS(o.price)}</b>`}</button>
+      ${!o.sold&&poor&&up&&!full?`<div class="wneed">${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다</div>`:''}</div>`;}).join('')+'</div>'+autoNote;
   box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';

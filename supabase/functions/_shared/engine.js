@@ -75,6 +75,36 @@ const SPOUSES=[
   {name:'검성의 손녀 유나', d:'전투력 +25%', mult:1.25},
   {name:'해적 여왕 바네사', d:'금화 +40%, 전투력 +10%', goldp:0.4, mult:1.1},
 ];
+// 동료·배우자의 신분·종족 제한. minW/maxW는 신분 순서(0 빈털터리 … 5 왕족), no는 받아주지 않는 종족, only는 이 종족(또는 minW 이상)만.
+const WEALTH_IX=n=>Math.max(0,WEALTH.findIndex(w=>w.name===n));
+// 신분이 높을수록 만날 수 있는 동료가 많고 강하다. 나쁜 특성은 일부 동료가 거부하고, 합류 확률도 깎는다.
+const COMP_REQ={
+  '여기사 세라':{minW:1,noTr:['겁쟁이'],why:'서민 이상 · 겁쟁이와는 검을 나란히 하지 않는다'},
+  '마녀 릴리스':{no:['반천사'],why:'반천사 거부'},
+  '엘프 궁수 아리엔':{no:['오크','고블린'],noTr:['술고래'],why:'오크·고블린 거부 · 술 냄새를 싫어한다'},
+  '무희 카르멘':{minW:2,why:'중산층 이상 · 몸값을 치를 수 있어야 한다'},
+  '성녀 엘리나':{minW:2,no:['망자','마족'],noTr:['저주받은 운명'],why:'중산층 이상 · 망자·마족 거부 · 저주받은 운명을 꺼린다'},
+  '성검의 무녀 하루':{minW:3,no:['망자','마족'],noTr:['겁쟁이'],why:'부유층 이상 · 망자·마족 거부 · 겁쟁이 거부'},
+  '용의 공주 이브':{minW:4,orRace:['용인족'],why:'귀족 이상 또는 용인족'},
+  '떠돌이 검사 카일':{noTr:['겁쟁이'],why:'겁쟁이와는 같이 다니지 않는다'},
+  '드워프 대장장이 브론':{minW:1,no:['엘프'],why:'서민 이상 · 엘프 거부(오랜 앙숙)'},
+  '수도사 한':{no:['망자'],noTr:['술고래'],why:'망자 거부 · 술고래 거부'},
+  '현자 오르빈':{minW:2,why:'중산층 이상 · 배움에 투자할 수 있는 자만 가르친다'},
+  '영주의 딸 리아':{minW:2,no:['오크','고블린'],why:'중산층 이상 · 오크·고블린 거부'},
+  '길드장의 제자 노엘':{minW:1,why:'서민 이상'},
+  '공주 이사벨':{minW:4,no:['오크','드워프','고블린','망자'],why:'귀족 이상 · 오크·드워프·고블린·망자 거부'},
+  '성녀 마리엘':{minW:2,no:['망자','마족'],noTr:['술고래'],why:'중산층 이상 · 망자·마족 거부 · 술고래 거부'},
+  '상단주의 딸 로사':{minW:3,why:'부유층 이상'},
+  '사냥꾼 카야':{noTr:['겁쟁이'],why:'겁쟁이 거부'},
+  '점성술사 시엘':{noTr:['저주받은 운명'],why:'저주받은 운명은 별이 허락하지 않는다'},
+  '검성의 손녀 유나':{minW:3,noTr:['겁쟁이','허약 체질'],why:'부유층 이상 · 겁쟁이·허약 체질 거부'},
+};
+function compOk(s,c){const q=COMP_REQ[c.name];if(!q)return true;const w=WEALTH_IX(s.hero.wealth.name),r=s.hero.race.name;
+  if(q.no&&q.no.includes(r))return false;if(q.noTr&&q.noTr.some(t=>hasTrait(s.hero,t)))return false;
+  if(q.minW!=null&&w<q.minW&&!(q.orRace&&q.orRace.includes(r)))return false;return true;}
+// 합류 확률 보정: 신분 한 단계마다 +5%p(빈털터리 -5%p … 왕족 +20%p), 나쁜 특성 하나마다 -8%p
+function compJoinAdj(s){const w=WEALTH_IX(s.hero.wealth.name);const bad=s.hero.traits.filter(t=>t.good===false).length;return (w-1)*0.05-bad*0.08;}
+function compPool(s,list){return list.filter(c=>compOk(s,c));}
 const QPICK=[['str','무기 (힘)'],['con','방패 (체력)'],['agi','장화 (민첩)'],['int','마법서 (지능)'],['cha','장신구 (매력)'],['luk','행운 부적 (행운)'],['mult','인장 (전투력)'],['win','깃발 (승리 확률)'],['flee','도주 장비 (도망)']];
 let QUEST_E=3.5;
 const QUESTS=[
@@ -322,7 +352,7 @@ function multTxt(m){return m&&m!==1?`전투력 ${m>1?'+':''}${Math.round((m-1)*1
 function raceInfo(race){const o=[];const m=multTxt(race.mult);if(m)o.push(m);for(const k in (race.p||{}))if(PERK_TXT[k])o.push(PERK_TXT[k](race.p[k]));if(race.revive)o.push(`부활 +${race.revive}`);
   const st=STAT_KEYS.filter(k=>race.mod&&race.mod[k]).map(k=>`${STAT_NAMES[k]} ${race.mod[k]>0?'+':''}${race.mod[k]}`);return {perks:o,stats:st};}
 function traitInfo(t){const o=[];const m=multTxt(t.mult);if(m)o.push(m);for(const k of ['hp','xp','talk','flee','luk','revive','gold','discount','enh'])if(t[k])o.push(PERK_TXT[k](t[k]));return o.length?o:['특별한 효과 없음'];}
-function wealthInfo(w){const g=START_GEAR[w.name];return [`시작 금화 ${w.gold}`,`기본 장비로 전투력 기반 +${Math.round(w.gear*1.6)}`,...(g?[`가문의 유산: 시작 장비 ${g.length}개 (${g.map(x=>GRADES[x].name).join(', ')})`]:[]),`시작 명성 +${WEALTH.indexOf(w)*5}`];}
+function wealthInfo(w){const g=START_GEAR[w.name];return [`시작 금화 ${w.gold}`,`기본 장비로 전투력 기반 +${Math.round(w.gear*1.6)}`,...(g?[`가문의 유산: 시작 장비 ${g.length}개 (${g.map(x=>GRADES[x].name).join(', ')})`]:[]),...(START_KNIGHTS[w.name]?[`가문의 기사 ${START_KNIGHTS[w.name]}명이 용병으로 동행`]:[]),`시작 명성 +${WEALTH.indexOf(w)*5}`];}
 // 스킬 습득 레벨: 10레벨까지 2레벨마다(2·4·6·8·10), 그 뒤로 3레벨마다(13·16·19…)
 function isPickLevel(l){return l<=10?l%2===0:(l-10)%3===0;}
 function nextPickLevel(l){let x=l+1;while(!isPickLevel(x))x++;return x;}
@@ -509,9 +539,12 @@ function newRun(hero, stageIdx, seed){
   return prime(s);
 }
 // 부유한 집안은 처음부터 장비를 갖고 시작한다
-const START_GEAR={'부유층':[1],'귀족':[1,1],'왕족':[2,1,1]};
+const START_GEAR={'부유층':[1,1],'귀족':[2,1],'왕족':[3,2,1]};
+// 귀족·왕족은 가문의 기사가 용병으로 함께 출정한다
+const START_KNIGHTS={'귀족':2,'왕족':1};
 function startGear(s){const gs=START_GEAR[s.hero.wealth.name];if(!gs)return;
   for(const g of gs){let it,t=0;do{it=makeItem(s.r,g,null,0);}while(t++<8&&!wouldUpgrade(s,it));it.src='가문의 유산';it.where='출정 전';noteGot(s,it);equip(s,it);}checkCombos(s,null);
+  s.allies+=START_KNIGHTS[s.hero.wealth.name]||0;
   s.hp=s.maxHp;}
 function hpMax(s){return Math.round((40+s.stats.con*6)*(1+tsum(s,'hp',0))*(1+0.05*(s.lvl-1)));}
 function power(s){
@@ -595,16 +628,16 @@ function rollEvent(s,n){
     const wrong=[...new Set(q[2].filter(x=>x!==q[1]))];const pick=[];while(pick.length<3&&wrong.length)pick.push(wrong.splice(Math.floor(r()*wrong.length),1)[0]);
     const ch=[q[1],...pick];for(let a=ch.length-1;a>0;a--){const b=Math.floor(r()*(a+1));[ch[a],ch[b]]=[ch[b],ch[a]];}n.quiz={q:q[0],ch,ans:ch.indexOf(q[1])};return;}
   const r=s.r, opts=[['merchant',14],['altar',12],['knight',10],['chest',10],['train',8]];
-  if(!s.comp.heroine && s.fame>=30) opts.push(['heroine',1.6]);
-  if(!s.comp.friend) opts.push(['friend',2.2]);
+  if(!s.comp.heroine && s.fame>=30 && compPool(s,HEROINES).length) opts.push(['heroine',1.6]);
+  if(!s.comp.friend && compPool(s,FRIENDS).length) opts.push(['friend',2.2]);
   if(!s.comp.pet) opts.push(['pet',2.2]);
   if(!s.activeQuest){const avail=QUESTS.filter(q=>s.fame>=q.min&&!(s.doneQ||[]).includes(q.giver)); if(avail.length) opts.push(['quest',STAGES[s.stage].endless&&STAGES[s.stage].hunt==null?1:6]);}
   if(s.fame>=150 && !s.tomb) opts.push(['tomb',4]);
   const tot=opts.reduce((a,b)=>a+b[1],0); let v=r()*tot; let k=opts[0][0];
   for(const [name,w] of opts){if((v-=w)<=0){k=name;break;}}
   n.kind=k;
-  if(k==='heroine') n.c=HEROINES[Math.floor(r()*HEROINES.length)];
-  if(k==='friend') n.c=FRIENDS[Math.floor(r()*FRIENDS.length)];
+  if(k==='heroine'){const P=compPool(s,HEROINES);n.c=P[Math.floor(r()*P.length)];}
+  if(k==='friend'){const P=compPool(s,FRIENDS);n.c=P[Math.floor(r()*P.length)];}
   if(k==='pet') n.c=PETS[Math.floor(r()*PETS.length)];
   if(k==='quest'){const avail=QUESTS.filter(q=>s.fame>=q.min&&!(s.doneQ||[]).includes(q.giver)); n.q=avail[avail.length-1];}
 }
@@ -686,13 +719,13 @@ function current(s){
   if(!n.kind) rollEvent(s,n);
   const k=n.kind;
   if(k==='heroine'){return {node:n,title:n.c.meet,hint:`구해주면 동행할지도 모른다. (${n.c.d})`,options:[
-      {id:'rescue',label:'구하러 뛰어든다',prob:clamp(winProb(s,(n.rescueE=n.rescueE||makeBattle(s,s.region,0,false).E)*1.2)+0.1,0.1,0.95),desc:'성공하면 히로인이 동행한다. 실패하면 부상을 입는다.'},
+      {id:'rescue',label:'구하러 뛰어든다',prob:clamp(winProb(s,(n.rescueE=n.rescueE||makeBattle(s,s.region,0,false).E)*1.2)+0.1+compJoinAdj(s),0.1,0.95),desc:'성공하면 히로인이 동행한다. 실패하면 부상을 입는다.'},
       {id:'pass',label:'못 본 척 지나간다',desc:'명성 -1.'}]};}
   if(k==='friend'){return {node:n,title:n.c.meet,hint:`마음이 맞으면 친구가 된다. (${n.c.d})`,options:[
-      {id:'befriend',label:'함께 가자고 한다',prob:clamp(0.45+(s.stats.cha-10)*0.04+s.fame/500,0.15,0.92),desc:'성공하면 친구로 동행한다.'},
+      {id:'befriend',label:'함께 가자고 한다',prob:clamp(0.45+(s.stats.cha-10)*0.04+s.fame/500+compJoinAdj(s),0.15,0.92),desc:'성공하면 친구로 동행한다.'},
       {id:'pass',label:'거절한다',desc:'아무 일도 일어나지 않는다.'}]};}
   if(k==='pet'){return {node:n,title:n.c.meet,hint:`돌봐주면 따를지도 모른다. (${n.c.d})`,options:[
-      {id:'tame',label:'돌봐준다',prob:clamp(0.55+(s.stats.cha-10)*0.03+(s.stats.luk-10)*0.02,0.2,0.92),desc:'생명력 -10%. 성공하면 펫이 된다.'},
+      {id:'tame',label:'돌봐준다',prob:clamp(0.55+(s.stats.cha-10)*0.03+(s.stats.luk-10)*0.02+compJoinAdj(s),0.2,0.92),desc:'생명력 -10%. 성공하면 펫이 된다.'},
       {id:'pass',label:'지나친다',desc:'아무 일도 일어나지 않는다.'}]};}
   if(k==='quest'){const q=n.q;n.qE=n.qE0||(n.qE0=Math.max(battleBaseE(s,s.region)*QUEST_E,power(s)*1.8));
     return {node:n,title:`명성을 들은 ${q.giver}이(가) ${q.task} 토벌을 의뢰했다.`,hint:`성공하면 명성 +40과 함께 'PvP 스탯 +1' 또는 '영웅~전설 아이템' 중 하나를 고른다. 의뢰 대상은 매우 강하다. 지금 이 싸움의 승리확률은 약 ${Math.round(winProb(s,n.qE)*100)}%다.`,options:[
@@ -704,7 +737,7 @@ function current(s){
   if(k==='qpick'){const tr=tierOf(s);return {node:n,title:`${n.q.giver}의 보물고. 어떤 계열을 가져갈까?`,hint:'고른 계열의 이 세계 아이템이 영웅(95%) 또는 전설(5%) 등급으로 나온다. 조합에 필요한 전설 아이템을 노릴 수 있다.',
     options:QPICK.map(([k,lab])=>({id:'qk:'+k,label:lab,desc:`영웅: ${itemNameOf(k,2,tr)} · 전설: ${itemNameOf(k,3,tr)}`}))};}
   if(k==='proposal'){const q=n.q,sp=SPOUSES[n.sp||0];return {node:n,title:`${q.giver}이(가) ${sp.name}와(과)의 혼담을 주선했다.`,hint:`혼인하면 배우자가 평생 곁을 지킨다. (${sp.d}, 명성 +30) 상대의 마음은 매력과 명성에 달렸다.`,options:[
-      {id:'marry',label:'청혼한다',prob:clamp(0.4+(s.stats.cha-10)*0.03+s.fame/1000,0.15,0.9),desc:'성공하면 배우자가 생긴다. 실패하면 명성 -3.'},
+      {id:'marry',label:'청혼한다',prob:clamp(0.4+(s.stats.cha-10)*0.03+s.fame/1000+compJoinAdj(s),0.15,0.9),desc:'성공하면 배우자가 생긴다. 실패하면 명성 -3.'},
       {id:'refuse',label:'토벌이 먼저라며 거절한다',desc:'명성 -3.'}]};}
   if(k==='hidden'){const H=HIDDEN_EV[s.hero.wealth.name];const z=n.quiz;
     return {node:n,title:`[히든] ${H.name} · ${H.title}`,hint:`문제: ${z.q} · 맞히면 ${H.reward}. 틀리면 기회는 사라진다.`,options:z.ch.map((c,ix)=>({id:'hq_'+ix,label:c,desc:''}))};}
@@ -789,7 +822,7 @@ function winRewards(s,n,p,out){
   if(n.quest){ const q=n.q; s.lastEvent={ok:true,head:'의뢰 완수',sub:q.task}; s.activeQuest=null; s.quests++; (s.doneQ=s.doneQ||[]).push(q.giver);
     s.fame+=40; out.push({t:'fame',x:'의뢰 완수 · 명성 +40'});
     s.queue.splice(1,0,{type:'event',kind:'qreward',q});
-    if(!s.spouse && s.fame>=q.min+60 && s.stats.cha>=11){ s.queue.splice(2,0,{type:'event',kind:'proposal',q,sp:Math.floor(s.r()*SPOUSES.length)}); }
+    if(!s.spouse && s.fame>=q.min+60 && s.stats.cha>=11){ const P=SPOUSES.map((x,ix)=>ix).filter(ix=>compOk(s,SPOUSES[ix])); if(P.length) s.queue.splice(2,0,{type:'event',kind:'proposal',q,sp:P[Math.floor(s.r()*P.length)]}); }
     else if(!s.spouse) out.push({t:'bad',x:`명성이 ${q.min+60} 이상이고 매력이 11 이상이었다면 혼담이 오갔을지 모른다`});
   }
   if(n.final){ s.conquered=true; s.pendingPicks=(s.pendingPicks||0)+SKV.conquerPicks; out.push({t:'item g3',x:`${STAGES[s.stage].name} 정복`}); }
@@ -943,7 +976,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.2';
+const ENGINE_VERSION='1.5.3';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1045,5 +1078,5 @@ function isImportant(s,c,mode){
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+globalThis.FateEngine={COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
