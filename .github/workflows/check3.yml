@@ -19,7 +19,9 @@ jobs:
           ./butler/butler -V > out/ver.txt 2>&1 || true
           mkdir -p tiny && echo '<html>t</html>' > tiny/index.html
           ./butler/butler status lightsc/fate-hero > out/status.txt 2>&1 || true
-          ./butler/butler push tiny lightsc/fate-hero:diag --dry-run > out/push.txt 2>&1 || true
+          curl -fsS https://sekhwan.github.io/fate-hero/config.js -o public/config.js
+          V=$(grep -o "ENGINE_VERSION='[0-9.]*'" public/engine.js | grep -o "[0-9.]*"); echo "V=[$V] sha=${GITHUB_SHA::7}" > out/v.txt
+          ./butler/butler push public "lightsc/fate-hero:html5" --userversion "$V-${GITHUB_SHA::7}" > out/push.txt 2>&1; echo "exit $?" >> out/push.txt
           sed -i "s/$BUTLER_API_KEY/***/g" out/*.txt || true
           git config user.name diag; git config user.email diag@users.noreply.github.com
-          git checkout --orphan check3-out2; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out2
+          git checkout --orphan check3-out3; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out3
