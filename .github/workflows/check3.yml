@@ -21,4 +21,4 @@ jobs:
             echo "config: $(curl -s https://vet.mypet.co.kr/config.js | grep -o 'supabaseUrl: "[^"]*"')"; } > out/dom.txt 2>&1
           rm -f out/page.html
           git config user.name diag; git config user.email diag@users.noreply.github.com
-          git checkout --orphan check3-out8; git rm -rfq --cached .; git add -f out; git commit -qm out; git push -f origin check3-out8
+          git checkout --orphan check3-out9; git rm -rfq --cached .; git add -f out; git commit -qm out; git push -f origin check3-out9
