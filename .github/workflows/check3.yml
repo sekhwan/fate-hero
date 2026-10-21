@@ -7,22 +7,14 @@ permissions:
 jobs:
   diag:
     runs-on: ubuntu-latest
-    env:
-      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY || secrets.BUTLERKEY }}
     steps:
       - uses: actions/checkout@v4
       - shell: bash {0}
         run: |
           mkdir -p out
-          echo "keylen ${#BUTLER_API_KEY}" > out/key.txt
-          curl -fsSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default > out/dl.txt 2>&1; echo "dl $?" >> out/dl.txt
-          unzip -q butler.zip -d butler >> out/dl.txt 2>&1; chmod +x butler/butler || true
-          ./butler/butler -V > out/ver.txt 2>&1 || true
-          mkdir -p tiny && echo '<html>t</html>' > tiny/index.html
-          ./butler/butler status lightsc/fate-hero > out/status.txt 2>&1 || true
-          curl -sS -w 'cfg %{http_code}\n' https://sekhwan.github.io/fate-hero/config.js -o public/config.js > out/cfg.txt 2>&1; ls public >> out/cfg.txt
-          V=$(grep -o "ENGINE_VERSION='[0-9.]*'" public/engine.js | grep -o "[0-9.]*"); echo "V=[$V] sha=${GITHUB_SHA::7}" > out/v.txt
-          echo skip > out/push.txt
-          sed -i "s/$BUTLER_API_KEY/***/g" out/*.txt || true
+          K=$(curl -fsS https://sekhwan.github.io/fate-hero/config.js | grep -o 'anonKey: "[^"]*"' | cut -d'"' -f2)
+          B=https://shrxpippitspelhfhvbo.supabase.co/rest/v1
+          H=(-H "apikey: $K"); case "$K" in eyJ*) H+=(-H "Authorization: Bearer $K");; esac
+          echo "runs $(curl -s "${H[@]}" "$B/runs?select=seed" | jq length) cards $(curl -s "${H[@]}" "$B/pvp_cards?select=id" | jq length) humans $(curl -s "${H[@]}" "$B/pvp_cards?select=id&is_bot=eq.false" | jq length) matches $(curl -s "${H[@]}" "$B/pvp_matches?select=id" | jq length)" > out/after.txt
           git config user.name diag; git config user.email diag@users.noreply.github.com
-          git checkout --orphan check3-out5; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out5
+          git checkout --orphan check3-out6; git rm -rfq --cached .; git add -f out; git commit -qm out; git push -f origin check3-out6
