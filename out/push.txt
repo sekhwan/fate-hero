@@ -1,0 +1,3 @@
+• Dry run, listing files we would push...
+-rw-r--r--       15 B index.html
+✓ Would push 15 B (1 files, 0 dirs, 0 symlinks)
