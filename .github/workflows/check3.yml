@@ -4,25 +4,22 @@ on:
     branches: [check3]
 permissions:
   contents: write
-env:
-  PROJECT_REF: shrxpippitspelhfhvbo
 jobs:
   diag:
     runs-on: ubuntu-latest
     env:
-      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY || secrets.BUTLERKEY }}
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
       - run: |
           mkdir -p out
-          supabase --version > out/ver.txt 2>&1 || true
-          supabase link --project-ref "$PROJECT_REF" -p "$SUPABASE_DB_PASSWORD" > out/link.txt 2>&1 || true
-          supabase projects list > out/projects.txt 2>&1 || true
-          curl -s -o out/start.txt -w '%{http_code}' -X POST "https://$PROJECT_REF.supabase.co/functions/v1/start-run" -H 'Content-Type: application/json' -d '{}' > out/start_code.txt || true
-          sed -i "s/$SUPABASE_DB_PASSWORD/***/g" out/*.txt || true
+          echo "keylen ${#BUTLER_API_KEY}" > out/key.txt
+          curl -fsSL -o butler.zip https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default > out/dl.txt 2>&1; echo "dl $?" >> out/dl.txt
+          unzip -q butler.zip -d butler >> out/dl.txt 2>&1; chmod +x butler/butler || true
+          ./butler/butler -V > out/ver.txt 2>&1 || true
+          mkdir -p tiny && echo '<html>t</html>' > tiny/index.html
+          ./butler/butler status lightsc/fate-hero > out/status.txt 2>&1 || true
+          ./butler/butler push tiny lightsc/fate-hero:diag --dry-run > out/push.txt 2>&1 || true
+          sed -i "s/$BUTLER_API_KEY/***/g" out/*.txt || true
           git config user.name diag; git config user.email diag@users.noreply.github.com
-          git checkout --orphan check3-out; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out
+          git checkout --orphan check3-out2; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out2
