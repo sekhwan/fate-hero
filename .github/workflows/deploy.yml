@@ -80,10 +80,15 @@ jobs:
       - if: steps.chk.outputs.go == '1'
         uses: actions/checkout@v4
       - if: steps.chk.outputs.go == '1'
-        name: config.js (공개 사이트에 이미 올라간 공개 설정을 그대로 쓴다)
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - if: steps.chk.outputs.go == '1'
+        name: config.js (공개 키를 Supabase에서 받아 넣는다)
         run: |
-          curl -fsS https://sekhwan.github.io/fate-hero/config.js -o public/config.js
-          grep -q supabaseUrl public/config.js
+          KEY=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          test -n "$KEY" && test "$KEY" != "null"
+          printf 'window.FATE_CONFIG = { supabaseUrl: "https://%s.supabase.co", anonKey: "%s" };\n' "$PROJECT_REF" "$KEY" > public/config.js
       - if: steps.chk.outputs.go == '1'
         name: butler로 itch.io에 올리기
         run: |
@@ -131,5 +136,5 @@ jobs:
           grep -q "bad 0" /tmp/x.txt
       - name: 게시된 페이지 확인
         run: |
-          curl -fsS "https://sekhwan.github.io/fate-hero/" | grep -q '운명의 용사'
-          V=$(grep -o "ENGINE_VERSION='[0-9.]*'" public/engine.js); sleep 20; curl -fsS "https://sekhwan.github.io/fate-hero/engine.js" | grep -q "$V"
+          curl -fsSL "https://sekhwan.github.io/fate-hero/" | grep -q '운명의 용사'
+          V=$(grep -o "ENGINE_VERSION='[0-9.]*'" public/engine.js); sleep 20; curl -fsSL "https://sekhwan.github.io/fate-hero/engine.js" | grep -q "$V"
