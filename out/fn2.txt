@@ -1,0 +1,5 @@
+Bundling Function: submit-run
+Deploying Function: submit-run (script size: 49 kB)
+unexpected update function status 403: {"message":"Missing required permission(s): edge_functions_write","error":{"missing_permissions":["edge_functions_write"]}}
+Try rerunning the command with --debug to troubleshoot the error.
+exit 1
