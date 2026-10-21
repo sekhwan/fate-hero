@@ -1,0 +1,13 @@
+dns:
+sekhwan.github.io.
+sekhwan.github.io.
+185.199.110.153
+185.199.108.153
+185.199.109.153
+185.199.111.153
+http: 200 -> 
+https: 200
+title: <title>운명의 용사
+engine: ENGINE_VERSION='1.5.3'
+old url: 301 -> http://vet.mypet.co.kr/
+config: supabaseUrl: "https://shrxpippitspelhfhvbo.supabase.co"
