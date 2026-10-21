@@ -1,0 +1,28 @@
+name: check3
+on:
+  push:
+    branches: [check3]
+permissions:
+  contents: write
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - run: |
+          mkdir -p out
+          supabase --version > out/ver.txt 2>&1 || true
+          supabase link --project-ref "$PROJECT_REF" -p "$SUPABASE_DB_PASSWORD" > out/link.txt 2>&1 || true
+          supabase projects list > out/projects.txt 2>&1 || true
+          curl -s -o out/start.txt -w '%{http_code}' -X POST "https://$PROJECT_REF.supabase.co/functions/v1/start-run" -H 'Content-Type: application/json' -d '{}' > out/start_code.txt || true
+          sed -i "s/$SUPABASE_DB_PASSWORD/***/g" out/*.txt || true
+          git config user.name diag; git config user.email diag@users.noreply.github.com
+          git checkout --orphan check3-out; git rm -rfq . ; git add -f out; git commit -qm out; git push -f origin check3-out
