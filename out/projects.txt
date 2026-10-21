@@ -1,0 +1,2 @@
+Unexpected error retrieving projects: {"message":"Invalid access token"}
+Try rerunning the command with --debug to troubleshoot the error.
