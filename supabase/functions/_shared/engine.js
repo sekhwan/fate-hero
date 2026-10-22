@@ -414,7 +414,7 @@ const MYTHS=[
  {id:'hecate',slot:'귀걸이',name:'석가모니의 축복',e:{boss:0.25,xp:10,mult:6},pvp:'bls',d:'지배자·수문장전 승률 +25%p, 경험치 +1000%, 전투력 +500%, PvP 축복 +10~20'},
 ];
 const MYTH_BY={};MYTHS.forEach(m=>MYTH_BY[m.id]=m);
-const MYTH_RATE=0.70, MYTH_PLUS=7, MYTH_FAME=10000;
+const MYTH_RATE=0.70, MYTH_PLUS=7, MYTH_FAME=100000;
 // ===== PvP 전용 스탯: 몬스터 전투에는 영향 없음 =====
 const PVP_KEYS=['ass','rev','bls','cur'], PVP_NAME={ass:'암살',rev:'부활',bls:'축복',cur:'저주'}, PVP_GAIN=0.001, PVP_CAP=40, PVP_MIN=5, MYTH_PVP=20;
 // 상성 고리: 암살 > 부활 > 축복 > 저주 > 암살
@@ -1039,7 +1039,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.7';
+const ENGINE_VERSION='1.5.8';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
