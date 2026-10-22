@@ -1116,7 +1116,7 @@ function autoChoice(s,c){
   if(n.kind==='tomb') return hpf>0.35?'inherit':'pass';
   if(n.kind==='hidden') return 'hq_'+n.quiz.ans;
   if(n.kind==='gambler') return 'gpass';
-  if(n.kind==='cursed') return 'cleave';
+  if(n.kind==='cursed') return 'ctake'; // 자동 진행에서는 전설 보물을 항상 받는다
   if(n.kind==='oath') return hpf>0.6?'oheal':'opass';
   if(n.kind==='pact') return 'ppass';
   if(n.kind==='fork') return hpf>0.6?'fmount':'friver';
