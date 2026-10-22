@@ -33,7 +33,7 @@ export async function worldRank(v: any) {
   const up = await fetch(restUrl('pvp_cards?on_conflict=id'), {
     method: 'POST',
     headers: { ...H, Prefer: 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ ...base, seed: v.row.seed, hero: v.row.hero, ladder: plan.ladder, fights_done: plan.fightsDone, is_bot: false, updated_at: new Date().toISOString() }),
+    body: JSON.stringify({ ...base, seed: v.row.seed, hero: v.row.hero, title: v.row.title ?? null, ladder: plan.ladder, fights_done: plan.fightsDone, is_bot: false, updated_at: new Date().toISOString() }),
   });
   if (!up.ok) throw new Error('pvp upsert ' + up.status + ' ' + (await up.text()));
   if (plan.matches.length) {

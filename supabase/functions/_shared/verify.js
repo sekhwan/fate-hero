@@ -67,6 +67,10 @@ export async function issueRun(secret, now = Date.now()) {
   return { seed, ts, token: await signRun(secret, seed, ts) };
 }
 
+// 용사 연대기 업적 칭호 (페이지의 ACH 목록과 같아야 한다). 목록에 없는 글자는 받지 않는다.
+export const TITLES = new Set(['지배자 사냥꾼', '지상계의 구원자', '옥좌의 정복자', '백층의 전설', '끝을 모르는 자', '신화를 빚은 자', '명장', '도박의 신', '운명을 아는 자', '가문의 기둥', '동료의 왕', '죽지 않는 자', '왕가의 피', '선택받은 자']);
+export function cleanTitle(raw) { return typeof raw === 'string' && TITLES.has(raw) ? raw : null; }
+
 export function cleanNickname(raw) {
   if (typeof raw !== 'string') return null;
   // 제어 문자, 꺾쇠, 앞뒤 공백 제거, 연속 공백 하나로
@@ -174,6 +178,7 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     reach_score: sum.reachScore,
     actions: log.length,
     version: usedVersion,
+    title: cleanTitle(body.title),
     updated_at: new Date(now).toISOString(),
   };
   return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };
