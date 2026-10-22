@@ -574,7 +574,9 @@ function nextRegion(s){
     const f=s.comp.friend; if(f&&f.forge){const k=STAT_KEYS[Math.floor(r()*6)];s.stats[k]++;s.transit.push({t:'good',x:`${f.name}이(가) 장비를 손봤다: ${STAT_NAMES[k]} +1`});}
     const pt=s.comp.pet; if(pt&&pt.grow){s.petGrow*=1+pt.grow;}
   }
-  s.shop=makeShop(s);
+  // 상점은 새 지역(층)에 도착할 때만 바뀐다. 끝없는 전장 ↔ 사냥터 왕복으로는 새로 나오지 않는다(왕복 새로고침 방지).
+  s.shop=s.keepShop||makeShop(s); s.keepShop=null;
+  if(s.huntFrom===5&&STAGES[s.stage].hunt!=null)(s.huntShops=s.huntShops||{})[STAGES[s.stage].hunt]=s.shop;
   const share=[0.15,0.2,0.25]; // boss gets remainder 0.4
   // 전투 → 탐험 → 전투 → 휴식 → 전투 → 탐험 → 지배자
   s.queue=[makeBattle(s,i,D*share[0],false),{type:'explore'},makeBattle(s,i,D*share[1],false),...(i%2===1?[{type:'rest'}]:[]),makeBattle(s,i,D*share[2],false),{type:'explore'}];
@@ -985,6 +987,7 @@ function enterHunt(s){
 function leaveHunt(s){
   if(STAGES[s.stage].hunt==null||s.dead) return false;
   if(s.huntFrom===5){ // 끝없는 전장에서 온 여행: 떠났던 층으로 돌아간다
+    s.keepShop=s.endShop||null; s.endShop=null;
     s.stage=5; s.region=Math.max(-1,(s.endRegion||0)-1); s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null; s.huntFrom=null;
     s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true; }
   s.stage=s.huntFrom; s.conquered=true; return advanceStage(s);
@@ -992,11 +995,11 @@ function leaveHunt(s){
 // 끝없는 전장에서 이전 세계(지상계~심연)의 사냥터로 떠난다
 function canTravel(s){const st=STAGES[s.stage];return !!(st&&st.endless&&st.hunt==null&&!s.dead&&!s.over);}
 function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
-  s.endRegion=s.region; s.huntFrom=5; s.stage=HUNT_BASE+k;
+  s.endRegion=s.region; s.endShop=s.shop; s.keepShop=(s.huntShops||{})[k]||null; s.huntFrom=5; s.stage=HUNT_BASE+k;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.5';
+const ENGINE_VERSION='1.5.6';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
