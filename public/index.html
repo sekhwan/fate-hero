@@ -733,7 +733,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hsub" id="hSub"></div>
       <div class="htags" id="hTags"></div>
       <dl class="facts top">
-        <dt>신분</dt><dd id="hWealth"></dd>
+        <dt>출신</dt><dd id="hWealth"></dd>
       </dl><div class="deals" id="hDeals"></div></div><div class="portrait" id="hPortrait" aria-hidden="true"></div></div>
       <div id="hTraits" hidden></div>
       <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
@@ -779,7 +779,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   </div>
 
   <h2>지난 용사들</h2>
-  <div class="histWrap"><table class="hist"><thead><tr><th>용사</th><th>종족</th><th>신분</th><th>세계</th><th>최후</th><th style="text-align:right">토벌률</th><th style="text-align:right">상위</th></tr></thead><tbody id="hist"></tbody></table></div>
+  <div class="histWrap"><table class="hist"><thead><tr><th>용사</th><th>종족</th><th>출신</th><th>세계</th><th>최후</th><th style="text-align:right">토벌률</th><th style="text-align:right">상위</th></tr></thead><tbody id="hist"></tbody></table></div>
   <p class="note">각 세계의 마지막 지배자를 쓰러뜨리면 정복으로 다음 세계가 열리고, 같은 용사로 이어서 들어갈 수 있다. 공허의 옥좌까지 정복하기 전에 쓰러지면 여정은 끝나고, 새 용사로 지상계부터 다시 시작해야 한다. 행운과 매력이 높을수록 행운의 일격과 매혹이 자주 터진다(35에서 30%, 40 이상 50%, 마지막 지배자 제외). 모든 지역의 지배자까지 쓰러뜨려 100%를 채우면 완전 정복으로 기록된다. 평정하지 못한 지역이 많을수록 마지막 지배자가 강해진다. 명성이 30 미만이면 히로인을 만날 수 없고, 150 이상이 되어야 열리는 숨은 장소도 있다. 아이템은 일반(흰색), 희귀(파랑), 영웅(노랑), 전설(황금) 네 등급이다. 승리확률은 내 전투력과 적 전투력의 비율로 기본값이 정해지고, 행운·명성(100마다 +1%p)·아이템이 더해진다. 명성이 높을수록 회유도 쉬워진다. 소지품은 금화를 받고 팔 수 있다. 성수는 상점에 나오면 금화로 자동 구매된다(최대 2병). 부활의 깃털은 명성으로 팔며, 남은 부활이 0회일 때만 자동으로 산다. 지배자 앞에서는 운명의 여신과 가위바위보로 축복이나 저주를 받을 수 있고, 동료와 용병은 지배자전에서 합동 공격으로 승률을 보탠다. 마지막 지배자에게는 세 번까지 도전할 수 있다. 상점은 지역마다 새로 열리고, 명성으로 사는 물건은 그만큼 명성이 줄어든다. 상위 %는 매번 가장 무난한 선택을 하는 용사 2,000명과 비교한 값이다. 기록은 이 브라우저에만 남는다.</p>
 </div>
 
@@ -893,16 +893,16 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>불리한 싸움에서 이길수록 좋은 등급의 아이템과 각성(능력치 상승) 보상이 커진다.</li>
     </ul>
 
-    <h3>종족 · 신분 · 특성</h3>
+    <h3>종족 · 출신 · 특성</h3>
     <ul>
       <li>종족마다 능력치 보정과 고유 효과가 있다. 예: 오크 전투력 +10%·회유 -10%p, 엘프 회유·도망 +10%p, 드워프 생명력 +20%·강화 +5%p, 고블린 금화 +40%·상점 -10%.</li>
-      <li>신분마다 아주 드물게(탐험 사건 1만 번에 한 번꼴) 그 신분에게만 일어나는 <b>히든 이벤트</b>가 퀴즈로 찾아온다. 이 게임에 대한 객관식 문제를 맞히면 신분에 맞는 큰 보상을 받고, 틀리면 기회가 사라진다.</li>
+      <li>출신마다 아주 드물게(탐험 사건 1만 번에 한 번꼴) 그 출신에게만 일어나는 <b>히든 이벤트</b>가 퀴즈로 찾아온다. 이 게임에 대한 객관식 문제를 맞히면 출신에 맞는 큰 보상을 받고, 틀리면 기회가 사라진다.</li>
       <li><b>전설 장비 강화</b>: 전설은 기본 효과가 영웅의 약 1.8배이고, +6까지는 완만하게(같은 강화의 영웅보다 약 1.5배) 오르다가 <b>+7부터 급격히</b> 강해진다(+7에서 영웅 +7의 약 3배).</li>
-      <li><b>운명의 갈림길</b>: 정답이 하나로 정해지지 않는 사건이 있다. <b>저주받은 보물</b>(전설 장비를 얻는 대신 다음 지배자전 승률 -20%p), <b>기사의 맹세</b>(지금 생명력 -20%, 3지역 뒤 지배자전에 기사가 합류해 +10%p), <b>악마의 거래</b>(다음 지배자를 꺾을 때까지 전투력 +35%, 계약금으로 최대 생명력 영구 -10%, 못 꺾으면 모든 능력치 -20%), <b>갈림길</b>(험한 산길: 전투 1번 더와 영웅 이상 상자 / 강길: 휴식 1번). 걸어 둔 맹세·저주·계약은 용사 명부의 신분 아래에 표시된다.</li>
-      <li><b>📜 용사 연대기</b>: 출정해서 첫 지역을 넘긴 용사는 종족×신분 도감에 기록되고, 그 용사가 어디까지 갔는지가 별(★ 출정, ★★ 지상계 정복, ★★★ 공허의 옥좌 정복, ★★★★ 끝없는 전장 100층)로 남는다. 몬스터 도감, 업적 칭호, 가문 기록도 함께 쌓인다. 전투력에는 영향이 없고 이 브라우저에만 저장된다.</li>
+      <li><b>운명의 갈림길</b>: 정답이 하나로 정해지지 않는 사건이 있다. <b>저주받은 보물</b>(전설 장비를 얻는 대신 다음 지배자전 승률 -20%p), <b>기사의 맹세</b>(지금 생명력 -20%, 3지역 뒤 지배자전에 기사가 합류해 +10%p), <b>악마의 거래</b>(다음 지배자를 꺾을 때까지 전투력 +35%, 계약금으로 최대 생명력 영구 -10%, 못 꺾으면 모든 능력치 -20%), <b>갈림길</b>(험한 산길: 전투 1번 더와 영웅 이상 상자 / 강길: 휴식 1번). 걸어 둔 맹세·저주·계약은 용사 명부의 출신 아래에 표시된다.</li>
+      <li><b>📜 용사 연대기</b>: 출정해서 첫 지역을 넘긴 용사는 종족×출신 도감에 기록되고, 그 용사가 어디까지 갔는지가 별(★ 출정, ★★ 지상계 정복, ★★★ 공허의 옥좌 정복, ★★★★ 끝없는 전장 100층)로 남는다. 몬스터 도감, 업적 칭호, 가문 기록도 함께 쌓인다. 전투력에는 영향이 없고 이 브라우저에만 저장된다.</li>
       <li>명성이 3,000 이상이면 가끔 <b>명성 도박꾼</b>이 나타난다(지역마다 최대 한 번). 명성의 10%, 30%, 전부 중 하나를 걸고 컵 세 개 중 공이 든 컵을 고른다. 맞힐 확률은 1/3이고, 맞히면 건 명성의 3배를 돌려받는다(건 만큼의 2배 이득). 틀리면 건 명성을 잃는다. 명성이 1,000 이상 남아 있으면 그 자리에서 몇 판이든 더 할 수 있다. 끼지 않고 지나가도 손해는 없다.</li>
-      <li>신분이 높을수록 시작 금화와 기본 장비가 좋고, <b>가문의 유산</b>: 부유층은 희귀 장비 2개, 귀족은 영웅·희귀 장비와 <b>가문의 기사 2명</b>(용병), 왕족은 <b>전설·영웅·희귀 장비</b>와 <b>가문의 기사 1명</b>을 갖고 출정한다.</li>
-      <li>용사 명부의 종족·신분·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
+      <li>출신이 높을수록 시작 금화와 기본 장비가 좋고, <b>가문의 유산</b>: 부유층은 희귀 장비 2개, 귀족은 영웅·희귀 장비와 <b>가문의 기사 2명</b>(용병), 왕족은 <b>전설·영웅·희귀 장비</b>와 <b>가문의 기사 1명</b>을 갖고 출정한다.</li>
+      <li>용사 명부의 종족·출신·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
     </ul>
     <h3>능력치</h3>
     <div class="tblWrap"><table>
@@ -937,9 +937,9 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>동료 · 용병 · 의뢰 · 혼인</h3>
     <ul>
       <li>길 위에서 드물게 <b>히로인(7명)·친구(5명)·펫(5마리)</b>을 만난다. 저마다 효과가 다르고, 합류 여부는 표시된 확률로 정해진다. 의뢰를 완수하면 <b>배우자 후보(10명)</b> 중 한 명과 혼담이 오갈 때가 있다.</li>
-      <li><b>신분과 동료</b>: 신분이 높을수록 만날 수 있는 동료가 많고 강하다(인간·나쁜 특성 없음 기준 히로인 빈털터리 2명 → 귀족 7명, 배우자 4명 → 10명). 합류·청혼 확률도 신분 한 단계마다 +5%p(빈털터리 -5%p, 왕족 +20%p).</li>
+      <li><b>출신과 동료</b>: 출신이 높을수록 만날 수 있는 동료가 많고 강하다(인간·나쁜 특성 없음 기준 히로인 빈털터리 2명 → 귀족 7명, 배우자 4명 → 10명). 합류·청혼 확률도 출신 한 단계마다 +5%p(빈털터리 -5%p, 왕족 +20%p).</li>
       <li><b>나쁜 특성과 동료</b>: 겁쟁이·길치·허약 체질·저주받은 운명·술고래는 하나마다 합류·청혼 확률 -8%p. 일부는 아예 거부한다 — 겁쟁이(여기사 세라·무녀 하루·검사 카일·사냥꾼 카야·검성의 손녀 유나), 술고래(궁수 아리엔·수도사 한·성녀 마리엘), 저주받은 운명(성녀 엘리나·점성술사 시엘), 허약 체질(유나).</li>
-      <li><b>신분 조건</b>: 서민 이상(여기사 세라·대장장이 브론·노엘), 중산층 이상(무희 카르멘·성녀 엘리나·현자 오르빈·영주의 딸 리아·성녀 마리엘), 부유층 이상(무녀 하루·상단주의 딸 로사·검성의 손녀 유나), 귀족 이상(용의 공주 이브(용인족은 신분 무관)·공주 이사벨). 종족 거부: 성녀·무녀(망자·마족), 마녀 릴리스(반천사), 아리엔·리아(오크·고블린), 브론(엘프), 수도사 한(망자), 이사벨(오크·드워프·고블린·망자). 펫은 누구나 만난다.</li>
+      <li><b>출신 조건</b>: 서민 이상(여기사 세라·대장장이 브론·노엘), 중산층 이상(무희 카르멘·성녀 엘리나·현자 오르빈·영주의 딸 리아·성녀 마리엘), 부유층 이상(무녀 하루·상단주의 딸 로사·검성의 손녀 유나), 귀족 이상(용의 공주 이브(용인족은 출신 무관)·공주 이사벨). 종족 거부: 성녀·무녀(망자·마족), 마녀 릴리스(반천사), 아리엔·리아(오크·고블린), 브론(엘프), 수도사 한(망자), 이사벨(오크·드워프·고블린·망자). 펫은 누구나 만난다.</li>
       <li>회유에 성공한 적은 <b>용병</b>이 된다(최대 12명, 1명당 전투력 +4%, 지휘 스킬로 늘어난다). 전투에서 지면 용병이 쓰러진다.</li>
       <li>명성이 쌓이면 <b>의뢰</b>가 들어온다. 완수하면 아이템과 큰 능력치 보상을 받고, 명성과 매력이 충분하면 의뢰인의 가족과 <b>혼인</b>할 수 있다(전투력 +15%).</li>
     </ul>
@@ -987,7 +987,7 @@ const ACH=[
   ['myth','🌈','신화 탄생','신화 합성에 성공했다','신화를 빚은 자'],
   ['enh10','🔨','전설 +10','전설 장비를 +10까지 강화했다','명장'],
   ['allin','🎲','올인 적중','명성 도박꾼에게 전부 걸고 맞혔다','도박의 신'],
-  ['hidq','❓','히든 이벤트 성공','신분 히든 퀴즈를 맞혔다','운명을 아는 자'],
+  ['hidq','❓','히든 이벤트 성공','출신 히든 퀴즈를 맞혔다','운명을 아는 자'],
   ['marry','💍','혼인','배우자를 맞았다','가문의 기둥'],
   ['party','🤝','온전한 일행','히로인·친구·펫이 모두 함께했다','동료의 왕'],
   ['near10','🔥','불사신','한 판에서 쓰러질 뻔하고 10번 살아남았다','죽지 않는 자'],
@@ -1066,7 +1066,7 @@ async function issueSeed(){
 const DIE_ROLL_MS=360;
 const PIPS={1:[[12,12]],2:[[7.5,7.5],[16.5,16.5]],3:[[7,7],[12,12],[17,17]],4:[[7.5,7.5],[16.5,7.5],[7.5,16.5],[16.5,16.5]],5:[[7,7],[17,7],[12,12],[7,17],[17,17]],6:[[7.5,6.5],[16.5,6.5],[7.5,12],[16.5,12],[7.5,17.5],[16.5,17.5]]};
 function dieInner(n){return `<rect x="2" y="2" width="20" height="20" rx="4.5" fill="#fff8e6" stroke="#f4b42c" stroke-width="1.6"/>${PIPS[n].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${n===1?2.6:1.8}" fill="#2a1a00"/>`).join('')}`;}
-// 용사 초상: 그림은 종족 × 직업, 신분은 액자 색과 장식(문장·왕관)으로 표현. 히든 영웅은 개별 그림. 그림이 없으면 실루엣.
+// 용사 초상: 그림은 종족 × 직업, 출신은 액자 색과 장식(문장·왕관)으로 표현. 히든 영웅은 개별 그림. 그림이 없으면 실루엣.
 const PORTRAIT_RACE={'인간':'human','엘프':'elf','드워프':'dwarf','오크':'orc','하플링':'halfling','고블린':'goblin','용인족':'dragonkin','반천사':'halfangel','망자':'undead'};
 const PORTRAIT_HID={'전생한 마왕':'h_demonlord','검성':'h_swordsaint','용왕의 후계자':'h_dragonheir','별에서 온 아이':'h_starchild'};
 function portraitTier(w){return {'빈털터리':1,'서민':2,'중산층':2,'부유층':3,'귀족':3,'왕족':4}[w]||1;}
@@ -1152,7 +1152,7 @@ function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name; $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
   {const ri=raceInfo(h.race);$('hRace').innerHTML=`<span class="tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name} <i class="qi">?</i></span><em>${h.race.note}</em>`;}
-  $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 신분 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
+  $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 출신 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
   {const ri=raceInfo(h.race);$('hTags').innerHTML=`<span class="rc tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name}</span>`+h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');}
   $('hTraits').innerHTML=h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');
   {const cr=run||null;const L=COMBOS.filter(c=>c.race===h.race.name);const W=i=>STAGES[i]?STAGES[i].name:'';
@@ -1388,7 +1388,7 @@ function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSu
     ['동료·배우자·펫',compMult(s)],['검술 스킬',1+SKV.blade*sk(s,'blade')],['전투 숙련',1+SKV.mPow[mastery(s,'전투')]],
     ['궁지(생명력 50% 미만)',s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1],['도망 사기 저하',Math.pow(0.9,s.fleeDebuff||0)]];
   const pct=x=>{const v=(x-1)*100;return (v>=0?'+':'')+(Math.abs(v)>=1e5?fmt(v):Math.abs(v)>=10?Math.round(v).toLocaleString('ko-KR'):v.toFixed(1))+'%';};
-  const out=[`기본 ${fmt(base*10)} (능력치·신분 기본 장비)`];
+  const out=[`기본 ${fmt(base*10)} (능력치·출신 기본 장비)`];
   for(const [n,x] of rows)if(Math.abs(x-1)>1e-9)out.push(`${n} ×${x>=100?fmt(x):x.toFixed(2)} (${pct(x)})`);
   out.push(`= 전투력 ${fmt(power(s)/s.stageCarry*10)}`);return out;}
 function tipAttr(title,lines){return ` data-tt="${esc(title)}" data-tl="${esc((lines||[]).filter(Boolean).join('¦'))}" tabindex="0"`;}
