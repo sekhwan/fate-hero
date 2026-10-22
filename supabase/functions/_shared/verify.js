@@ -1,8 +1,13 @@
 // 서버 쪽 검증 로직. Deno(Supabase Edge Functions)와 Node 양쪽에서 돌아가는 순수 ES 모듈.
 // 게임 엔진(engine.js)은 페이지가 쓰는 파일과 완전히 같은 파일이어야 한다.
+// 이전 버전 엔진을 먼저 불러 따로 보관한다. 업데이트 직전에 시작한 용사의 기록은 그 버전 엔진으로 재생해야 결과가 같다.
+import './engine_1_5_3.js';
 import './engine.js';
 
 const E = globalThis.FateEngine;
+const ENGINES = { [E.ENGINE_VERSION]: E };
+for (const old of [globalThis.FateEngine_1_5_3]) if (old && !ENGINES[old.ENGINE_VERSION]) ENGINES[old.ENGINE_VERSION] = old;
+export const ACCEPT_VERSIONS = Object.keys(ENGINES);
 export const ENGINE_VERSION = E.ENGINE_VERSION;
 
 export const LIMITS = {
@@ -74,7 +79,8 @@ const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L', 'M', 'T']);
 export async function verifySubmission(body, secret, now = Date.now()) {
   if (!body || typeof body !== 'object') throw new Error('잘못된 요청');
   const { version, seed, token, ts, nickname, log } = body;
-  if (version !== ENGINE_VERSION) throw new Error('게임 버전이 달라졌다. 새로고침 후 새 용사로 도전해 주세요.');
+  const EV = ENGINES[version];
+  if (!EV) throw new Error('게임 버전이 달라졌다. 새로고침 후 새 용사로 도전해 주세요.');
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff) throw new Error('잘못된 seed');
   if (!Number.isInteger(ts)) throw new Error('잘못된 발급 시각');
   if (now - ts > LIMITS.tokenMaxAgeMs) throw new Error('등록 기한이 지난 용사다');
@@ -84,7 +90,7 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     if (!Number.isInteger(base) || base < 0 || base > 0xffffffff || !Number.isInteger(n) || n < 1 || n > 1000 || !Number.isInteger(i) || i < 0 || i >= n)
       throw new Error('잘못된 주사위 묶음');
     if (!(await anyVersion((v) => signBatch(secret, base, n, ts, v), token))) throw new Error('서버가 발급하지 않은 용사다');
-    if ((E.mixSeed(base, i) >>> 0) !== seed) throw new Error('주사위 묶음과 용사가 맞지 않다');
+    if ((EV.mixSeed(base, i) >>> 0) !== seed) throw new Error('주사위 묶음과 용사가 맞지 않다');
   } else {
     if (!(await anyVersion((v) => signRun(secret, seed, ts, v), token))) throw new Error('서버가 발급하지 않은 용사다');
   }
@@ -103,7 +109,7 @@ export async function verifySubmission(body, secret, now = Date.now()) {
   }
   let sum;
   try {
-    sum = E.replayLog(log);
+    sum = EV.replayLog(log);
   } catch (e) {
     throw new Error('기록 재생 실패: ' + (e && e.message ? e.message : String(e)));
   }
@@ -117,7 +123,7 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     reach: String(sum.reach).slice(0, 60),
     reach_score: sum.reachScore,
     actions: log.length,
-    version: ENGINE_VERSION,
+    version,
     updated_at: new Date(now).toISOString(),
   };
   return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };

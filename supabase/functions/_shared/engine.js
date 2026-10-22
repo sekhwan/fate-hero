@@ -462,7 +462,9 @@ function mythFuse(s){const c=mythCheck(s);if(!c.ok)return null;s.fame-=MYTH_FAME
   for(const it of used){applyItem(s,it,-1);s.items.splice(s.items.indexOf(it),1);}normSlots(s,applyItem);
   const ok=s.r()<MYTH_RATE;if(!ok)return {ok:false,names};
   const m=MYTHS[Math.floor(s.r()*MYTHS.length)];const v=10+Math.floor(s.r()*11);s.mythics=s.mythics||[];s.mythV=s.mythV||{};
-  if(s.mythics.includes(m.id)){const old=s.mythV[m.id]||MYTH_PVP;if(v>old){s.mythV[m.id]=v;return {ok:true,upgrade:true,m,v,old,names};}return {ok:true,dup:true,m,v,old,names};}
+  if(s.mythics.includes(m.id)){const old=s.mythV[m.id]||MYTH_PVP;if(v>old){s.mythV[m.id]=v;return {ok:true,upgrade:true,m,v,old,names};}
+    // 같은 신화가 더 낮게 나오면 흩어지는 대신 가진 신화를 +1 단련한다 (최대 20)
+    const nv=Math.min(20,old+1);s.mythV[m.id]=nv;return {ok:true,dup:true,m,v,old,nv,names};}
   s.mythics.push(m.id);s.mythV[m.id]=v;if(m.e.hp){const o=s.maxHp;s.maxHp=hpMax(s);s.hp+=Math.max(0,s.maxHp-o);}return {ok:true,m,v,names};}
 function tsum(s,key,base){const v=traitSum(s.hero,key,base);return key==='mult'?v*cmb(s,'mult',1):v+cmb(s,key,0)+(key==='hp'?(s.hpBonus||0):0)+(COMP_KEYS[key]?compAdd(s,COMP_KEYS[key]):0);}
 const COMP_KEYS={hp:'hp',xp:'xp',enh:'enh',boss:'boss',discount:'discount',gold:'goldp'};
@@ -599,6 +601,9 @@ function makeEvent(s){
 }
 // 신분별 히든 이벤트: 탐험 사건 1만 번에 1번꼴 (0.01%)
 const HIDDEN_P=0.0001;
+// 명성 도박꾼(야바위): 명성 3000 이상, 지역마다 최대 1번. 컵 3개 중 하나, 맞히면 건 명성의 3배를 돌려받는다(기대값 0).
+const GAMBLE_MIN=3000, GAMBLE_W=1.5, GAMBLE_P=1/3, GAMBLE_PAY=3, GAMBLE_BETS=[10,30,100];
+function gambleStake(s,pct){return Math.max(0,Math.floor(Math.max(0,s.fame)*pct/100));}
 const HIDDEN_EV={
   '왕족':{name:'왕의 칙령',title:'왕좌의 현자가 시험을 낸다. 맞히면 왕의 칙령이 내려진다.',reward:'지배자전 승률 +10%p, 전투력 +50%'},
   '귀족':{name:'기사단 서임',title:'가문의 기사단장이 문답으로 그대의 자격을 묻는다.',reward:'용병 상한 +5, 용병이 상한까지 즉시 합류'},
@@ -633,12 +638,14 @@ function rollEvent(s,n){
   if(!s.comp.pet) opts.push(['pet',2.2]);
   if(!s.activeQuest){const avail=QUESTS.filter(q=>s.fame>=q.min&&!(s.doneQ||[]).includes(q.giver)); if(avail.length) opts.push(['quest',STAGES[s.stage].endless&&STAGES[s.stage].hunt==null?1:6]);}
   if(s.fame>=150 && !s.tomb) opts.push(['tomb',4]);
+  const gk=s.stage+':'+s.region; if(s.fame>=GAMBLE_MIN && s.gambleAt!==gk) opts.push(['gambler',GAMBLE_W]);
   const tot=opts.reduce((a,b)=>a+b[1],0); let v=r()*tot; let k=opts[0][0];
   for(const [name,w] of opts){if((v-=w)<=0){k=name;break;}}
   n.kind=k;
   if(k==='heroine'){const P=compPool(s,HEROINES);n.c=P[Math.floor(r()*P.length)];}
   if(k==='friend'){const P=compPool(s,FRIENDS);n.c=P[Math.floor(r()*P.length)];}
   if(k==='pet') n.c=PETS[Math.floor(r()*PETS.length)];
+  if(k==='gambler') s.gambleAt=gk;
   if(k==='quest'){const avail=QUESTS.filter(q=>s.fame>=q.min&&!(s.doneQ||[]).includes(q.giver)); n.q=avail[avail.length-1];}
 }
 function winParts(s,E){const ratio=power(s)/E;const tt=Math.tanh(Math.log(ratio)*1.15); const base=0.70+(tt<0?0.58:0.22)*tt;const luck=clamp((effLuk(s)-10)*0.005,-0.05,0.10);const under=base<0.55?compSum(s,'underdog'):0;
@@ -741,6 +748,9 @@ function current(s){
       {id:'refuse',label:'토벌이 먼저라며 거절한다',desc:'명성 -3.'}]};}
   if(k==='hidden'){const H=HIDDEN_EV[s.hero.wealth.name];const z=n.quiz;
     return {node:n,title:`[히든] ${H.name} · ${H.title}`,hint:`문제: ${z.q} · 맞히면 ${H.reward}. 틀리면 기회는 사라진다.`,options:z.ch.map((c,ix)=>({id:'hq_'+ix,label:c,desc:''}))};}
+  if(k==='gambler'){return {node:n,title:'[명성 도박꾼] 컵 세 개를 늘어놓은 사내가 씩 웃는다.',hint:`"공이 든 컵을 맞히면 건 명성의 3배를 돌려주지." 맞힐 확률은 1/3이다. 틀리면 건 명성을 잃는다. 지금 명성은 ${fmtG(s.fame)}이다.`,
+    options:[...GAMBLE_BETS.map(p=>{const st=gambleStake(s,p);return {id:'gb:'+p,label:p===100?`명성 전부 건다 (${fmtG(st)})`:`명성 ${p}% 건다 (${fmtG(st)})`,prob:GAMBLE_P,disabled:st<1,desc:`맞히면 명성 +${fmtG(st*(GAMBLE_PAY-1))} · 틀리면 -${fmtG(st)}`};}),
+      {id:'gpass',label:'판에 끼지 않는다',desc:'아무 일도 일어나지 않는다.'}]};}
   if(k==='tomb'){return {node:n,title:'전설 속 영웅의 무덤이 네 명성에 응답해 문을 열었다.',hint:'명성 150 이상인 자에게만 열리는 곳이다.',options:[
       {id:'inherit',label:'유산을 계승한다',desc:'모든 능력치 +3, 생명력 -20%.'},
       {id:'pass',label:'경의만 표하고 떠난다',desc:'명성 +10.'}]};}
@@ -798,7 +808,7 @@ function placeName(s){const st=STAGES[s.stage];const rg=st.regions[Math.max(0,s.
 function gainItem(s,out,bonus,src){
   const g=rollGrade(s.r,(bonus||0)+SKV.appraise*sk(s,'appraise')+cmb(s,'gradeB',0),cmb(s,'legend',0)); const roll=s.r(); const it=roll<0.05?makeItem(s.r,0,'heal'):roll<0.06?makeItem(s.r,g,'revive'):makeItem(s.r,g,null,tierOf(s));
   it.src=src||'획득'; it.where=placeName(s);
-  noteGot(s,it); equip(s,it); checkCombos(s,out); s.fame+=2+it.grade*4; out.push({t:'item g'+it.grade,x:`${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})`}); if(s.lastEquipNote) out.push({t:'good',x:s.lastEquipNote}); return;
+  noteGot(s,it); equip(s,it); checkCombos(s,out); s.fame+=2+it.grade*4; out.push({t:'item g'+it.grade,x:`${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})`,got:{name:it.name,d:it.d,grade:it.grade,src:it.src,spare:!!it.spare,kept:s.items.includes(it),slot:slotOf(it),heal:!!it.heal,revive:!!it.revive}}); if(s.lastEquipNote) out.push({t:'good',x:s.lastEquipNote}); return;
 
 }
 function gainXp(s,amt,out){
@@ -899,6 +909,12 @@ function choose(s,optId){
       case 'marry': {const sp=SPOUSES[n.sp||0]; if(roll>=o.prob){s.lastEvent={ok:false,head:'혼인 실패',sub:sp.name};s.fame-=3;text=`${sp.name}은(는) 정중히 거절했다.`;out.push({t:'bad',x:'명성 -3'});break;}
         s.lastEvent={ok:true,head:'혼인',sub:sp.name}; s.spouse=sp.name; s.spouseC=sp; if(sp.luk)s.stats.luk+=sp.luk; {const o2=s.maxHp; s.maxHp=hpMax(s); s.hp+=Math.max(0,s.maxHp-o2);} s.fame+=30; text=`${sp.name}와(과) 혼인했다. 왕국 전체가 축하했다.`; out.push({t:'comp',x:`배우자: ${sp.name} (${sp.d})`},{t:'fame',x:'명성 +30'});} break;
       case 'refuse': s.fame-=3; text='혼담을 거절했다.'; out.push({t:'bad',x:'명성 -3'}); break;
+      case 'gb:10': case 'gb:30': case 'gb:100': { const pct=+String(optId).slice(3); const st=gambleStake(s,pct); const win=r()<GAMBLE_P;
+        s.gambles=(s.gambles||0)+1;
+        if(win){ s.fame+=st*(GAMBLE_PAY-1); s.gambleWins=(s.gambleWins||0)+1; text=`공이 든 컵을 정확히 짚었다! 도박꾼이 이를 갈며 명성을 내놓았다.`; out.push({t:'fame',x:`도박 적중 · 명성 +${fmtG(st*(GAMBLE_PAY-1))}`,gamble:{win:true,stake:st,pct,gain:st*(GAMBLE_PAY-1)}}); }
+        else { s.fame-=st; text=`빈 컵이었다. 도박꾼이 명성을 쓸어 담고 사라졌다.`; out.push({t:'bad',x:`도박 실패 · 명성 -${fmtG(st)}`,gamble:{win:false,stake:st,pct,gain:-st}}); }
+        break; }
+      case 'gpass': text='도박꾼을 무시하고 지나갔다.'; break;
       case 'hq_0': case 'hq_1': case 'hq_2': case 'hq_3': { const w=s.hero.wealth.name; const H=HIDDEN_EV[w]; const ix=+String(optId).slice(3);
         if(ix!==n.quiz.ans){ s.lastEvent={ok:false,head:'히든 이벤트 · 오답',sub:`정답은 "${n.quiz.ch[n.quiz.ans]}"`}; text=`틀렸다. 정답은 "${n.quiz.ch[n.quiz.ans]}". ${H.name}의 기회가 사라졌다.`; out.push({t:'bad',x:'히든 이벤트 실패'}); break; }
         s.hiddenDone=(s.hiddenDone||0)+1; s.lastEvent={ok:true,head:'히든 이벤트 · '+H.name,sub:H.reward}; const fx=s.hidFx=s.hidFx||{};
@@ -976,7 +992,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.3';
+const ENGINE_VERSION='1.5.4';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1052,6 +1068,7 @@ function autoChoice(s,c){
   if(n.kind==='qpick') return 'qk:mult';
   if(n.kind==='tomb') return hpf>0.35?'inherit':'pass';
   if(n.kind==='hidden') return 'hq_'+n.quiz.ans;
+  if(n.kind==='gambler') return 'gpass';
   if(n.kind==='merchant') return (hpf<0.5&&s.gold>=n.cost)?'buy':'pass';
   if(n.kind==='altar') return opts.find(o=>o.id==='pray').prob>0.55?'pray':'smash';
   if(n.kind==='knight') return hpf>0.5?'heal':'loot';
@@ -1072,11 +1089,11 @@ function isImportant(s,c,mode){
   if(n.type==='skill') return true;
   if(n.type==='prep') return !!n.boss.final && mode!=='auto';
   if(n.type==='explore'||n.type==='rest') return false;
-  if(n.type!=='battle') return ['heroine','friend','pet','quest','proposal','tomb','qreward','qpick','hidden'].includes(n.kind);
+  if(n.type!=='battle') return ['heroine','friend','pet','quest','proposal','tomb','qreward','qpick','hidden','gambler'].includes(n.kind);
   if(n.quest) return true;
   if(mode==='boss') return n.boss;
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+globalThis.FateEngine={GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
 if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};

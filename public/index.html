@@ -54,6 +54,98 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 @media (max-width:840px){.grid{display:flex;flex-direction:column;align-items:stretch}.grid>.front{order:1}.grid>.gear{order:2}.grid>.roster{order:3;margin-top:16px}.grid>.logWrap{order:4}}
 .roster{background:var(--panel);border:1px solid var(--line);padding:20px;position:relative}
 .roster::before{content:"용사 명부";position:absolute;top:-9px;left:14px;background:var(--bg);padding:0 8px;font-size:11px;letter-spacing:.14em;color:var(--brass)}
+ #mythFx{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;overflow:hidden}
+#mythFx.on{display:flex;background:radial-gradient(circle at 50% 45%,#1a1030,#05030a 70%)}
+#mythFx .mfRing{position:absolute;width:min(70vmin,520px);height:min(70vmin,520px);border-radius:50%;border:2px solid rgba(190,160,255,.6);box-shadow:0 0 40px rgba(160,120,255,.5),inset 0 0 40px rgba(160,120,255,.35);background:repeating-conic-gradient(rgba(200,170,255,.18) 0 6deg,transparent 6deg 30deg);animation:mfSpin 3s linear infinite}
+@keyframes mfSpin{to{transform:rotate(360deg)}}
+#mythFx .mfMats{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+#mythFx .mfMats span{position:absolute;font-size:52px;filter:drop-shadow(0 0 12px rgba(255,220,140,.9));animation:mfIn 1.7s cubic-bezier(.6,0,.4,1) forwards;--a:calc(var(--k)*90deg + 45deg)}
+#mythFx.wait .mfMats span{animation:mfOrbit 6s linear infinite}
+@keyframes mfOrbit{from{transform:rotate(var(--a)) translateX(min(34vmin,250px)) rotate(calc(var(--a)*-1))}to{transform:rotate(calc(var(--a) + 360deg)) translateX(min(34vmin,250px)) rotate(calc(var(--a)*-1 - 360deg))}}
+#mythFx.wait .mfCore{animation:mfPulse 1.2s ease-in-out infinite alternate} @keyframes mfPulse{from{transform:scale(.3)}to{transform:scale(.6)}}
+#mythFx .mfGo{position:absolute;bottom:12vh;z-index:3;font:inherit;font-size:20px;font-weight:800;padding:14px 40px;border-radius:10px;border:0;cursor:pointer;color:#fff;background:linear-gradient(180deg,#9b7bff,#5a36c9);box-shadow:0 0 24px rgba(160,120,255,.8),0 4px 0 #2c1b6e;letter-spacing:.08em;animation:mfGoP 1.4s ease-in-out infinite;display:none}
+#mythFx.wait .mfGo{display:block} @keyframes mfGoP{50%{box-shadow:0 0 40px rgba(190,160,255,1),0 4px 0 #2c1b6e}}
+@keyframes mfIn{0%{transform:rotate(var(--a)) translateX(min(34vmin,250px)) rotate(calc(var(--a)*-1)) scale(1);opacity:1}80%{opacity:1}100%{transform:rotate(calc(var(--a) + 540deg)) translateX(0) rotate(calc(var(--a)*-1)) scale(.2);opacity:0}}
+#mythFx .mfCore{position:absolute;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 30px 10px rgba(220,190,255,.9);transform:scale(.2);animation:mfCore 1.7s ease-in forwards}
+@keyframes mfCore{60%{transform:scale(1)}100%{transform:scale(2.4);box-shadow:0 0 80px 40px rgba(240,220,255,1)}}
+#mythFx .mfRes{position:relative;z-index:2;text-align:center;opacity:0;padding:0 20px}
+#mythFx.win .mfRes,#mythFx.lose .mfRes{animation:mfRes .7s cubic-bezier(.2,1.4,.3,1) forwards}
+@keyframes mfRes{0%{opacity:0;transform:scale(.4)}100%{opacity:1;transform:scale(1)}}
+#mythFx.win,#mythFx.lose{animation:none} #mythFx.win .mfMats,#mythFx.win .mfCore,#mythFx.lose .mfMats,#mythFx.lose .mfCore{display:none}
+#mythFx.win{background:radial-gradient(circle at 50% 45%,#fff 0,#ffe9a8 8%,#6b3fd8 35%,#120820 75%);animation:mfFlash .9s ease-out}
+@keyframes mfFlash{0%{filter:brightness(4)}100%{filter:brightness(1)}}
+#mythFx.win .mfRing{border-color:rgba(255,230,160,.9);box-shadow:0 0 80px rgba(255,210,120,.9);animation-duration:6s}
+#mythFx .mfRays{position:absolute;left:50%;top:38%;width:200vmax;height:200vmax;transform:translate(-50%,-50%);background:repeating-conic-gradient(rgba(255,255,255,.16) 0 4deg,transparent 4deg 18deg);animation:mfSpin 10s linear infinite;z-index:-1;-webkit-mask:radial-gradient(circle,#000 0,transparent 60%);mask:radial-gradient(circle,#000 0,transparent 60%)}
+#mythFx .mfIco{font-size:120px;line-height:1.1;filter:drop-shadow(0 0 30px rgba(255,230,160,1));animation:mfBob 2s ease-in-out infinite}
+@keyframes mfBob{50%{transform:translateY(-8px) scale(1.05)}}
+#mythFx .mfHead{font-family:var(--display);font-size:clamp(44px,9vw,96px);font-weight:800;letter-spacing:.06em;color:#fff;text-shadow:0 0 30px rgba(255,220,140,1),0 4px 0 #6a3a00}
+#mythFx .mfName{font-size:clamp(26px,5vw,48px);margin-top:4px}
+#mythFx .mfSub{font-size:clamp(15px,2.2vw,20px);color:#f6ecff;margin-top:12px;line-height:1.6;text-shadow:0 1px 4px #000} #mythFx .mfSub b{color:#ffe08a}
+#mythFx .mfOk{margin-top:26px;font:inherit;font-size:17px;font-weight:700;padding:11px 46px;border-radius:8px;border:0;cursor:pointer;color:#2a1a00;background:linear-gradient(180deg,#ffe27a,#f0b232);box-shadow:0 3px 0 #8a5a12;opacity:0;pointer-events:none;transition:opacity .3s}
+#mythFx.done .mfOk{opacity:1;pointer-events:auto}
+#mythFx.lose{background:radial-gradient(circle at 50% 45%,#3a0a0a,#0a0505 70%);animation:mfShake .6s cubic-bezier(.36,.07,.19,.97)}
+@keyframes mfShake{10%,90%{transform:translate(-2px,1px)}20%,80%{transform:translate(5px,-3px)}30%,50%,70%{transform:translate(-9px,4px)}40%,60%{transform:translate(9px,-4px)}}
+#mythFx.lose .mfRing{border-color:rgba(120,40,40,.7);box-shadow:none;background:none;animation:mfCrack 1s ease-out forwards}
+@keyframes mfCrack{to{transform:scale(1.4);opacity:0}}
+#mythFx.lose .mfHead{color:#ff5a4a;text-shadow:0 0 24px rgba(255,40,20,.8),0 4px 0 #300}
+#mythFx.lose .mfSub{color:#d8c8c8}
+#mythFx.lose .mfOk{background:linear-gradient(180deg,#5a4a4a,#3a2e2e);color:#eee;box-shadow:0 3px 0 #1a1212}
+#mythFx .mfShards{position:relative;height:110px;display:flex;justify-content:center;gap:18px;margin-bottom:6px}
+#mythFx .mfShards span{font-size:56px;filter:grayscale(1) brightness(.7);animation:mfFall 1.3s ease-in forwards;animation-delay:calc(var(--k)*90ms)}
+@keyframes mfFall{0%{transform:none;opacity:1}30%{transform:translateY(-10px) rotate(calc((var(--k) - 1.5)*12deg))}100%{transform:translateY(160px) rotate(calc((var(--k) - 1.5)*70deg));opacity:0}}
+@media (prefers-reduced-motion:reduce){#mythFx *{animation-duration:.01s!important}}
+/* 명성 도박꾼(야바위) 전체 화면 */
+#gbFx{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#3a2a12 0,#140c06 55%,#050302 100%);color:#f5ead2}
+#gbFx.on{display:flex;animation:gbIn .35s ease-out} @keyframes gbIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
+#gbFx::before{content:"";position:absolute;left:50%;top:-10vh;width:70vmin;height:70vmin;transform:translateX(-50%);background:radial-gradient(circle,rgba(255,190,90,.35),transparent 65%);animation:gbLamp 3s ease-in-out infinite alternate;pointer-events:none}
+@keyframes gbLamp{from{opacity:.7}to{opacity:1}}
+#gbFx .gbIn{position:relative;width:min(760px,94vw);text-align:center;padding:16px}
+#gbFx .gbMan{font-size:clamp(64px,12vmin,110px);line-height:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.7));animation:gbBob 2.4s ease-in-out infinite} @keyframes gbBob{50%{transform:translateY(-6px) rotate(-3deg)}}
+#gbFx .gbTitle{font-family:var(--display);font-size:clamp(28px,5.5vw,48px);font-weight:800;letter-spacing:.08em;color:#ffd77a;text-shadow:0 0 18px rgba(255,190,80,.7),0 3px 0 #5a3500;margin-top:4px}
+#gbFx .gbSay{font-size:clamp(15px,2.3vw,19px);margin:8px auto 4px;max-width:560px;line-height:1.55;color:#f0e2c4;min-height:2.6em}
+#gbFx .gbFame{display:inline-flex;align-items:center;gap:6px;font-size:16px;padding:5px 14px;border-radius:999px;background:rgba(0,0,0,.45);border:1px solid rgba(255,215,122,.35);margin:4px 0 10px} #gbFx .gbFame b{color:#ffd77a;font-size:19px;font-variant-numeric:tabular-nums}
+#gbFx .gbFelt{position:relative;margin:6px auto 0;padding:22px 14px 26px;border-radius:50% / 26%;background:radial-gradient(ellipse at 50% 40%,#1f6b3a,#0f3d20 70%,#0a2a16);border:10px solid #5a3a1a;box-shadow:inset 0 0 50px rgba(0,0,0,.6),0 18px 40px rgba(0,0,0,.7),0 0 0 2px #2a1a0a}
+#gbFx .gbBets{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+#gbFx .chip{width:clamp(96px,22vw,140px);aspect-ratio:1;border-radius:50%;border:0;cursor:pointer;font:inherit;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:radial-gradient(circle,var(--c1) 0 52%,transparent 53%),repeating-conic-gradient(var(--c1) 0 22.5deg,#fff 22.5deg 45deg);box-shadow:0 6px 0 rgba(0,0,0,.55),0 0 0 4px rgba(0,0,0,.25);transition:transform .15s}
+#gbFx .chip:hover:not(:disabled),#gbFx .chip:focus-visible{transform:translateY(-6px) rotate(-6deg)} #gbFx .chip:disabled{opacity:.35;cursor:default}
+#gbFx .chip b{font-size:clamp(20px,4vw,28px);font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.45)} #gbFx .chip span{font-size:12.5px;opacity:.95} #gbFx .chip em i{font-style:normal} #gbFx .chip em{font-style:normal;font-size:11.5px;color:#ffe9a8}
+#gbFx .chip.c10{--c1:#2a6fd1} #gbFx .chip.c30{--c1:#b8322a} #gbFx .chip.c100{--c1:#1a1a1a;box-shadow:0 6px 0 rgba(0,0,0,.55),0 0 22px rgba(255,200,80,.7)}
+#gbFx .gbPass{margin-top:16px;font:inherit;font-size:14px;padding:9px 26px;border-radius:8px;cursor:pointer;background:transparent;color:#d8c8a8;border:1px solid rgba(216,200,168,.45)}
+#gbFx .gbCups{position:relative;height:clamp(150px,26vmin,210px);max-width:520px;margin:0 auto;display:none}
+#gbFx .cup{position:absolute;bottom:18px;width:28%;left:calc(var(--x) * 36% + 0%);transition:left .24s cubic-bezier(.5,0,.5,1);cursor:default;z-index:2;outline:none}
+#gbFx .cup .cb{display:block;height:clamp(96px,17vmin,140px);transition:transform .45s cubic-bezier(.3,1.4,.5,1);
+  background:linear-gradient(90deg,#6a3a12,#c27a34 35%,#e8a95a 50%,#a6622a 70%,#5a300e);clip-path:polygon(18% 0,82% 0,100% 100%,0 100%);border-radius:6px 6px 0 0;box-shadow:inset 0 -10px 0 rgba(0,0,0,.25)}
+#gbFx .cup .cb::after{content:"";display:block;height:10px;margin:16% 12% 0;background:rgba(0,0,0,.18);border-radius:3px}
+#gbFx .cup.up .cb{transform:translateY(-62%)}
+#gbFx .ball{position:absolute;bottom:22px;width:clamp(30px,5vmin,40px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#ffd36a 40%,#c8861a);box-shadow:0 0 18px rgba(255,210,100,.9);left:calc(var(--x) * 36% + 14% - clamp(15px,2.5vmin,20px));z-index:1;opacity:0;transition:opacity .2s}
+#gbFx .ball.on{opacity:1}
+#gbFx.pick .cup{cursor:pointer} #gbFx.pick .cup:hover .cb,#gbFx.pick .cup:focus-visible .cb{transform:translateY(-10px);filter:brightness(1.2) drop-shadow(0 0 14px rgba(255,220,140,.9))}
+#gbFx.cups .gbBets,#gbFx.cups .gbPass{display:none} #gbFx.cups .gbCups{display:block}
+#gbFx .gbRes{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;z-index:5;padding:20px}
+#gbFx.win .gbRes,#gbFx.lose .gbRes{display:flex;animation:mfRes .7s cubic-bezier(.2,1.4,.3,1) both}
+#gbFx.win{background:radial-gradient(circle at 50% 45%,#fff 0,#ffe08a 10%,#b8741a 38%,#2a1606 80%);animation:mfFlash .9s ease-out}
+#gbFx.lose{background:radial-gradient(circle at 50% 45%,#3a0a0a,#0a0505 70%);animation:mfShake .6s cubic-bezier(.36,.07,.19,.97)}
+#gbFx.win .gbIn,#gbFx.lose .gbIn{opacity:.12;filter:blur(2px);transition:opacity .5s}
+#gbFx .gbHead{font-family:var(--display);font-size:clamp(56px,12vw,120px);font-weight:800;letter-spacing:.06em;color:#fff;text-shadow:0 0 30px rgba(255,220,140,1),0 5px 0 #6a3a00}
+#gbFx.lose .gbHead{color:#ff5a4a;text-shadow:0 0 24px rgba(255,40,20,.8),0 5px 0 #300}
+#gbFx .gbAmt{font-size:clamp(26px,5vw,46px);font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums;color:#ffe9a8;text-shadow:0 2px 6px #000} #gbFx.lose .gbAmt{color:#ffb0a8}
+#gbFx .gbSub{font-size:clamp(14px,2vw,18px);margin-top:10px;color:#fff;text-shadow:0 1px 4px #000}
+#gbFx .gbStars{position:absolute;inset:0;pointer-events:none;overflow:hidden} #gbFx .gbStars i{position:absolute;left:50%;top:45%;font-style:normal;font-size:28px;color:#ffe08a;text-shadow:0 0 10px #fff;animation:gbStar 1.6s ease-out forwards;animation-delay:calc(var(--d)*1ms)}
+@keyframes gbStar{from{transform:translate(-50%,-50%) scale(.3);opacity:1}to{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2) rotate(200deg);opacity:0}}
+#gbFx .gbOk{margin-top:24px;font:inherit;font-size:17px;font-weight:700;padding:11px 46px;border-radius:8px;border:0;cursor:pointer;color:#2a1a00;background:linear-gradient(180deg,#ffe27a,#f0b232);box-shadow:0 3px 0 #8a5a12;opacity:0;pointer-events:none;transition:opacity .3s}
+#gbFx.done .gbOk{opacity:1;pointer-events:auto} #gbFx.lose .gbOk{background:linear-gradient(180deg,#5a4a4a,#3a2e2e);color:#eee;box-shadow:0 3px 0 #1a1212}
+@media (max-width:560px){#gbFx .gbBets{gap:8px;flex-wrap:nowrap} #gbFx .chip{width:27vw;max-width:110px} #gbFx .chip b{font-size:19px} #gbFx .chip span{font-size:11.5px} #gbFx .chip em{font-size:11px} #gbFx .chip em i{display:none} #gbFx .gbFelt{padding:18px 8px 20px;border-width:7px}}
+@media (prefers-reduced-motion:reduce){#gbFx *,#gbFx{animation-duration:.01s!important;transition-duration:.01s!important}}
+
+ #legFx{position:fixed;inset:0;pointer-events:none;z-index:61;display:flex;align-items:center;justify-content:center;opacity:0}
+#legFx.on{animation:lfBg 2.6s ease-out forwards}
+@keyframes lfBg{0%{opacity:1;background:radial-gradient(circle,rgba(255,215,120,.65),rgba(255,160,40,.15) 45%,rgba(0,0,0,0) 70%)}30%{background:radial-gradient(circle,rgba(255,215,120,.35),rgba(0,0,0,0) 65%)}85%{opacity:1}100%{opacity:0}}
+#legFx .lfIn{text-align:center;padding:18px 26px;border-radius:14px;background:rgba(20,14,6,.96);border:2px solid #e8a93a;box-shadow:0 0 40px rgba(255,190,80,.7);transform:scale(.5);opacity:0}
+#legFx.on .lfIn{animation:lfPop 2.6s cubic-bezier(.2,.9,.3,1.3) forwards}
+@keyframes lfPop{0%{transform:scale(.5) rotate(-6deg);opacity:0}18%{transform:scale(1.12) rotate(2deg);opacity:1}30%{transform:scale(1) rotate(0)}85%{opacity:1}100%{opacity:0;transform:scale(1.04)}}
+#legFx .lfTag{font-size:13px;font-weight:800;letter-spacing:.2em;color:#ffd77a} #legFx .lfIco{font-size:64px;line-height:1.1;margin:6px 0;filter:drop-shadow(0 0 14px rgba(255,200,90,.9))} #legFx .lfName{font-family:var(--display);font-size:28px;color:#ffcf5a;text-shadow:0 0 12px rgba(255,190,80,.8)} #legFx .lfD{font-size:14px;color:#f3e6cc;margin-top:4px} #legFx .lfSrc{font-size:12px;color:#cdbb98;margin-top:6px}
+#log li.legend{border-left:3px solid #e8a93a;background:rgba(232,169,58,.1)} #log li.legend::before{content:'★ 전설 획득';display:block;grid-column:1/-1;font-size:11px;font-weight:700;color:#ffcf5a;letter-spacing:.05em}
  #nearFx{position:fixed;inset:0;pointer-events:none;z-index:60;display:flex;align-items:center;justify-content:center;opacity:0}
 #nearFx.on{animation:nfBg 1.7s ease-out forwards}
 @keyframes nfBg{0%{opacity:1;background:rgba(160,0,0,.55)}18%{background:rgba(120,0,0,.35)}35%{background:radial-gradient(circle,rgba(255,230,150,.55),rgba(0,0,0,0) 70%)}80%{opacity:1}100%{opacity:0}}
@@ -441,7 +533,17 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .wares{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:7px;padding:2px 0}
 .ware{position:relative;display:flex;flex-direction:column;gap:2px;padding:7px 8px;border-radius:7px;background:linear-gradient(180deg,rgba(255,240,210,.07),rgba(255,240,210,.02));border:1px solid rgba(255,220,160,.18);box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
 .ware.g1{border-color:color-mix(in srgb,var(--g1) 55%,transparent)} .ware.g2{border-color:color-mix(in srgb,var(--g2) 60%,transparent)}
-.ware.g3{border-color:var(--g3);box-shadow:0 0 14px rgba(232,169,58,.35),inset 0 0 18px rgba(232,169,58,.12)}
+.ware.g3{border:2px solid transparent;background:linear-gradient(180deg,#2b1d0c,#1d140a) padding-box,conic-gradient(from var(--ga,0deg),#ffd77a,#e8a93a,#7a4a10,#ffe9a8,#e8a93a,#ffd77a) border-box;animation:legSpin 4s linear infinite,legPulse 2s ease-in-out infinite;overflow:hidden}
+@property --ga{syntax:'<angle>';initial-value:0deg;inherits:false}
+@keyframes legSpin{to{--ga:360deg}}
+@keyframes legPulse{0%,100%{box-shadow:0 0 12px rgba(232,169,58,.45)}50%{box-shadow:0 0 26px rgba(255,200,90,.9)}}
+.ware.g3::before{content:'';position:absolute;inset:0;background:linear-gradient(115deg,transparent 30%,rgba(255,240,200,.28) 45%,transparent 60%);transform:translateX(-120%);animation:legSweep 2.8s ease-in-out infinite;pointer-events:none}
+@keyframes legSweep{0%{transform:translateX(-120%)}60%,100%{transform:translateX(120%)}}
+.ware.g3 .gb{animation:legBadge 1.2s ease-in-out infinite alternate} @keyframes legBadge{to{box-shadow:0 0 10px #ffd77a}}
+.ware.g3.sold,.ware.g3.sold::before,.ware.g3.sold .gb{animation:none}
+.shopLegend{display:inline-block;margin-left:8px;font-size:11px;font-weight:800;color:#1d1206;background:linear-gradient(90deg,#ffd77a,#e8a93a);padding:1px 8px;border-radius:9px;animation:legBadge 1s ease-in-out infinite alternate}
+.gtabs .gtShop.hasLeg{animation:legPulse 1.6s ease-in-out infinite;border-color:#e8a93a}
+@media (prefers-reduced-motion:reduce){.ware.g3,.ware.g3::before,.shopLegend,.gtabs .gtShop.hasLeg{animation:none}}
 .ware .wtop{display:flex;align-items:center;justify-content:space-between;gap:6px}
 .ware .gb{white-space:nowrap;font-size:10px;font-weight:700;padding:0 6px;border-radius:9px;background:rgba(0,0,0,.35);color:var(--muted);letter-spacing:.04em}
 .ware.g1 .gb{color:var(--g1)} .ware.g2 .gb{color:var(--g2)} .ware.g3 .gb{color:#1d1206;background:var(--g3)}
@@ -657,7 +759,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li>공허의 옥좌까지 정복한 뒤 <b>끝없는 전장</b>에서만 합성할 수 있다.</li>
       <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 10,000</b>. 성공 확률은 <b>70%</b>이고, 실패하면 재료가 모두 사라진다.</li>
       <li><b>예비 전설</b>: 전설 장비는 착용품보다 약하거나 같은 부위가 있어도 버리지 않고 예비로 보관한다(최대 8개). 예비 전설은 효과가 없지만 강화해서 신화 합성 재료로 쓸 수 있고, 착용품보다 강해지면 자동으로 바꿔 낀다. 합성에는 예비 전설이 먼저 쓰인다.</li>
-      <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고 낮으면 사라진다. 신화는 강화할 수 없지만 효과가 압도적이다.</li>
+      <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없지만 효과가 압도적이다.</li>
       <li>영웅·전설 장비는 같은 이름이라도 능력치가 조금씩 다르다.</li>
     </ul>
     <h3>PvP 스탯 (월드랭킹 대전)</h3>
@@ -686,6 +788,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <ul>
       <li>종족마다 능력치 보정과 고유 효과가 있다. 예: 오크 전투력 +10%·회유 -10%p, 엘프 회유·도망 +10%p, 드워프 생명력 +20%·강화 +5%p, 고블린 금화 +40%·상점 -10%.</li>
       <li>신분마다 아주 드물게(탐험 사건 1만 번에 한 번꼴) 그 신분에게만 일어나는 <b>히든 이벤트</b>가 퀴즈로 찾아온다. 이 게임에 대한 객관식 문제를 맞히면 신분에 맞는 큰 보상을 받고, 틀리면 기회가 사라진다.</li>
+      <li>명성이 3,000 이상이면 가끔 <b>명성 도박꾼</b>이 나타난다(지역마다 최대 한 번). 명성의 10%, 30%, 전부 중 하나를 걸고 컵 세 개 중 공이 든 컵을 고른다. 맞힐 확률은 1/3이고, 맞히면 건 명성의 3배를 돌려받는다(건 만큼의 2배 이득). 틀리면 건 명성을 잃는다. 끼지 않고 지나가도 손해는 없다.</li>
       <li>신분이 높을수록 시작 금화와 기본 장비가 좋고, <b>가문의 유산</b>: 부유층은 희귀 장비 2개, 귀족은 영웅·희귀 장비와 <b>가문의 기사 2명</b>(용병), 왕족은 <b>전설·영웅·희귀 장비</b>와 <b>가문의 기사 1명</b>을 갖고 출정한다.</li>
       <li>용사 명부의 종족·신분·특성·스킬·동료·소지품에 마우스를 올리거나 누르면 효과가 나온다.</li>
     </ul>
@@ -871,6 +974,7 @@ function renderHero(){
   renderMyth();
   $('hItems').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.sell;const r=sell(run,ix);if(r){logAct(['s',ix]);logSell(r);prevStats=null;renderAll();}});
   $('hPower').textContent=fmt(power(tmp)/tmp.stageCarry*10);
+  {const el=$('hPower').parentElement;const pp=powerParts(tmp);el.classList.add('tipt');el.dataset.tt='전투력은 이렇게 정해진다';el.dataset.tl=pp.join('¦');el.tabIndex=0;}
   $('gGold').textContent=fmtS(tmp.gold);$('sGold').textContent=fmtS(tmp.gold);$('gFame').textContent=fmt(tmp.fame);
   {const hpR=Math.max(0,tmp.hp)/tmp.maxHp;const cL=COMBOS.filter(c=>c.race===h.race.name);const cDone=cL.filter(c=>tmp.combos&&tmp.combos.includes(c.id)).length;$('hStrip').innerHTML=`<div class="nm">${esc(h.name)}<small>${h.race.name} ${h.job} · Lv ${tmp.lvl}</small></div><div class="tg"><span class="rc">${h.race.name}</span>${h.traits.map(t=>`<span class="${t.good===false?'bd':t.good?'gd':''}">${t.name}</span>`).join('')}${cL.length?`<span class="cb">조합 ${cDone}/${cL.length}${cL.some(c=>c.god&&(!c.tr||h.traits.some(t=>t.name===c.tr)))?' · 전설 조합 가능':''}</span>`:''}</div><div class="nums"><span class="p">전투력 ${fmt(power(tmp)/tmp.stageCarry*10)}</span><span>HP ${Math.max(0,tmp.hp)}/${tmp.maxHp}</span><span>부활 ${revives(tmp)}</span></div><div class="hpb"><i class="${hpR<0.35?'low':''}" style="width:${hpR*100}%"></i></div><div class="more">능력치·동료·스킬은 아래 용사 명부에서 볼 수 있다</div>`;}
   {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&(wouldUpgrade(run,o.item)||canKeepSpare(run,o.item))).length:0;$('shopBadge').textContent=n?String(n):'';}
@@ -882,7 +986,7 @@ function itemIcon(it){if(!it)return '';if(it.heal)return '🧪';if(it.revive)ret
 function renderShop(t){
   const box=$('shop');
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
-  $('shopTitle').textContent=`${STAGES[stage].regions[run.region][0]}의 상인`;
+  {const hasLeg=run.shop.some(o=>!o.sold&&o.item.grade===3);$('shopTitle').innerHTML=`${esc(STAGES[stage].regions[run.region][0])}의 상인${hasLeg?'<span class="shopLegend">★ 전설 입고</span>':''}`;const gt=document.querySelector('.gtShop');if(gt)gt.classList.toggle('hasLeg',hasLeg);}
   const COIN='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f4c542" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.3" fill="none" stroke="#a87b1c" stroke-width="1.2"/></svg>',STAR='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.2 6.1 20.5l1.3-6.6L2.5 9.4l6.6-.8z" fill="#c8a2ff" stroke="#6a4aa0" stroke-width="1.2"/></svg>';
   const auto=run.shop.filter(o=>o.item.heal||o.item.revive);
   const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'';
@@ -909,16 +1013,84 @@ function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHT
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
   box.innerHTML=`<div class="myth"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
     <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
-    <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 사라진다. 신화는 강화할 수 없다.</p></div>`;
+    <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></div>`;
   const b=$('mythBtn');if(b)b.onclick=doMyth;}
+// 신화 합성 전체 화면 연출: 의식(재료 4개가 마법진으로 빨려 듦) → 성공은 무지개 폭발, 실패는 금이 가며 산산조각
+const MYTH_ICON={'월계관':'🌿','목걸이':'📿','반지':'💍','귀걸이':'✨'};
+function mythShow(r,mats){let o=$('mythFx');if(!o){o=document.createElement('div');o.id='mythFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');document.body.appendChild(o);}
+  const wasPaused=typeof paused!=='undefined'&&paused;if(!wasPaused&&typeof togglePause==='function')togglePause();
+  const ok=r.ok,m=r.m;let head,sub,big;
+  if(!ok){head='합성 실패';sub=`${mats.map(x=>x.n).join(' · ')}<br>모두 빛과 함께 사라졌다`;}
+  else if(r.upgrade){head='신화 강화';sub=`PvP ${PVP_NAME[m.pvp]} +${r.old} → <b>+${r.v}</b>`;}
+  else if(r.dup){head=r.nv>r.old?'신화 단련':'신화 합성 성공';sub=r.nv>r.old?`같은 신화가 깃들어 단련되었다<br>PvP ${PVP_NAME[m.pvp]} +${r.old} → <b>+${r.nv}</b>`:`이미 최고 수치(+${r.old})라 더 단련되지 않았다`;}
+  else {head='신화 탄생';sub=`${m.d}<br>PvP ${PVP_NAME[m.pvp]} <b>+${r.v}</b>`;}
+  o.className='mf charge wait';
+  o.innerHTML=`<div class="mfRing"></div><div class="mfMats">${mats.map((x,k)=>`<span style="--k:${k}">${x.ic||'✦'}</span>`).join('')}</div><div class="mfCore"></div><button type="button" class="mfGo">운명을 시험한다</button>
+    <div class="mfRes">${ok?`<div class="mfRays"></div><div class="mfIco">${MYTH_ICON[m.slot]||'✦'}</div><div class="mfHead">${head}</div><div class="mfName myName">${esc(m.name)}</div>`:`<div class="mfShards">${mats.map((x,k)=>`<span style="--k:${k}">${x.ic||'✦'}</span>`).join('')}</div><div class="mfHead">${head}</div>`}
+    <div class="mfSub">${sub}</div><button type="button" class="mfOk">확인</button></div>`;
+  void o.offsetWidth;o.classList.add('on');
+  let kd2=null;const close=()=>{o.className='mf';o.innerHTML='';document.removeEventListener('keydown',kd);if(kd2)document.removeEventListener('keydown',kd2);if(!wasPaused&&typeof togglePause==='function'&&paused)togglePause();};
+  const kd=e=>{if(o.classList.contains('done')&&(e.key==='Escape'||e.key==='Enter'||e.key===' ')){e.preventDefault();close();}};document.addEventListener('keydown',kd);
+  const go=()=>{if(!o.classList.contains('wait'))return;o.classList.remove('wait');
+    setTimeout(()=>{o.classList.remove('charge');o.classList.add(ok?'win':'lose');setTimeout(()=>{o.classList.add('done');const b=o.querySelector('.mfOk');if(b){b.onclick=close;b.focus();}},900);},1700);};
+  const gb=o.querySelector('.mfGo');gb.onclick=go;setTimeout(()=>gb.focus(),50);
+  kd2=e=>{if(o.classList.contains('wait')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();go();}};document.addEventListener('keydown',kd2);}
+// 명성 도박꾼: 판돈 고르기 → 컵 섞기 → 컵 고르기 → 공개. 결과는 엔진이 정하고(1/3), 컵은 그 결과를 보여 주는 무대일 뿐이다.
+let gbSeen=null;
+const GB_SAY=['"명성이 자자하더군. 그 명성, 한번 굴려 보지 않겠나?"','"눈은 손보다 느린 법이지. 공이 든 컵만 맞히면 세 배다."','"겁나면 지나가도 좋아. 다만 영웅이라면 이런 판은 못 지나치지."'];
+function gambleShow(preId){if(!run||run.dead||run.over)return;const c=current(run);if(c.node.kind!=='gambler')return;
+  let o=$('gbFx');if(!o){o=document.createElement('div');o.id='gbFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','명성 도박꾼');document.body.appendChild(o);}
+  if(o.classList.contains('on'))return;
+  const wasPaused=paused;if(!wasPaused)togglePause();
+  const bets=c.options.filter(x=>x.id.startsWith('gb:'));
+  const say=GB_SAY[Math.floor(Math.random()*GB_SAY.length)];
+  o.className='gb';
+  o.innerHTML=`<div class="gbIn"><div class="gbMan">🎩</div><div class="gbTitle">명성 도박꾼</div><div class="gbSay">${say}</div>
+    <div class="gbFame">★ 내 명성 <b>${fmt(run.fame)}</b></div>
+    <div class="gbFelt"><div class="gbBets">${bets.map(b=>{const p=+b.id.slice(3);const st=gambleStake(run,p);return `<button type="button" class="chip c${p}" data-id="${b.id}" ${b.disabled?'disabled':''}><b>${p===100?'올인':p+'%'}</b><span>${fmt(st)}</span><em><i>적중 시 </i>+${fmt(st*(GAMBLE_PAY-1))}</em></button>`;}).join('')}</div>
+      <div class="gbCups"><i class="ball" style="--x:1"></i>${[0,1,2].map(k=>`<div class="cup" data-k="${k}" style="--x:${k}" tabindex="-1" role="button" aria-label="${k+1}번 컵"><span class="cb"></span></div>`).join('')}</div>
+      <button type="button" class="gbPass">판에 끼지 않는다</button></div></div>
+    <div class="gbRes"><div class="gbStars"></div><div class="gbHead"></div><div class="gbAmt"></div><div class="gbSub"></div><button type="button" class="gbOk">확인</button></div>`;
+  void o.offsetWidth;o.classList.add('on');
+  const T=[];const later=(f,ms)=>T.push(setTimeout(f,ms));
+  const close=()=>{T.forEach(clearTimeout);o.className='gb';o.innerHTML='';document.removeEventListener('keydown',kd,true);if(!wasPaused&&paused)togglePause();else renderStage();};
+  const say$=t=>{const e=o.querySelector('.gbSay');if(e)e.textContent=t;};
+  const cups=[...o.querySelectorAll('.cup')],ball=o.querySelector('.ball');let slot=[0,1,2],betId=null;
+  const place=()=>cups.forEach((cp,k)=>cp.style.setProperty('--x',slot[k]));
+  const start=id=>{betId=id;const p=+id.slice(3);o.classList.add('cups');say$(p===100?'"올인이라… 배짱 한번 두둑하군. 잘 봐라."':'"좋아. 공은 여기 있다. 눈 떼지 마라."');
+    ball.style.setProperty('--x',1);ball.classList.add('on');cups[1].classList.add('up');
+    later(()=>{cups[1].classList.remove('up');},900);later(()=>{ball.classList.remove('on');},1250);
+    let t=1350;const n=7+Math.floor(Math.random()*3);for(let i=0;i<n;i++){later(()=>{const a=Math.floor(Math.random()*3);let b=Math.floor(Math.random()*2);if(b>=a)b++;const ia=slot.indexOf(a),ib=slot.indexOf(b);slot[ia]=b;slot[ib]=a;place();},t);t+=280;}
+    later(()=>{o.classList.add('pick');say$('"자, 어느 컵이지?"');cups.forEach(cp=>{cp.tabIndex=0;});cups[0].focus();},t+150);};
+  const pickCup=k=>{if(!o.classList.contains('pick'))return;o.classList.remove('pick');cups.forEach(cp=>cp.tabIndex=-1);
+    const before=run.fame;decide(betId);const g=((lastOut&&lastOut.effects)||[]).map(e=>e.gamble).find(Boolean)||{win:run.fame>before,gain:run.fame-before,stake:Math.abs(run.fame-before)};
+    const mySlot=slot[k];let ballSlot=mySlot;if(!g.win){const oth=[0,1,2].filter(x=>x!==mySlot);ballSlot=oth[Math.floor(Math.random()*2)];}
+    ball.style.setProperty('--x',ballSlot);
+    cups[k].classList.add('up');if(g.win)ball.classList.add('on');say$(g.win?'"……뭐, 뭐라고?"':'"크큭, 빈 컵이군."');
+    if(!g.win)later(()=>{ball.classList.add('on');cups[slot.indexOf(ballSlot)].classList.add('up');},700);
+    later(()=>{const r=o.querySelector('.gbRes');r.querySelector('.gbHead').textContent=g.win?'적중!':'꽝';
+      r.querySelector('.gbAmt').textContent=(g.win?'★ 명성 +':'★ 명성 -')+fmt(Math.abs(g.gain));
+      r.querySelector('.gbSub').textContent=g.win?`도박꾼이 이를 갈며 명성을 내놓았다 · 지금 명성 ${fmt(run.fame)}`:`도박꾼이 명성을 쓸어 담고 사라졌다 · 지금 명성 ${fmt(run.fame)}`;
+      if(g.win)r.querySelector('.gbStars').innerHTML=Array.from({length:22},(_,i)=>{const a=i/22*Math.PI*2,d=30+Math.random()*25;return `<i style="--dx:${Math.cos(a)*d}vmin;--dy:${Math.sin(a)*d}vmin;--d:${Math.floor(Math.random()*250)}">★</i>`;}).join('');
+      o.classList.add(g.win?'win':'lose');later(()=>{o.classList.add('done');const b=o.querySelector('.gbOk');b.onclick=close;b.focus();},900);},g.win?1100:1700);};
+  o.querySelectorAll('.chip').forEach(b=>b.onclick=()=>start(b.dataset.id));
+  o.querySelector('.gbPass').onclick=()=>{close();decide('gpass');};
+  cups.forEach((cp,k)=>{cp.onclick=()=>pickCup(k);});
+  const kd=e=>{if(!o.classList.contains('on'))return;e.stopImmediatePropagation();
+    if(o.classList.contains('done')&&(e.key==='Enter'||e.key===' '||e.key==='Escape')){e.preventDefault();close();return;}
+    if(o.classList.contains('pick')&&/^[1-3]$/.test(e.key)){e.preventDefault();pickCup(cups.findIndex(cp=>slot[cups.indexOf(cp)]===+e.key-1));return;}
+    if(o.classList.contains('pick')&&(e.key==='Enter'||e.key===' ')&&document.activeElement&&document.activeElement.classList.contains('cup')){e.preventDefault();pickCup(cups.indexOf(document.activeElement));return;}
+    if(!o.classList.contains('cups')&&e.key==='Escape'){e.preventDefault();close();}};
+  document.addEventListener('keydown',kd,true);
+  if(preId)start(preId);else setTimeout(()=>{const b=o.querySelector('.chip:not(:disabled)');if(b)b.focus();},60);}
 function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
   const b=$('mythBtn');if(b&&!b.dataset.arm){b.dataset.arm='1';b.textContent=`정말 바칠까? 실패하면 ${c.mats.map(i=>itemName(run.items[i])).join(', ')} 모두 사라진다 · 한 번 더 누르기`;b.classList.add('arm');setTimeout(()=>{if(b.isConnected&&b.dataset.arm){delete b.dataset.arm;b.textContent='신화 합성 시도';b.classList.remove('arm');}},4000);return;}
+  const matIt=c.mats.map(i=>run.items[i]).map(it=>({ic:itemIcon(it),n:itemName(it)}));
   const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=mythFuseSync(run,ckOk?ck.snap:null);if(!r)return;if(ckOk)store.set('ckpt',ck);logAct(['M']);TRACK.st.myth++;TRACK.ev('myth');prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
-  const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! <b class="myName">${r.m.name}</b>이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?`신화 합성 성공! 그러나 이미 지닌 <b class="myName">${r.m.name}</b>(+${r.old})보다 약한 +${r.v}가 나와 흩어졌다.`:`신화 합성 성공! <b class="myName">${r.m.name}</b> (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
-  li.className=!r.ok||r.dup?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
-  if(r.ok&&!r.dup)showToast(r.upgrade?'신화 강화 · '+r.m.slot:'신화 탄생 · '+r.m.slot,`${r.m.name} · PvP ${PVP_NAME[r.m.pvp]} +${r.v}`,'ok',2200,3);
-  else showToast(r.ok?'신화 합성 성공 · 중복':'신화 합성 실패',r.ok?`이미 지닌 +${r.old}보다 약한 +${r.v}라 사라졌다`:'전설 장비 4개가 사라졌다','bad',1600);
+  const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! <b class="myName">${r.m.name}</b>이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?(r.nv>r.old?`신화 합성 성공! 이미 지닌 <b class="myName">${r.m.name}</b>(+${r.old})보다 약한 +${r.v}가 나왔지만, 그 힘이 스며들어 지닌 신화가 단련되었다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.nv})`:`신화 합성 성공! 그러나 <b class="myName">${r.m.name}</b>은(는) 이미 최고 수치(+${r.old})라 더 단련되지 않았다.`):`신화 합성 성공! <b class="myName">${r.m.name}</b> (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
+  li.className=!r.ok||(r.dup&&!(r.nv>r.old))?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
+  mythShow(r,matIt);
   renderAll();}
 function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)store.set('ckpt',ck);if(!r)return;logAct(['e',idx]);TRACK.st.enh++;TRACK.ev(null);prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
@@ -975,6 +1147,20 @@ function logSell(r){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.
 function logBuy(items,why){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
   items.forEach(it=>{const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${why?'자동 구매':'구매'}</b> · ${why||'상점에서 물건을 샀다.'}<div class="fx"><span class="g${it.grade}">${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})</span></div></div>`;lg.prepend(li);});}
 // 설명 말풍선: data-tt(제목) + data-tl(줄들, ¦로 구분). 마우스를 올리거나 눌러서 연다.
+// 전투력 구성: 기본값 × 각 배율 (엔진 power()와 같은 순서)
+function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSum(s,k):0;
+  const base=(t.str-ic('str'))*1.3+(t.agi-ic('agi'))*1.05+(t.int-ic('int'))*1.15+(t.con-ic('con'))*0.95+s.hero.wealth.gear*1.6;
+  const prod=a=>a.reduce((x,y)=>x*y,1);
+  const combo=prod((s.combos||[]).map(id=>COMBO_BY[id].e.mult||1)),myth=prod((s.mythics||[]).map(id=>MYTH_BY[id].e.mult||1)),hid=(s.hidFx&&s.hidFx.mult)||1;
+  const mi=cf<1?1+(s.multItems-1)*cf:s.multItems;
+  const rows=[['종족 '+s.hero.race.name,s.hero.race.mult],['특성',traitSum(s.hero,'mult',1)],['조합',combo],['신화',myth],['히든 이벤트',hid],
+    ['장비'+(cf<1?' (저주 -15%)':''),mi],['레벨 '+s.lvl,1+LVL_B*(s.lvl-1)],['용병 '+s.allies+'명',1+(0.04+SKV.command*sk(s,'command'))*cmb(s,'cmd',1)*s.allies],
+    ['동료·배우자·펫',compMult(s)],['검술 스킬',1+SKV.blade*sk(s,'blade')],['전투 숙련',1+SKV.mPow[mastery(s,'전투')]],
+    ['궁지(생명력 50% 미만)',s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1],['도망 사기 저하',Math.pow(0.9,s.fleeDebuff||0)]];
+  const pct=x=>{const v=(x-1)*100;return (v>=0?'+':'')+(Math.abs(v)>=1e5?fmt(v):Math.abs(v)>=10?Math.round(v).toLocaleString('ko-KR'):v.toFixed(1))+'%';};
+  const out=[`기본 ${fmt(base*10)} (능력치·신분 기본 장비)`];
+  for(const [n,x] of rows)if(Math.abs(x-1)>1e-9)out.push(`${n} ×${x>=100?fmt(x):x.toFixed(2)} (${pct(x)})`);
+  out.push(`= 전투력 ${fmt(power(s)/s.stageCarry*10)}`);return out;}
 function tipAttr(title,lines){return ` data-tt="${esc(title)}" data-tl="${esc((lines||[]).filter(Boolean).join('¦'))}" tabindex="0"`;}
 function traitHtml(st){const t=WORLD_TRAITS[worldOf(st)];return t?`<br><span class="trait tipt"${tipAttr('세계 특성 · '+t.name,[t.d,'세계마다 특성이 달라 같은 빌드가 끝까지 통하지 않는다. 스킬을 고를 때 참고하자.'])}>세계 특성 · ${t.name}: ${t.d}</span>`:'';}
 function renderTrack(){
@@ -1013,6 +1199,7 @@ function renderStage(){
      <div class="autobar"><span>숫자 키 1~3으로도 고를 수 있다</span></div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
   bindModes();
   box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>decide(b.dataset.id));
+  if(n.kind==='gambler'){box.querySelectorAll('.opt').forEach(b=>{if(b.dataset.id.startsWith('gb:'))b.onclick=()=>gambleShow(b.dataset.id);});if(gbSeen!==n){gbSeen=n;setTimeout(()=>gambleShow(),250);}}
 }
 let verdictHtml='';
 function breakdown(n){const w=n.parts;if(!w)return '';const P=power(run)/run.stageCarry*10,E=n.E/run.stageCarry*10;const f=v=>(v>=0?'+':'')+(v*100).toFixed(1);
@@ -1070,6 +1257,7 @@ function decide(id,auto){const f0=run&&STAGES[run.stage].endless&&STAGES[run.sta
   TRACK.decide();if(run.dead){TRACK.st.deaths++;TRACK.ev('death');}if(run.conquered&&!TRACK.st.clears.includes(STAGES[run.stage].name)){TRACK.st.clears.push(STAGES[run.stage].name);TRACK.ev('clear',{w:STAGES[run.stage].name});}
   addLog(n,opt,res,auto);
   {const nd=(res.effects||[]).find(e=>e.near);if(nd){nearDeathFx(nd);const li=$('log').firstElementChild;if(li)li.classList.add('near');}}
+  {const lg=(res.effects||[]).filter(e=>e.got&&e.got.grade===3);if(lg.length){legendFx(lg);const li=$('log').firstElementChild;if(li)li.classList.add('legend');}}
   if(run.dead||run.over) finish(n);
   renderAll();
 }
@@ -1085,6 +1273,12 @@ function tickAuto(ms){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[]
 const NEAR_TXT={revive:['부활','죽음의 문턱에서 되살아났다'],potion:['기사회생','성수가 목숨을 붙잡았다'],saver:['구원','동료가 몸을 던져 구해냈다'],grit:['불굴','질긴 목숨으로 버텨냈다']};
 function nearDeathFx(e){const [h,sub]=NEAR_TXT[e.near]||['생존',e.x];let o=$('nearFx');if(!o){o=document.createElement('div');o.id='nearFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
   o.className='nf '+e.near;o.innerHTML=`<div class="nfIn"><b>${h}</b><span>${esc(sub)}</span></div>`;void o.offsetWidth;o.classList.add('on');clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('on'),1700);}
+// 전설 획득 연출: 금빛 섬광 + 큰 아이콘 + 이름 (상점 구매 제외, 전투·탐험·보상에서 얻었을 때)
+function legendFx(list){const g=list[0].got;const fake={heal:g.heal,revive:g.revive,stat:['str','int','con','agi','cha','luk'].includes(g.slot)?g.slot:null,mult:g.slot==='mult'?1:0,win:g.slot==='win'?1:0,flee:g.slot==='flee'?1:0};
+  let o=$('legFx');if(!o){o=document.createElement('div');o.id='legFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
+  const fate=g.kept?(g.spare?'예비 전설로 보관했다':'바로 착용했다'):'이미 더 좋은 것이 있어 팔았다';
+  o.innerHTML=`<div class="lfIn"><div class="lfTag">전설 획득${list.length>1?` ×${list.length}`:''}</div><div class="lfIco">${itemIcon(fake)||'✨'}</div><div class="lfName">${esc(g.name)}</div><div class="lfD">${esc(g.d||'')}</div><div class="lfSrc">${esc(g.src||'')} · ${fate}</div></div>`;
+  o.classList.remove('on');void o.offsetWidth;o.classList.add('on');clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('on'),2600);}
 function addLog(n,opt,res,auto){
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
   const li=document.createElement('li'); if(auto) li.className='auto';
@@ -1402,7 +1596,7 @@ let gearTab=store.get('gearTab','shop');function setGearTab(t){gearTab=t;store.s
 document.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>setGearTab(b.dataset.gt));setGearTab(gearTab);
 
 $('leaveBtn').onclick=leaveHuntNow;$('travel').addEventListener('click',e=>{const b=e.target.closest('[data-tv]');if(b)travelTo(+b.dataset.tv);});
-document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(e.key===' '&&!isImportant(run,current(run),mode)){e.preventDefault();togglePause();return;}if(!isImportant(run,current(run),mode))return;const k=+e.key;if(k>=1&&k<=3){const c=current(run);const o=c.options[k-1];if(o)decide(o.id);}});
+document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(document.querySelector('#mythFx.on,#gbFx.on'))return;if(e.key===' '&&!isImportant(run,current(run),mode)){e.preventDefault();togglePause();return;}if(!isImportant(run,current(run),mode))return;const k=+e.key;if(k>=1&&k<=3){const c=current(run);const o=c.options[k-1];if(o)decide(o.id);}});
 newHero(true);
 if(!store.get('seenHelp',0)) openHelp();
 </script>
