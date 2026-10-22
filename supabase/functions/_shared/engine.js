@@ -845,8 +845,10 @@ function gainItem(s,out,bonus,src){
 }
 function gainXp(s,amt,out){
   s.xp+=amt*(1+tsum(s,'xp',0)+SKV.scholar*sk(s,'scholar')+SKV.mXp[mastery(s,'성장')]);
-  while(s.xp>=s.lvl*10){s.xp-=s.lvl*10;s.lvl++;if(isPickLevel(s.lvl))s.pendingPicks=(s.pendingPicks||0)+1;const o=s.maxHp;s.maxHp=hpMax(s);s.hp=Math.min(s.maxHp,s.hp+(s.maxHp-o)+Math.round(s.maxHp*0.1));out.push({t:'good',x:`레벨 ${s.lvl} 달성`});}
+  while(s.xp>=s.lvl*10){s.xp-=s.lvl*10;levelUp(s,out);}
 }
+// 레벨업 한 번: 스킬 선택권(해당 레벨이면), 최대 생명력 갱신, 생명력 10% 회복. 경험치와 기연 모두 이 길을 탄다.
+function levelUp(s,out){s.lvl++;if(isPickLevel(s.lvl))s.pendingPicks=(s.pendingPicks||0)+1;const o=s.maxHp;s.maxHp=hpMax(s);s.hp=Math.min(s.maxHp,s.hp+(s.maxHp-o)+Math.round(s.maxHp*0.1));out.push({t:'good',x:`레벨 ${s.lvl} 달성`});}
 function kill(s,n,out){s.killed+=n.share;s.regionKilled[s.region]+=n.share;s.kills=(s.kills||0)+n.count;}
 function winRewards(s,n,p,out){
   if(n.forkChest){const g=s.r()<0.05?3:2;const it=makeItem(s.r,g,null,tierOf(s));it.src='험한 산길의 상자';it.where=placeName(s);noteGot(s,it);equip(s,it);checkCombos(s,out);s.fame+=2+g*4;
@@ -979,7 +981,7 @@ function choose(s,optId){
         if(k==='trap'){ if(s.comp.pet&&s.comp.pet.trap){text=`${s.comp.pet.name}이(가) 함정을 먼저 알아채 피했다.`;out.push({t:'comp',x:'함정 회피'});} else {text=TRAPS[Math.floor(r()*TRAPS.length)];hurt(s,deep?0.22+r()*0.12:0.1+r()*0.08,out);} }
         else if(k==='item'){text='먼지 속에서 무언가가 빛났다.';gainItem(s,out,deep?0.2:0,'탐험 발견');}
         else if(k==='fortune'){const f=FORTUNES[Math.floor(r()*FORTUNES.length)];text='기연. '+f.t;
-          if(f.mult)s.multItems*=f.mult; if(f.all)STAT_KEYS.forEach(k2=>s.stats[k2]+=f.all); if(f.con){s.stats.con+=f.con;} if(f.revive)for(let z=0;z<f.revive;z++)addRevive(s,out); if(f.lvl){for(let z=0;z<f.lvl;z++){s.lvl++;}}
+          if(f.mult)s.multItems*=f.mult; if(f.all)STAT_KEYS.forEach(k2=>s.stats[k2]+=f.all); if(f.con){s.stats.con+=f.con;} if(f.revive)for(let z=0;z<f.revive;z++)addRevive(s,out); if(f.lvl){for(let z=0;z<f.lvl;z++)levelUp(s,out);}
           {const o2=s.maxHp;s.maxHp=hpMax(s);s.hp+=Math.max(0,s.maxHp-o2);} s.fame+=15; out.push({t:'item',x:f.x},{t:'fame',x:'명성 +15'});}
         else if(k==='gold'){const g=Math.round((15+30*r())*econ(s,1.3)*GOLD_IN);s.gold+=g;text='누군가 숨겨둔 금화 주머니를 찾았다.';out.push({t:'good',x:`금화 +${fmtG(g)}`});}
         else if(k==='meet'){const ev={type:'event',kind:null};rollEvent(s,ev);s.queue.splice(1,0,ev);text='탐험하던 중 무언가와 마주쳤다.';}
@@ -1039,7 +1041,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.8';
+const ENGINE_VERSION='1.5.9';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
