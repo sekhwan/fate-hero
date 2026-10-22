@@ -456,6 +456,15 @@ header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!import
 .autoCard .monster b{font-size:17px}
 .autoCard .monster .art,.autoCard .monster .art.boss{width:300px;height:300px;border:0;background:radial-gradient(circle at 50% 60%,rgba(216,83,59,.22),transparent 68%)}
 @media (max-width:640px){.autoCard .monster{grid-template-columns:1fr;justify-items:center;text-align:center}.autoCard .monster .art,.autoCard .monster .art.boss{width:210px;height:210px}}
+
+/* 상점 간판: 가게 안쪽 배경 + 상인 + 말풍선 */
+.shopSign{position:relative;display:flex;align-items:flex-end;gap:10px;height:118px;padding:0 12px;background:linear-gradient(90deg,rgba(10,6,4,.15),rgba(10,6,4,.55) 60%),url('art/shop_bg.webp') center/cover;border-bottom:1px solid rgba(201,154,58,.4);overflow:hidden}
+.shopSign[hidden]{display:none}
+.shopSign .smImg{width:118px;height:118px;object-fit:contain;object-position:bottom;flex:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.7));-webkit-mask-image:linear-gradient(180deg,#000 82%,transparent);mask-image:linear-gradient(180deg,#000 82%,transparent)}
+.shopSign .smTalk{align-self:center;position:relative;background:rgba(244,230,196,.94);color:#2a1a0a;border-radius:10px;padding:7px 11px;font-size:12.5px;line-height:1.45;box-shadow:0 3px 10px rgba(0,0,0,.5);max-width:100%}
+.shopSign .smTalk::before{content:"";position:absolute;left:-8px;top:50%;margin-top:-7px;border:7px solid transparent;border-right-color:rgba(244,230,196,.94);border-left:0}
+.shopSign .smTalk b{display:block;font-size:11.5px;color:#7a4a12;margin-bottom:1px}
+.shopSign.leg .smTalk{background:linear-gradient(180deg,#fff2c8,#f2cf7a);box-shadow:0 0 14px rgba(255,200,90,.7)}
 /* 진행률: 전투 구역 제목 아래 한 줄짜리로 축소 */
 .progStrip{padding:8px 14px 10px;border-bottom:1px solid color-mix(in srgb,var(--zb) 30%,transparent);background:rgba(10,8,12,.45)}
 .progStrip .pct{gap:4px 12px;align-items:baseline;flex-wrap:wrap}
@@ -630,6 +639,10 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .tipBox{position:fixed;z-index:80;max-width:min(320px,calc(100vw - 24px));background:#211d28;border:1px solid var(--brass);box-shadow:0 8px 28px rgba(0,0,0,.55);padding:10px 12px;font-size:13px;line-height:1.5;color:var(--fg);pointer-events:none}
 .tipBox b{display:block;color:var(--brass);font-size:13.5px;margin-bottom:4px}
 .tipBox div{color:var(--fg)} .tipBox div+div{margin-top:2px}
+.tipBox.withImg{display:flex;gap:12px;align-items:flex-start;max-width:min(420px,calc(100vw - 24px))} .tipBox .tipTx{min-width:0} .tipBox .tipTx div+div{margin-top:2px}
+.tipBox .tipImg{flex:none;width:112px;height:112px;margin:0!important;border-radius:8px;border:1px solid var(--line);background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.08),rgba(0,0,0,.35));display:flex;align-items:center;justify-content:center}
+.tipBox .tipImg img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,.7))}
+.tipBox .tipImg.g1{border-color:var(--g1);box-shadow:0 0 8px color-mix(in srgb,var(--g1) 40%,transparent)} .tipBox .tipImg.g2{border-color:var(--g2);box-shadow:0 0 10px color-mix(in srgb,var(--g2) 45%,transparent)} .tipBox .tipImg.g3{border-color:var(--g3);box-shadow:0 0 14px rgba(232,169,58,.7)}
 
 /* 구역 색: 전투(붉은색) · 정비(청록색) · 상점(금색) */
 :root{--zb:#e2614b;--zg:#4fbfae;--zs:#e3b341}
@@ -840,7 +853,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <section class="gear" aria-label="정비와 상점">
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
       <div class="gearBody" data-tab="shop">
-        <div class="pane pShop"><div class="zone zs stall"><div class="awning" aria-hidden="true"></div><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
+        <div class="pane pShop"><div class="zone zs stall"><div class="awning" aria-hidden="true"></div><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="shopSign" id="shopSign" hidden><img class="smImg" id="smImg" alt=""><div class="smTalk"><b id="smName"></b><span id="smLine"></span></div></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
         <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div id="mythBox"></div><div class="items"><div id="hItems"></div></div></div></div></div>
       </div>
     </section>
@@ -1278,7 +1291,22 @@ function renderHero(){
 const ITEM_ICON={str:'⚔️',con:'🛡️',agi:'👢',int:'📖',cha:'💍',luk:'🍀',mult:'💠',win:'🚩',flee:'💨'};
 function itemIcon(it){if(!it)return '';if(it.heal)return '🧪';if(it.revive)return '<img class="iI" src="art/res_revive.webp" alt="">';const k=slotOf(it);if(!k)return '';const em=ITEM_ICON[k]||'';
   return `<img class="iI" src="art/icon/icon_${k}_g${Math.max(0,Math.min(3,it.grade||0))}.webp" alt="" onerror="this.outerHTML='${em}'">`;}
+// 상점 간판: 세계마다 다른 상인과 한마디
+const MERCHANTS=[null,
+  ['떠돌이 행상',['어서 오시오, 용사 양반! 길 위에선 뭐든 귀하지.','성수 한 병이면 목숨 하나요. 아끼지 마시오.','이 동네 악마들, 요즘 부쩍 늘었다오.']],
+  ['해골 뱃사공',['…산 자의 금화도 받소. 망각의 강을 건너려면 필요할 테니.','여기서 파는 건 죽은 영웅들이 놓고 간 물건이오.','덜그럭… 흥정은 사양하오.']],
+  ['고블린 상인',['히히, 진품 보장! 출처는 묻지 마쇼.','명성만 두둑하면 귀한 물건도 꺼내 드리지.','깎아 달라고? 마계에서? 히히히.']],
+  ['수상한 상인',['…눈이 많으면 좋은 물건이 잘 보이지.','이 수정 속엔 별 하나가 잠들어 있소.','심연에선 값보다 운이 중요하다오.']],
+  ['그림자 상인',['……원하는 것을 고르시오. 대가는 정확히.','옥좌의 주인도 내 손님이었소.','빛을 사겠소, 그림자를 사겠소?']],
+  ['전장 수집가',['쓰러진 영웅들 무기요. 아직 쓸 만하지.','몇 층까지 올라갈 셈이오? 장비부터 챙기시오.','이 투구 주인은 백 층에서 멈췄지. 자넨 어떨까.']]];
+let smKey='';
+function renderShopSign(){const el=$('shopSign');if(!el)return;if(!run||run.dead||run.over){el.hidden=true;return;}
+  const ix=worldBgIx(run);const M=MERCHANTS[ix]||MERCHANTS[1];const hasLeg=run.shop&&run.shop.some(o=>!o.sold&&o.item.grade===3);
+  const key=run.stage+':'+run.region+':'+hasLeg;el.hidden=false;
+  if(key!==smKey){smKey=key;$('smImg').src=`art/shop_merchant${ix}.webp`;$('smName').textContent=M[0];
+    $('smLine').textContent=hasLeg?'오늘은 특별한 물건이 들어왔소. 전설이라 하오.':M[1][Math.floor(Math.random()*M[1].length)];el.classList.toggle('leg',!!hasLeg);}}
 function renderShop(t){
+  renderShopSign();
   const box=$('shop');
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
   {const hasLeg=run.shop.some(o=>!o.sold&&o.item.grade===3);$('shopTitle').innerHTML=`${esc(STAGES[stage].regions[run.region][0])}의 상인${hasLeg?'<span class="shopLegend">★ 전설 입고</span>':''}`;const gt=document.querySelector('.gtShop');if(gt)gt.classList.toggle('hasLeg',hasLeg);}
@@ -1915,7 +1943,10 @@ document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key
 {const box=document.createElement('div');box.className='tipBox';box.hidden=true;box.setAttribute('role','tooltip');document.body.appendChild(box);
  let cur=null,pinned=false;
  const show=el=>{cur=el;const t=el.dataset.tt,l=(el.dataset.tl||'').split('¦').filter(Boolean);
-   box.innerHTML=`<b>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');box.hidden=false;
+   const im=el.querySelector('img.iI');const gm=(el.className.match(/\bg([0-3])\b/)||[])[1];
+   const txt=`<b>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');
+   box.classList.toggle('withImg',!!im);
+   box.innerHTML=im?`<div class="tipImg g${gm||0}"><img src="${im.getAttribute('src')}" alt=""></div><div class="tipTx">${txt}</div>`:txt;box.hidden=false;
    const r=el.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;let x=Math.min(Math.max(12,r.left),innerWidth-bw-12),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);box.style.left=x+'px';box.style.top=y+'px';};
  const hide=()=>{box.hidden=true;cur=null;pinned=false;};
  document.addEventListener('mouseover',e=>{if(pinned)return;const el=e.target.closest&&e.target.closest('[data-tt]');if(el){if(el!==cur)show(el);}else if(cur)hide();});
