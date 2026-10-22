@@ -1,12 +1,13 @@
 // 서버 쪽 검증 로직. Deno(Supabase Edge Functions)와 Node 양쪽에서 돌아가는 순수 ES 모듈.
 // 게임 엔진(engine.js)은 페이지가 쓰는 파일과 완전히 같은 파일이어야 한다.
 // 이전 버전 엔진을 먼저 불러 따로 보관한다. 업데이트 직전에 시작한 용사의 기록은 그 버전 엔진으로 재생해야 결과가 같다.
+import './engine_1_5_2.js';
 import './engine_1_5_3.js';
 import './engine.js';
 
 const E = globalThis.FateEngine;
 const ENGINES = { [E.ENGINE_VERSION]: E };
-for (const old of [globalThis.FateEngine_1_5_3]) if (old && !ENGINES[old.ENGINE_VERSION]) ENGINES[old.ENGINE_VERSION] = old;
+for (const old of [globalThis.FateEngine_1_5_3, globalThis.FateEngine_1_5_2]) if (old && !ENGINES[old.ENGINE_VERSION]) ENGINES[old.ENGINE_VERSION] = old;
 export const ACCEPT_VERSIONS = Object.keys(ENGINES);
 export const ENGINE_VERSION = E.ENGINE_VERSION;
 
@@ -107,12 +108,14 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     if (a.length === 2 && typeof a[1] !== 'string' && !Number.isInteger(a[1])) throw new Error(`${i}번째 행동 형식 오류`);
     if (typeof a[1] === 'string' && a[1].length > 32) throw new Error(`${i}번째 행동 형식 오류`);
   }
-  let sum;
-  try {
-    sum = EV.replayLog(log);
-  } catch (e) {
-    throw new Error('기록 재생 실패: ' + (e && e.message ? e.message : String(e)));
+  // 보낸 버전 엔진으로 먼저 재생하고, 어긋나면 보관 중인 다른 공식 버전으로도 재생해 본다.
+  // (업데이트 전 페이지에서 둔 판을 업데이트 후 페이지에서 등록하면 버전 표시만 새 것으로 붙는다)
+  let sum, usedVersion = version, firstErr = null;
+  for (const v of [version, ...ACCEPT_VERSIONS.filter((x) => x !== version)]) {
+    try { sum = ENGINES[v].replayLog(log); usedVersion = v; break; }
+    catch (e) { if (!firstErr) firstErr = e; }
   }
+  if (!sum) throw new Error('기록 재생 실패: ' + (firstErr && firstErr.message ? firstErr.message : String(firstErr)));
   const row = {
     seed,
     nickname: nick,
@@ -123,7 +126,7 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     reach: String(sum.reach).slice(0, 60),
     reach_score: sum.reachScore,
     actions: log.length,
-    version,
+    version: usedVersion,
     updated_at: new Date(now).toISOString(),
   };
   return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };
