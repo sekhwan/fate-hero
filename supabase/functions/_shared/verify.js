@@ -74,6 +74,46 @@ export function cleanNickname(raw) {
   return s;
 }
 
+// 업데이트 전후에 걸쳐 둔 판: 페이지를 새로 열면 저장 지점(L)에서 새 버전 엔진으로 이어 간다.
+// 그래서 L마다 같은 버전이나 더 새 버전으로 바뀌는 것만 허용해 재생한다. 모든 행동은 어느 한 공식 버전에서 유효해야 한다.
+function stepOp(EV, s, a, snap) {
+  const op = a[0];
+  if (op === 'c') { const c = EV.current(s); if (!c) return '결정할 것이 없다'; const o = c.options.find((x) => x.id === a[1]); if (!o || o.disabled) return `고를 수 없는 선택지 ${a[1]}`; EV.choose(s, a[1]); return null; }
+  let ok = true;
+  if (op === 'b') ok = !!EV.buy(s, a[1] | 0); else if (op === 's') ok = !!EV.sell(s, a[1] | 0); else if (op === 'e') ok = !!EV.enhanceSync(s, a[1] | 0, snap);
+  else if (op === 'M') ok = !!EV.mythFuseSync(s, snap); else if (op === 'T') ok = EV.travelHunt(s, a[1] | 0); else if (op === 'n') ok = EV.advanceStage(s);
+  else if (op === 'h') ok = EV.enterHunt(s); else if (op === 'l') ok = EV.leaveHunt(s); else return `알 수 없는 행동 ${op}`;
+  return ok ? null : `${op} 실행 불가`;
+}
+export function replayMixed(log, order) {
+  const seed = log[0][1] >>> 0, startStage = log[0][2] | 0;
+  const segEnds = []; for (let i = 1; i < log.length; i++) if (log[i][0] === 'L') segEnds.push(i); segEnds.push(log.length);
+  let tries = 0;
+  // 구간 k를 엔진 ei로 재생. state: {s, snap, loads}
+  function run(k, ei, st) {
+    if (++tries > 40) return null;
+    const EV = ENGINES[order[ei]];
+    let s, snap = st.snap ? JSON.parse(JSON.stringify(st.snap)) : null, loads = st.loads;
+    const from = k === 0 ? 1 : segEnds[k - 1];
+    if (k === 0) s = EV.newRun(EV.makeHero(seed), startStage, EV.mixSeed(seed, 1));
+    else { const a = log[from]; loads++; s = EV.restoreRun(snap, EV.makeHero(seed), EV.mixSeed(seed, 100 + loads), a[1] === 1); }
+    const to = segEnds[k];
+    for (let i = k === 0 ? 1 : from + 1; i < to; i++) {
+      const a = log[i];
+      if (a[0] === 'S') { snap = EV.snapshotRun(s); continue; }
+      if (s.dead) return null;
+      if (a[0] === 'c' && s.over) return null;
+      if (stepOp(EV, s, a, snap)) return null;
+    }
+    if (to >= log.length) return { EV, s, loads, used: [order[ei]] };
+    if (!snap) return null;
+    for (let ej = ei; ej < order.length; ej++) { const r = run(k + 1, ej, { snap, loads }); if (r) { if (r.used[0] !== order[ei]) r.used.unshift(order[ei]); return r; } }
+    return null;
+  }
+  for (let ei = 0; ei < order.length; ei++) { const r = run(0, ei, { snap: null, loads: 0 }); if (r) return { seed, startStage, loads: r.loads, actions: log.length, ...r.EV.runSummary(r.s), versions: r.used }; }
+  return null;
+}
+
 const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L', 'M', 'T']);
 
 // 요청 본문을 검사하고 기록을 재생한다. 성공하면 { row, summary }, 실패하면 Error를 던진다.
@@ -114,6 +154,11 @@ export async function verifySubmission(body, secret, now = Date.now()) {
   for (const v of [version, ...ACCEPT_VERSIONS.filter((x) => x !== version)]) {
     try { sum = ENGINES[v].replayLog(log); usedVersion = v; break; }
     catch (e) { if (!firstErr) firstErr = e; }
+  }
+  if (!sum && log.some((a) => a[0] === 'L')) {
+    const order = ACCEPT_VERSIONS.slice().sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+    const r = replayMixed(log, order);
+    if (r) { sum = r; usedVersion = r.versions[r.versions.length - 1]; }
   }
   if (!sum) throw new Error('기록 재생 실패: ' + (firstErr && firstErr.message ? firstErr.message : String(firstErr)));
   const row = {
