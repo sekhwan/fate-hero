@@ -182,8 +182,8 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .coFx{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px} .coFx span{font-size:14px;font-weight:700;padding:3px 10px;border-radius:12px;background:rgba(127,224,195,.14);border:1px solid #4fc3a1;color:#bff3e4}
 .coNote{font-size:11.5px;color:var(--muted);margin-top:6px}
 .deals{display:flex;flex-wrap:wrap;gap:4px;margin:-6px 0 8px} .deals:empty{display:none} .deals span{font-size:11.5px;padding:1px 7px;border-radius:9px;border:1px solid} .deals .dg{color:#7fe0c3;border-color:#4fc3a1} .deals .db{color:#ff9a8e;border-color:#ff7a6b} .deals .dp{color:#d9a2ff;border-color:#a06bd6}
-.hhead{display:flex;gap:12px;align-items:flex-start} .hinfo{flex:1;min-width:0}
-.portrait{flex:none;width:140px;height:140px;margin-top:4px;position:relative;border:2px solid var(--pc,#6b5a44);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--pc,#6b5a44) 30%,#1c1922),#14121a 75%);box-shadow:inset 0 0 18px rgba(0,0,0,.6);overflow:hidden}
+.hhead{display:flex;gap:6px;align-items:flex-start} .hinfo{flex:1;min-width:0}
+.portrait{flex:none;width:128px;height:128px;margin-top:4px;position:relative;border:2px solid var(--pc,#6b5a44);background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--pc,#6b5a44) 30%,#1c1922),#14121a 75%);box-shadow:inset 0 0 18px rgba(0,0,0,.6);overflow:hidden}
 .portrait img{width:100%;height:100%;object-fit:cover;display:block}
 .portrait .pfb{position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:center} .portrait .pfb svg{width:86%;height:86%;color:color-mix(in srgb,var(--pc) 55%,#3a3340)}
 .portrait .ptag{position:absolute;left:0;right:0;bottom:0;font-size:11.5px;text-align:center;padding:1px 0;background:rgba(10,8,12,.72);color:var(--pc);letter-spacing:.06em}
@@ -405,6 +405,43 @@ header.hb .helpBtn:hover{background:linear-gradient(180deg,#5c4220,#33230e);colo
 .portrait .ptag,.portrait .pcrest{display:none!important}
 .portrait img{object-fit:contain;-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 100%);mask-image:linear-gradient(180deg,#000 72%,transparent 100%)}
 .portrait .pfb svg{color:#3a3340}
+
+/* ===== 일러스트·UI 재질 ===== */
+body{background-color:#0e0b12;background-image:linear-gradient(rgba(12,9,14,.9),rgba(12,9,14,.93)),url('art/ui_stone.webp');background-size:auto,384px;background-attachment:fixed}
+img.iI{width:1.3em;height:1.3em;object-fit:contain;vertical-align:-.32em;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+.ware .wico img.iI{width:44px;height:44px}
+img.rI{width:16px;height:16px;object-fit:contain;vertical-align:-3px}
+.core .ic img.rIco{width:26px;height:26px;object-fit:contain;flex:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,.6))}
+.merc img.rIco{width:22px;height:22px;object-fit:contain;align-self:center;flex:none}
+.roster,.zone{border-style:solid!important;border-width:14px!important;border-color:transparent!important;border-image-source:url('art/ui_panel_frame.webp')!important;border-image-slice:64!important;border-image-width:14px!important;border-image-repeat:stretch!important;background-color:rgba(24,18,14,.92)}
+.roster{background-image:linear-gradient(rgba(20,15,12,.86),rgba(20,15,12,.9)),url('art/ui_wood.webp');background-size:auto,320px;padding:16px}
+.roster::before{top:-20px}
+.zone.zb{background-image:linear-gradient(180deg,rgba(14,10,18,.55),rgba(14,10,18,.82) 45%,rgba(14,10,18,.92)),var(--wbg,none);background-size:cover;background-position:center top}
+.sceneImg{height:170px;margin:8px 0 12px;border-radius:4px;background-size:cover;background-position:center;box-shadow:inset 0 -40px 40px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.5);border:1px solid rgba(201,154,58,.45)}
+.sceneImg.sm{height:120px;margin:0 0 10px}
+.compPic{float:right;width:132px;height:132px;margin:-6px -4px 6px 12px;background:radial-gradient(circle at 50% 55%,rgba(240,166,200,.22),transparent 68%)}
+.compPic img{width:100%;height:100%;object-fit:contain;-webkit-mask-image:linear-gradient(180deg,#000 75%,transparent);mask-image:linear-gradient(180deg,#000 75%,transparent)}
+.decide .compOffer{clear:both}
+header.hb .helpBtn{border:0!important;background:url('art/ui_button.webp') center/100% 100% no-repeat!important;box-shadow:0 2px 4px rgba(0,0,0,.5)!important;padding:8px 22px;text-shadow:0 1px 2px #000}
+header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!important}
+.modal{border-style:solid!important;border-width:14px!important;border-color:transparent!important;border-image-source:url('art/ui_panel_frame.webp')!important;border-image-slice:64!important;border-image-width:14px!important;background:linear-gradient(rgba(22,17,13,.94),rgba(22,17,13,.96)),url('art/ui_wood.webp');background-size:auto,320px}
+.modal::before,.modal::after{content:"";position:absolute;top:-10px;width:56px;height:56px;background:url('art/ui_corner.webp') center/contain no-repeat;pointer-events:none}
+.modal::before{left:-10px} .modal::after{right:-10px;transform:scaleX(-1)}
+.modal h2::after{content:"";display:block;height:14px;margin:6px 0 2px;background:url('art/ui_divider.webp') left center/100% 100% no-repeat;opacity:.9}
+@media (max-width:640px){.sceneImg{height:120px}.sceneImg.sm{height:84px}.compPic{width:84px;height:84px;margin:-4px -6px 4px 8px}.decide h3{font-size:20px}.roster,.zone,.modal{border-width:10px!important;border-image-width:10px}}
+
+/* 진행률: 전투 구역 제목 아래 한 줄짜리로 축소 */
+.progStrip{padding:8px 14px 10px;border-bottom:1px solid color-mix(in srgb,var(--zb) 30%,transparent);background:rgba(10,8,12,.45)}
+.progStrip .pct{gap:4px 12px;align-items:baseline;flex-wrap:wrap}
+.progStrip .pct .num{font-size:24px;line-height:1.1;color:#f3e3b8}
+.progStrip .pct .num small{font-size:.6em}
+.progStrip .pct .what{font-size:12.5px;max-width:none;line-height:1.5}
+.progStrip .pct .what br{display:none}
+.progStrip .track{height:6px;margin:6px 0 0;border:0;background:rgba(255,255,255,.08);border-radius:3px;overflow:visible}
+.progStrip .track .fill{border-radius:3px}
+.progStrip .track .tick{top:-2px;bottom:-2px}
+.progStrip .trackLbl{display:none}
+.front .actions{margin:0 0 4px} .front .actions .btn{padding:8px 14px;font-size:14px}
 /* 처음 10분: 처음 만날 때 하나씩 열리는 화면 */
 body.ob-combo #cmbBox,body.ob-skill .skills,body.ob-comp .party,body.ob-merc #mercBox,body.ob-inv .pInv,body.ob-inv .gt[data-gt="inv"],body.ob-end .pvpBox,body.ob-end [data-rk="world"]{display:none!important}
 body.ob-inv .gearBody .pShop{display:block!important}
@@ -745,8 +782,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
       <div class="xp"><div class="row"><span>레벨 <b id="xpLv">1</b></span><em id="xpTxt"></em></div><div class="bar"><i id="xpBar"></i></div></div>
-      <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.2 6.1 20.5l1.3-6.6L2.5 9.4l6.6-.8z" fill="#c8a2ff" stroke="#6a4aa0" stroke-width="1.2"/></svg><b id="fameNum">0</b></div><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#e3b341" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.5" fill="none" stroke="#a87b1c" stroke-width="1.2"/><path d="M12 8.2v7.6M9.8 10h3.4a1.5 1.5 0 0 1 0 3h-2.4a1.5 1.5 0 0 0 0 3h3.4" stroke="#6b4c0c" stroke-width="1.3" fill="none" stroke-linecap="round"/></svg><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M19 3C11 4 6 9 5 18l-1.5 3" fill="none" stroke="#8fc2b4" stroke-width="1.6" stroke-linecap="round"/><path d="M19 3c-.5 6-4 11-12 14 1-6 5-11 12-14z" fill="#8fc2b4" fill-opacity=".35" stroke="#8fc2b4" stroke-width="1.2"/></svg><b id="mRev">0</b></div></div></div>
-      <div class="merc" id="mercBox"><span>용병</span><b id="mAlly">0</b><em id="mercTxt"></em></div>
+      <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><div class="ic"><img class="rIco" src="art/res_fame.webp" alt=""><b id="fameNum">0</b></div><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><img class="rIco" src="art/res_gold.webp" alt=""><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><img class="rIco" src="art/res_revive.webp" alt=""><b id="mRev">0</b></div></div></div>
+      <div class="merc" id="mercBox"><img class="rIco" src="art/res_merc.webp" alt=""><span>용병</span><b id="mAlly">0</b><em id="mercTxt"></em></div>
       <div class="stats" id="hStats"></div>
       <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
       <div class="mini"><div><span>레벨</span><b id="mLvl">1</b></div><div><span>처치</span><b id="mKill">0</b></div></div>
@@ -758,12 +795,6 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     </section>
 
     <section class="front" aria-label="토벌 전선">
-      <div class="pct">
-        <div class="num" id="pctNum">0.000<small>%</small></div>
-        <div class="what" id="pctWhat"></div>
-      </div>
-      <div class="track" id="track"><div class="fill" id="fill" style="width:0%"></div></div>
-      <div class="trackLbl"><span id="tFrom"></span><span id="tTo"></span></div>
       <div class="hstrip" id="hStrip"></div>
       <div class="actions">
         <button class="btn" id="goBtn" type="button">이 운명으로 출정</button>
@@ -772,7 +803,13 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
         <button class="btn" id="leaveBtn" type="button" hidden>사냥 마치고 다음 세계로</button>
         <div class="travel" id="travel" hidden><span>이전 세계 사냥터로 떠나기</span><div id="travelBtns"></div></div>
       </div>
-      <div class="zone zb"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3H21v6.5L10 20.5l-2-2L19 7.5V5h-2.5L5.5 16l-2-2z" fill="currentColor" opacity=".9"/><path d="M4 17l3 3-2 2-3-3z" fill="currentColor"/></svg>전투<small>길목마다 결정을 내린다</small></div><div class="zbody"><div id="stage"></div></div></div>
+      <div class="zone zb"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 3H21v6.5L10 20.5l-2-2L19 7.5V5h-2.5L5.5 16l-2-2z" fill="currentColor" opacity=".9"/><path d="M4 17l3 3-2 2-3-3z" fill="currentColor"/></svg>전투<small>길목마다 결정을 내린다</small></div><div class="progStrip"><div class="pct">
+  <div class="num" id="pctNum">0.000<small>%</small></div>
+  <div class="what" id="pctWhat"></div>
+</div>
+<div class="track" id="track"><div class="fill" id="fill" style="width:0%"></div></div>
+<div class="trackLbl"><span id="tFrom"></span><span id="tTo"></span></div>
+</div><div class="zbody"><div id="stage"></div></div></div>
     </section>
     <section class="gear" aria-label="정비와 상점">
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
@@ -1213,12 +1250,13 @@ function renderHero(){
 }
 // 아이템 앞 그림 문자: 부위별
 const ITEM_ICON={str:'⚔️',con:'🛡️',agi:'👢',int:'📖',cha:'💍',luk:'🍀',mult:'💠',win:'🚩',flee:'💨'};
-function itemIcon(it){if(!it)return '';if(it.heal)return '🧪';if(it.revive)return '🪶';const k=slotOf(it);return ITEM_ICON[k]||'';}
+function itemIcon(it){if(!it)return '';if(it.heal)return '🧪';if(it.revive)return '<img class="iI" src="art/res_revive.webp" alt="">';const k=slotOf(it);if(!k)return '';const em=ITEM_ICON[k]||'';
+  return `<img class="iI" src="art/icon/icon_${k}_g${Math.max(0,Math.min(3,it.grade||0))}.webp" alt="" onerror="this.outerHTML='${em}'">`;}
 function renderShop(t){
   const box=$('shop');
   if(!run||run.dead||run.over){$('shopTitle').textContent='출정하면 지역마다 새 물건이 들어온다';box.innerHTML='<p style="color:var(--muted);font-size:13px;margin:10px 0 0">아직 열린 상점이 없다.</p>';return;}
   {const hasLeg=run.shop.some(o=>!o.sold&&o.item.grade===3);$('shopTitle').innerHTML=`${esc(STAGES[stage].regions[run.region][0])}의 상인${hasLeg?'<span class="shopLegend">★ 전설 입고</span>':''}`;const gt=document.querySelector('.gtShop');if(gt)gt.classList.toggle('hasLeg',hasLeg);}
-  const COIN='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#f4c542" stroke="#8a6414" stroke-width="1.6"/><circle cx="12" cy="12" r="6.3" fill="none" stroke="#a87b1c" stroke-width="1.2"/></svg>',STAR='<svg class="cn" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.5 1.3 6.6L12 17.2 6.1 20.5l1.3-6.6L2.5 9.4l6.6-.8z" fill="#c8a2ff" stroke="#6a4aa0" stroke-width="1.2"/></svg>';
+  const COIN='<img class="cn rI" src="art/res_gold.webp" alt="">',STAR='<img class="cn rI" src="art/res_fame.webp" alt="">';
   const auto=run.shop.filter(o=>o.item.heal||o.item.revive);
   const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'';
   box.innerHTML='<div class="wares">'+run.shop.map((o,i)=>{if(o.item.heal||o.item.revive)return '';const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
@@ -1404,14 +1442,14 @@ function renderTrack(){
   if(s.endless){const tr=$('track');tr.querySelectorAll('.tick').forEach(t=>t.remove());const f=run?floorOf(run):0;const bf=best[stage]||0;
     $('pctNum').innerHTML=`${f}<small>층</small>`;$('fill').style.width=Math.min(100,bf?f/Math.max(bf,1)*100:0)+'%';
     $('tFrom').textContent='1층';$('tTo').textContent=bf?`최고 기록 ${bf}층`:'끝이 없다';
-    $('pctWhat').innerHTML=(run&&!run.dead&&!run.over?`<b>${s.regions[run.region][0]}</b> · 층마다 적이 강해진다${s.hunt!=null?'<br>언제든 왼쪽 버튼으로 다음 세계로 떠날 수 있다':'<br>처치한 악마 '+fmt(run.kills||0)+'마리'}`:`<b>${s.name}</b> · ${s.sub}`)+traitHtml(stage);return;}
+    $('pctWhat').innerHTML=(run&&!run.dead&&!run.over?`<b>${s.regions[run.region][0]}</b> · 층마다 적이 강해진다${s.hunt!=null?' · 언제든 왼쪽 버튼으로 다음 세계로 떠날 수 있다':' · 처치한 악마 '+fmt(run.kills||0)+'마리'}`:`<b>${s.name}</b> · ${s.sub}`)+traitHtml(stage);return;}
   $('tFrom').textContent=s.regions[0][0]; $('tTo').textContent=s.regions[s.regions.length-1][0];
   const tr=$('track');tr.querySelectorAll('.tick').forEach(t=>t.remove());
   const ws=s.regions.map((_,i)=>Math.pow(DEMON_W,i)),tot=ws.reduce((a,b)=>a+b,0);let acc=0;
   ws.forEach((w,i)=>{acc+=w;if(i<ws.length-1){const t=document.createElement('div');t.className='tick'+(run&&run.pacified&&run.pacified[i]?' on':'');t.style.left=(acc/tot*100)+'%';tr.appendChild(t);}});
   const p=run?pct(run):0; $('pctNum').innerHTML=pfmt(p)+'<small>%</small>'; $('fill').style.width=p+'%';
   if(!run) $('pctWhat').innerHTML=`<b>${s.name}</b> · ${s.sub}. 지역 ${s.regions.length}곳.`+traitHtml(stage);
-  else if(!run.dead&&!run.over) $('pctWhat').innerHTML=`<b>${s.regions[run.region][0]}</b> · 지역 ${run.region+1}/${s.regions.length}<br>처치한 악마 ${fmt(run.kills||0)}마리`+traitHtml(stage);
+  else if(!run.dead&&!run.over) $('pctWhat').innerHTML=`<b>${s.regions[run.region][0]}</b> · 지역 ${run.region+1}/${s.regions.length} · 처치한 악마 ${fmt(run.kills||0)}마리`+traitHtml(stage);
 }
 function outcomeHtml(o){return `<div class="outcome"><p>${o.text}</p>${o.effects.length?`<div class="fx">${o.effects.map(e=>`<span class="${e.t}">${e.x}</span>`).join('')}</div>`:''}</div>`;}
 function probCls(p){return p>=0.6?'hi':p>=0.25?'mid':'lo';}
@@ -1426,18 +1464,35 @@ function renderStage(){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
     const body=`<div><b>${label} · ${c.title}</b><div class="phase" id="phase">${(PHASES[n.type]||PHASES.event)[0]}…</div><div style="font-size:13px;margin-top:4px">자동 선택: ${pick.label}${n.type==='battle'?` (승리확률 ${pctTxt(n.p)}%)`:''}</div></div>`;
-    box.innerHTML=`<div class="autoCard">${n.type==='battle'?`<div class="monster"><div class="art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div>${body}</div>`:body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':''}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
+    box.innerHTML=`<div class="autoCard">${n.type==='battle'?`<div class="monster"><div class="art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div>${body}</div>`:sceneHtml(n,true)+body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':''}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
     bindModes(); tickAuto(ms); return;
   }
   const why=mode==='manual'?'':n.type==='skill'?'스킬 선택':n.type==='prep'?'마지막 지배자':n.type!=='battle'?'중요한 만남':n.boss?'지배자 전투':n.quest?'의뢰':n.p<0.6?'불리한 싸움':'생명력 위험';
   box.innerHTML=`<div class="decide"><div class="where">${s.regions[run.region][0]} · ${n.type==='battle'?(n.boss?'지배자 전투':n.quest?'의뢰 토벌':'전투'):n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건'}${why?`<span class="why">${why} · 직접 결정</span>`:''}</div>
-     <div class="head">${n.type==='battle'?`<div class="monster" style="margin:8px 0 10px"><div class="art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div><div><h3>${c.title}</h3><p class="hint" style="margin:0">${c.hint} 승리확률 <b style="color:var(--fg)">${pctTxt(n.p)}%</b></p>${breakdown(n)}</div></div>`:`<h3>${c.title}</h3><p class="hint">${compOfferHtml(n)?String(c.hint).replace(/\s*\([^()]*\)\s*$/,''):c.hint}</p>${compOfferHtml(n)}`}</div>
+     <div class="head">${n.type==='battle'?`<div class="monster" style="margin:8px 0 10px"><div class="art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div><div><h3>${c.title}</h3><p class="hint" style="margin:0">${c.hint} 승리확률 <b style="color:var(--fg)">${pctTxt(n.p)}%</b></p>${breakdown(n)}</div></div>`:`${sceneHtml(n)}${compImgOf(n)?`<div class="compPic"><img src="${compImgOf(n)}" alt=""></div>`:''}<h3>${c.title}</h3><p class="hint">${compOfferHtml(n)?String(c.hint).replace(/\s*\([^()]*\)\s*$/,''):c.hint}</p>${compOfferHtml(n)}`}</div>
      <div class="opts">${c.options.map((o,i)=>`<button class="opt" type="button" data-id="${o.id}" ${o.disabled?'disabled':''}><span class="k">${i+1}</span><span class="l">${o.label}</span>${o.prob!=null?`<span class="p ${probCls(o.prob)}">${pctTxt(o.prob)}%<small>성공</small></span>`:'<span class="p"></span>'}<span class="d">${o.desc}</span></button>`).join('')}</div>
      <div class="autobar"><span>숫자 키 1~3으로도 고를 수 있다</span></div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
   bindModes();
   box.querySelectorAll('.opt').forEach(b=>b.onclick=()=>decide(b.dataset.id));
   if(n.kind==='gambler'){box.querySelectorAll('.opt').forEach(b=>{if(b.dataset.id.startsWith('gb:'))b.onclick=()=>gambleShow(b.dataset.id);});if(gbSeen!==n){gbSeen=n;setTimeout(()=>gambleShow(),250);}}
 }
+// ===== 일러스트 연결: 세계 배경 · 장면 · 동료 초상 =====
+const COMP_IMG=(()=>{const L=['성녀 엘리나','마녀 릴리스','여기사 세라','엘프 궁수 아리엔','무희 카르멘','성검의 무녀 하루','용의 공주 이브','떠돌이 검사 카일','드워프 대장장이 브론','도둑 레오','수도사 한','현자 오르빈','아기 드래곤 루비','늑대 회색이','요정 반딧불','검은 고양이 망토','황금 두꺼비 금복이','영주의 딸 리아','길드장의 제자 노엘','공주 이사벨','성녀 마리엘','대장장이의 딸 미라','상단주의 딸 로사','사냥꾼 카야','점성술사 시엘','검성의 손녀 유나','해적 여왕 바네사','쓰러진 기사'];const m={};L.forEach((n,i)=>m[n]='art/comp/c'+String(i+1).padStart(2,'0')+'.webp');return m;})();
+const EXP_IMG=(()=>{const m={};let k=1;EXPLORE_TXT.forEach(a=>a.forEach(t=>{m[t]='art/scene/e'+String(k++).padStart(2,'0')+'.webp';}));return m;})();
+const GIVER_IMG={'영주':'v04','마법사 길드장':'v05','왕':'v06','대주교':'v07'};
+function worldBgIx(s){if(!s)return 1;const st=STAGES[s.stage];if(st&&st.endless&&st.hunt==null)return 6;if(s.huntFrom===5&&st&&st.hunt!=null)return worldOf(s.stage)+1;return Math.min(5,worldOf(s.stage)+1);}
+function sceneOf(n){if(!n)return null;const sc=x=>`art/scene/${x}.webp`;
+  if(n.type==='explore')return EXP_IMG[n.title]||null;
+  if(n.type==='rest')return sc('r0'+worldBgIx(run));
+  if(n.type!=='event')return null;
+  const K={merchant:'v01',altar:'v02',cursed:'v02',tomb:'v03',chest:'v08',train:'v09'}[n.kind];if(K)return sc(K);
+  if((n.kind==='quest'||n.kind==='qreward'||n.kind==='qpick'||n.kind==='proposal')&&n.q&&GIVER_IMG[n.q.giver]&&n.kind!=='proposal')return sc(GIVER_IMG[n.q.giver]);
+  return null;}
+function compImgOf(n){if(!n||n.type!=='event')return null;if(n.kind==='knight'||n.kind==='oath')return COMP_IMG['쓰러진 기사'];
+  if(n.kind==='proposal'){const sp=SPOUSES[n.sp||0];return sp&&COMP_IMG[sp.name];}
+  if(['heroine','friend','pet'].includes(n.kind)&&n.c)return COMP_IMG[n.c.name];return null;}
+function sceneHtml(n,small){const sc=sceneOf(n);if(sc)return `<div class="sceneImg${small?' sm':''}" style="background-image:url('${sc}')"></div>`;return '';}
+function applyWorldBg(){const z=document.querySelector('.zone.zb');if(!z)return;const ix=run?worldBgIx(run):Math.min(6,(STAGES[stage]&&STAGES[stage].endless?6:worldOf(stage)+1));z.style.setProperty('--wbg',`url('art/bg_world${ix}.webp')`);}
 let verdictHtml='';
 // 동료가 될 수 있는 만남: 얻게 될 효과를 크게 보여 준다
 function compOfferHtml(n){const K={heroine:['💗','히로인'],friend:['🤝','친구'],pet:['🐾','펫'],proposal:['💍','배우자']}[n.kind];if(!K)return '';
@@ -1516,7 +1571,7 @@ const NEAR_TXT={revive:['부활','죽음의 문턱에서 되살아났다'],potio
 function nearDeathFx(e){const [h,sub]=NEAR_TXT[e.near]||['생존',e.x];let o=$('nearFx');if(!o){o=document.createElement('div');o.id='nearFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
   o.className='nf '+e.near;o.innerHTML=`<div class="nfIn"><b>${h}</b><span>${esc(sub)}</span></div>`;void o.offsetWidth;o.classList.add('on');clearTimeout(o._t);o._t=setTimeout(()=>o.classList.remove('on'),1700);}
 // 전설 획득 연출: 금빛 섬광 + 큰 아이콘 + 이름 (상점 구매 제외, 전투·탐험·보상에서 얻었을 때)
-function legendFx(list){const g=list[0].got;const fake={heal:g.heal,revive:g.revive,stat:['str','int','con','agi','cha','luk'].includes(g.slot)?g.slot:null,mult:g.slot==='mult'?1:0,win:g.slot==='win'?1:0,flee:g.slot==='flee'?1:0};
+function legendFx(list){const g=list[0].got;const fake={grade:3,heal:g.heal,revive:g.revive,stat:['str','int','con','agi','cha','luk'].includes(g.slot)?g.slot:null,mult:g.slot==='mult'?1:0,win:g.slot==='win'?1:0,flee:g.slot==='flee'?1:0};
   let o=$('legFx');if(!o){o=document.createElement('div');o.id='legFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
   const fate=g.kept?(g.spare?'예비 전설로 보관했다':'바로 착용했다'):'이미 더 좋은 것이 있어 팔았다';
   o.innerHTML=`<div class="lfIn"><div class="lfTag">전설 획득${list.length>1?` ×${list.length}`:''}</div><div class="lfIco">${itemIcon(fake)||'✨'}</div><div class="lfName">${esc(g.name)}</div><div class="lfD">${esc(g.d||'')}</div><div class="lfSrc">${esc(g.src||'')} · ${fate}</div></div>`;
@@ -1673,6 +1728,7 @@ function nextStage(){
 function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
   if(typeof obCheck==='function')obCheck();
+  applyWorldBg();
   {const d=$('hDeals');if(d){const a=[];if(run&&!run.dead&&!run.over){if(run.oath)a.push(`<span class="dg" title="치료해 준 기사가 약속한 지배자전에 달려온다">🛡️ 맹세: ${run.oath.left}지역 뒤 기사 합류</span>`);if(run.oathBoss)a.push(`<span class="dg">🛡️ 기사 합류 중: 이번 지배자전 +${Math.round(OATH_BOSS*100)}%p</span>`);
     if(run.bossCurse)a.push(`<span class="db">☠️ 저주: 다음 지배자전 -${Math.round(run.bossCurse*100)}%p</span>`);if(run.pact)a.push(`<span class="dp" title="다음 지배자에게 지거나 도망치면 모든 능력치 -${Math.round(PACT_PEN*100)}%">😈 계약: 전투력 +${Math.round((PACT_POW-1)*100)}%</span>`);}d.innerHTML=a.join('');}}
   renderStages();renderHero();renderTrack();renderStage();renderHist();
