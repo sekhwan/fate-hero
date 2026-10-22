@@ -19,9 +19,12 @@ async function hmacKey(secret) {
 function toHex(buf) {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
-export async function signRun(secret, seed, ts) {
+// 서명에 들어간 버전 표시는 발급 당시 서버 버전이다. 서버가 업데이트되는 사이에 발급된 용사도 인정하도록 이전 버전 표시도 받아 준다.
+// (서명 자체는 비밀 키로만 만들 수 있으므로 버전 표시를 넓혀도 위조 위험은 늘지 않는다)
+export const SIGN_VERSIONS = [ENGINE_VERSION, '1.5.3', '1.5.2', '1.5.1', '1.5.0'].filter((v, i, a) => a.indexOf(v) === i);
+export async function signRun(secret, seed, ts, ver = ENGINE_VERSION) {
   const key = await hmacKey(secret);
-  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero|${ENGINE_VERSION}|${seed >>> 0}|${ts}`)));
+  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero|${ver}|${seed >>> 0}|${ts}`)));
 }
 function safeEqual(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
@@ -32,9 +35,13 @@ function safeEqual(a, b) {
 
 // 주사위 묶음: 서버 호출 한 번에 용사 후보 BATCH_N개. i번째 후보의 seed = mixSeed(base, i)
 export const BATCH_N = 50;
-export async function signBatch(secret, base, n, ts) {
+export async function signBatch(secret, base, n, ts, ver = ENGINE_VERSION) {
   const key = await hmacKey(secret);
-  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero-batch|${ENGINE_VERSION}|${base >>> 0}|${n}|${ts}`)));
+  return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero-batch|${ver}|${base >>> 0}|${n}|${ts}`)));
+}
+async function anyVersion(f, token) {
+  for (const v of SIGN_VERSIONS) if (safeEqual(await f(v), token)) return true;
+  return false;
 }
 export async function issueBatch(secret, now = Date.now()) {
   const buf = new Uint32Array(1);
@@ -76,12 +83,10 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     const { base, i, n } = body.batch;
     if (!Number.isInteger(base) || base < 0 || base > 0xffffffff || !Number.isInteger(n) || n < 1 || n > 1000 || !Number.isInteger(i) || i < 0 || i >= n)
       throw new Error('잘못된 주사위 묶음');
-    const expect = await signBatch(secret, base, n, ts);
-    if (!safeEqual(expect, token)) throw new Error('서버가 발급하지 않은 용사다');
+    if (!(await anyVersion((v) => signBatch(secret, base, n, ts, v), token))) throw new Error('서버가 발급하지 않은 용사다');
     if ((E.mixSeed(base, i) >>> 0) !== seed) throw new Error('주사위 묶음과 용사가 맞지 않다');
   } else {
-    const expect = await signRun(secret, seed, ts);
-    if (!safeEqual(expect, token)) throw new Error('서버가 발급하지 않은 용사다');
+    if (!(await anyVersion((v) => signRun(secret, seed, ts, v), token))) throw new Error('서버가 발급하지 않은 용사다');
   }
   const nick = cleanNickname(nickname);
   if (!nick) throw new Error('닉네임은 1~12자로 입력해 주세요');
