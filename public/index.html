@@ -1126,7 +1126,7 @@ function obCheck(){if(run){
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
   return `<div class="obNext">📜 <b>${esc(hero.hidden?hero.hidden.title:hero.race.name+' '+hero.wealth.name)}</b>이(가) 용사 연대기에 ${v?'★'.repeat(v)+'로 기록되었다':'오르지 못했다(첫 지역을 넘겨야 기록된다)'}.<br>${nx?`다음 목표: 이 조합으로 <b>${nx}</b>. `:''}새 용사를 뽑아 다른 칸도 채워 보자. 위의 「랜덤 영웅 뽑기」를 누른다.</div>`;}
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
-let stage=0, hero=null, run=null, mode=(m=>m==='manual'?'manual':'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
+let stage=0, hero=null, run=null, mode=(m=>m==='manual'||m==='auto'?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
 const dist={};
 function getDist(st){if(dist[st])return dist[st];const a=[];for(let i=1;i<=2000;i++){const h=makeHero((i*2246822519+st*977)>>>0);a.push(pct(autoRun(h,st,i*104729+st)));}a.sort((x,y)=>x-y);return dist[st]=a;}
@@ -1467,14 +1467,14 @@ function monsterPixel(name,st,boss){
   }
   return `<svg viewBox="0 0 ${W+2} ${H+2}" shape-rendering="crispEdges" style="filter:hue-rotate(${hue}deg)" role="img" aria-label="${name}">${rects}</svg>`;
 }
-const SPEEDS=[1,2,4,8];
+const SPEEDS=[1,2,4,8,16]; // 16배속·완전 자동은 테스트 기간 임시
 // 기본 8배속. 예전 기본값(1배속)이 저장된 사람도 한 번은 8배속으로 옮긴다. 이후 고른 속도는 그대로 기억한다.
-let speed=(v=>SPEEDS.includes(v)?v:v>8?8:8)(store.get('spd8')?store.get('speed',8):8), paused=false; store.set('spd8',1);
+let speed=(v=>SPEEDS.includes(v)?v:8)(store.get('spd8')?store.get('speed',8):8), paused=false; store.set('spd8',1);
 store.set('speed',speed); store.set('mode2',mode); // 예전 설정(16배속, 전부 자동, 지배자만)을 새 설정으로 옮긴다
 function stepMs(n){const base=n.type==='battle'?(n.boss?9000:7000):n.type==='explore'?5000:n.type==='rest'||n.type==='prep'?4000:4500;const sf=[1,1.35,1.8,2,2.6][stage]||1;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches?300:base*sf/speed;}
 const PHASES={prep:['무기를 손질한다','작전을 세운다','결전의 문 앞에 선다'],battle:['적과 거리를 좁힌다','칼날이 부딪친다','승부가 기울기 시작한다'],explore:['주변을 살핀다','깊숙이 들어간다','무언가가 보인다'],rest:['모닥불을 피운다','밤이 깊어간다','동이 튼다'],event:['다가간다','이야기를 나눈다']};
-const MODES=[['manual','전부 직접'],['key','중요한 것만']];
+const MODES=[['manual','전부 직접'],['key','중요한 것만'],['auto','완전 자동']];
 function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MODES.map(([k,l])=>`<button class="mode" type="button" data-m="${k}" aria-pressed="${mode===k}">${l}</button>`).join('')}<button class="mode" type="button" data-pause="1" aria-pressed="${paused}" style="${paused?'border-color:var(--ember);color:var(--ember)':''}">${paused?'재개 ▶':'일시정지 ❚❚'}</button><span class="speed">${SPEEDS.map(v=>`<button class="mode" type="button" data-sp="${v}" aria-pressed="${speed===v}">${v}×</button>`).join('')}</span></div>`;}
 function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode2',mode);clearTimeout(autoT);renderStage();});
   document.querySelectorAll('[data-pause]').forEach(b=>b.onclick=togglePause);
