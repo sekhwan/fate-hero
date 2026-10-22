@@ -352,6 +352,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .rankTbl td,.rankTbl th{white-space:nowrap}
 .rankTbl td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .rankTbl tr.me td{color:var(--brass)}
+.rkSort{font:inherit;font-size:inherit;color:var(--muted);background:none;border:0;padding:0;cursor:pointer;white-space:nowrap} .rkSort[aria-pressed="true"]{color:var(--brass);font-weight:700} .rkSort:hover{color:var(--fg)}
 .botTag{display:inline-block;font-size:10px;padding:0 5px;margin-left:4px;border:1px solid #5b5470;border-radius:8px;color:var(--muted);vertical-align:1px}
 .wRes{margin-top:10px} .wRes .wSum{font-weight:700;margin:6px 0} .wRes .wRounds{font-size:12.5px;color:var(--muted);margin:4px 0 8px;line-height:1.6}
 .wRes details{border:1px solid #3a3446;border-radius:6px;padding:6px 10px;margin-top:6px} .wRes summary{cursor:pointer;font-size:13px}
@@ -692,12 +693,10 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h2 id="rankTitle">랭킹</h2>
     <p class="lead">지상계에서 태어나 등록된 용사들의 기록. 모든 기록은 서버가 행동 기록을 처음부터 다시 재생해 검증한 결과다.</p>
     <div class="rankTabs" role="tablist">
-      <button class="mode" type="button" data-rk="kills" aria-pressed="true">처치한 악마</button>
-      <button class="mode" type="button" data-rk="power" aria-pressed="false">최종 전투력</button>
-      <button class="mode" type="button" data-rk="reach_score" aria-pressed="false">도달 기록</button>
+      <button class="mode" type="button" data-rk="hero" aria-pressed="true">용사 랭킹</button>
       <button class="mode" type="button" data-rk="world" aria-pressed="false">월드랭킹 (PvP)</button>
     </div>
-    <div class="tblWrap"><table class="rankTbl"><thead><tr><th>순위</th><th>닉네임</th><th>용사</th><th id="rkCol" style="text-align:right">처치</th><th id="rkCol2">날짜</th></tr></thead><tbody id="rankBody"><tr><td colspan="5">불러오는 중…</td></tr></tbody></table></div>
+    <div class="tblWrap"><table class="rankTbl"><thead id="rankHead"></thead><tbody id="rankBody"><tr><td colspan="5">불러오는 중…</td></tr></tbody></table></div>
   </div>
 </div>
 <div class="modalBg" id="duelModal" hidden role="dialog" aria-modal="true" aria-labelledby="duelTitle">
@@ -758,7 +757,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <ul>
       <li>공허의 옥좌까지 정복한 뒤 <b>끝없는 전장</b>에서만 합성할 수 있다.</li>
       <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 10,000</b>. 성공 확률은 <b>70%</b>이고, 실패하면 재료가 모두 사라진다.</li>
-      <li><b>예비 전설</b>: 전설 장비는 착용품보다 약하거나 같은 부위가 있어도 버리지 않고 예비로 보관한다(최대 8개). 예비 전설은 효과가 없지만 강화해서 신화 합성 재료로 쓸 수 있고, 착용품보다 강해지면 자동으로 바꿔 낀다. 합성에는 예비 전설이 먼저 쓰인다.</li>
+      <li><b>예비 전설</b>: 전설 장비는 착용품보다 약하거나 같은 부위가 있어도 버리지 않고 예비로 보관한다(얻은 것은 최대 12개, 상점에서 산 전설은 칸 수와 관계없이 보관). 예비 전설은 효과가 없지만 강화해서 신화 합성 재료로 쓸 수 있고, 착용품보다 강해지면 자동으로 바꿔 낀다. 합성에는 같은 부위에서 강화 수치가 가장 낮은 것이 쓰인다.</li>
       <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없지만 효과가 압도적이다.</li>
       <li>영웅·전설 장비는 같은 이름이라도 능력치가 조금씩 다르다.</li>
     </ul>
@@ -977,7 +976,7 @@ function renderHero(){
   {const el=$('hPower').parentElement;const pp=powerParts(tmp);el.classList.add('tipt');el.dataset.tt='전투력은 이렇게 정해진다';el.dataset.tl=pp.join('¦');el.tabIndex=0;}
   $('gGold').textContent=fmtS(tmp.gold);$('sGold').textContent=fmtS(tmp.gold);$('gFame').textContent=fmt(tmp.fame);
   {const hpR=Math.max(0,tmp.hp)/tmp.maxHp;const cL=COMBOS.filter(c=>c.race===h.race.name);const cDone=cL.filter(c=>tmp.combos&&tmp.combos.includes(c.id)).length;$('hStrip').innerHTML=`<div class="nm">${esc(h.name)}<small>${h.race.name} ${h.job} · Lv ${tmp.lvl}</small></div><div class="tg"><span class="rc">${h.race.name}</span>${h.traits.map(t=>`<span class="${t.good===false?'bd':t.good?'gd':''}">${t.name}</span>`).join('')}${cL.length?`<span class="cb">조합 ${cDone}/${cL.length}${cL.some(c=>c.god&&(!c.tr||h.traits.some(t=>t.name===c.tr)))?' · 전설 조합 가능':''}</span>`:''}</div><div class="nums"><span class="p">전투력 ${fmt(power(tmp)/tmp.stageCarry*10)}</span><span>HP ${Math.max(0,tmp.hp)}/${tmp.maxHp}</span><span>부활 ${revives(tmp)}</span></div><div class="hpb"><i class="${hpR<0.35?'low':''}" style="width:${hpR*100}%"></i></div><div class="more">능력치·동료·스킬은 아래 용사 명부에서 볼 수 있다</div>`;}
-  {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&(wouldUpgrade(run,o.item)||canKeepSpare(run,o.item))).length:0;$('shopBadge').textContent=n?String(n):'';}
+  {const n=run&&!run.dead&&!run.over&&run.shop?run.shop.filter(o=>!o.sold&&!o.item.heal&&!o.item.revive&&(o.cur==='gold'?run.gold:run.fame)>=o.price&&(wouldUpgrade(run,o.item)||canKeepSpare(run,o.item)||shopLegend(o.item))).length:0;$('shopBadge').textContent=n?String(n):'';}
   renderShop(tmp);
 }
 // 아이템 앞 그림 문자: 부위별
@@ -991,7 +990,7 @@ function renderShop(t){
   const auto=run.shop.filter(o=>o.item.heal||o.item.revive);
   const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'';
   box.innerHTML='<div class="wares">'+run.shop.map((o,i)=>{if(o.item.heal||o.item.revive)return '';const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
-    const up0=wouldUpgrade(run,it),spk=!up0&&canKeepSpare(run,it),up=up0||spk,full=holdFull(run,it),poor=have<o.price;
+    const up0=wouldUpgrade(run,it),spk=!up0&&(canKeepSpare(run,it)||shopLegend(it)),up=up0||spk,full=holdFull(run,it),poor=have<o.price;
     const tag=o.sold?'':full?'<em class="wt no">이미 지님</em>':up0?'<em class="wt up" title="착용품보다 좋음">▲ 더 좋음</em>':spk?'<em class="wt sp" title="예비 전설로 보관">예비 보관</em>':'<em class="wt no" title="보유품이 더 좋음">보유품 우위</em>';
     const dis=o.sold||poor||!up||full;
     return `<div class="ware g${it.grade||0} ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}">
@@ -1344,7 +1343,7 @@ function worldHtml(w){if(!w)return '';
   return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명 · 대전 ${w.rounds.length}회 ${tw}승 ${tl}패</div>
    <div class="wRounds">${head}.<br>${w.rounds.map(r=>`${r.floor}층: ${r.w}승 ${r.l}패 → ${r.delta>0?'+'+r.delta:r.delta}위 (${r.from}위 → ${r.to}위)`).join('<br>')}</div>
    ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}</span></div><div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
-function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('kills');}
+function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('hero');}
 let lastSubmitted=null;
 async function submitRun(which){const W=which==='w';
   const nick=($(W?'wNick':'rankNick').value||'').trim().slice(0,12);const msg=$(W?'wMsg':'rankMsg');
@@ -1358,8 +1357,8 @@ async function submitRun(which){const W=which==='w';
     const wr=$(W?'wRes':'rankWorld');if(wr)wr.innerHTML=worldHtml(j.world);if(W)btn.disabled=false;
   }catch(e){msg.className='msg err';msg.textContent='서버에 연결하지 못했다. 잠시 후 다시 시도해 주세요.';btn.disabled=false;}
 }
-let rankCol='kills';
-async function openRank(col){TRACK.st.rank++;TRACK.ev('rank');rankCol=col||rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
+let rankCol='hero',rankSort='reach_score';
+async function openRank(col){TRACK.st.rank++;TRACK.ev('rank');rankCol=col==='world'?'world':col?'hero':rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
 const FAKE_FOES=['검은 늑대 카르','은빛 성녀 라엘','망치왕 도르간','그림자 유','붉은 마녀 베라','철벽 바론','폭풍의 아샤','저주꾼 모르','불사의 렌','축복받은 이나'];
 function openDuel(){TRACK.st.duel++;TRACK.ev('duel');if(!run)return;$('duelModal').hidden=false;$('worldBox').innerHTML=worldBoxHtml();bindWorldBox();runDuels();$('duelClose').focus();}
 function runDuels(){$('pvpRule').textContent=PVP_RULE;const me=pvpCard(run);me.name='나';const R=Math.random;const mults=[0.5,1,2,4,8];
@@ -1372,20 +1371,23 @@ function closeDuel(){$('duelModal').hidden=true;$('pvpBtn').focus();}
 function closeRank(){$('rankModal').hidden=true;$('rankBtn').focus();}
 async function loadRank(){
   document.querySelectorAll('[data-rk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rk===rankCol));
-  $('rkCol').textContent={kills:'처치',power:'전투력',reach_score:'도달',world:'전투력 · 생명력'}[rankCol];$('rkCol2').textContent=rankCol==='world'?'PvP 스탯 · 층':'날짜';
-  const body=$('rankBody');body.innerHTML='<tr><td colspan="5">불러오는 중…</td></tr>';
-  if(rankCol==='world'){try{const r=await fetch(`${RANK.url}/rest/v1/pvp_cards?select=seed,nickname,hero,race,power,hp,ass,rev,bls,cur,floor,is_bot&order=ladder.desc&limit=100`,{headers:rankHeaders()});
+  const SC=[['reach_score','도달'],['power','전투력'],['kills','처치']];
+  $('rankHead').innerHTML=rankCol==='world'?'<tr><th>순위</th><th>닉네임</th><th>용사</th><th style="text-align:right">전투력 · 생명력</th><th style="text-align:right">도달 층</th></tr>'
+    :`<tr><th>순위</th><th>닉네임</th><th>용사</th>${SC.map(([k,l])=>`<th style="text-align:right"><button type="button" class="rkSort" data-sort="${k}" aria-pressed="${rankSort===k}" title="${l} 순으로 정렬">${l}${rankSort===k?' ▼':''}</button></th>`).join('')}</tr>`;
+  $('rankHead').querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{rankSort=b.dataset.sort;loadRank();});
+  const NC=rankCol==='world'?5:6;const body=$('rankBody');body.innerHTML=`<tr><td colspan="${NC}">불러오는 중…</td></tr>`;
+  if(rankCol==='world'){try{const r=await fetch(`${RANK.url}/rest/v1/pvp_cards?select=seed,nickname,hero,race,power,hp,floor,is_bot&order=ladder.desc&limit=100`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
     if(!rows.length){body.innerHTML='<tr><td colspan="5">아직 아무도 끝없는 전장에 오르지 않았다.</td></tr>';return;}
-    body.innerHTML=rows.map((x,i)=>{const st=PVP_KEYS.filter(k=>x[k]).map(k=>PVP_NAME[k]+x[k]).join(' ')||'-';
-      return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td><small>${esc(st)} · ${x.floor}층</small></td></tr>`;}).join('');
+    body.innerHTML=rows.map((x,i)=>{
+      return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td class="n">${fmt(x.floor||0)}층</td></tr>`;}).join('');
   }catch(e){body.innerHTML='<tr><td colspan="5">월드랭킹을 불러오지 못했다.</td></tr>';}return;}
-  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,hero,race,kills,power,reach,updated_at&order=${rankCol}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
+  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,hero,race,kills,power,reach,updated_at&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
-    if(!rows.length){body.innerHTML='<tr><td colspan="5">아직 등록된 용사가 없다. 첫 기록의 주인공이 되어 보자.</td></tr>';return;}
-    body.innerHTML=rows.map((x,i)=>{const v=rankCol==='kills'?fmt(x.kills)+'마리':rankCol==='power'?fmt(x.power):esc(x.reach);const d=new Date(x.updated_at);
-      return `<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${v}</td><td>${isNaN(d)?'':(d.getMonth()+1)+'/'+d.getDate()}</td></tr>`;}).join('');
-  }catch(e){body.innerHTML='<tr><td colspan="5">랭킹을 불러오지 못했다.</td></tr>';}
+    if(!rows.length){body.innerHTML='<tr><td colspan="6">아직 등록된 용사가 없다. 첫 기록의 주인공이 되어 보자.</td></tr>';return;}
+    const hl=k=>rankSort===k?' style="color:var(--fg);font-weight:700"':'';
+    body.innerHTML=rows.map((x,i)=>`<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n"${hl('reach_score')}>${esc(x.reach)}</td><td class="n"${hl('power')}>${fmt(x.power)}</td><td class="n"${hl('kills')}>${fmt(x.kills)}마리</td></tr>`).join('');
+  }catch(e){body.innerHTML='<tr><td colspan="6">랭킹을 불러오지 못했다.</td></tr>';}
 }
 function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name,at:Date.now()});logAct(['S']);}
 function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}

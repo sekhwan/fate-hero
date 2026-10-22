@@ -238,8 +238,10 @@ function applyItem(s,it,sign){ if(it.spare) return; // 예비 전설은 효과 �
 // 같은 부위(능력치·전투력·승률·도망)는 하나만 착용한다. 더 좋은 것이 들어오면 기존 것은 자동으로 판다.
 function wouldUpgrade(s,it){const slot=slotOf(it);if(!slot)return true;it.boost=1+SKV.mItem[mastery(s,'재물')];const old=s.items.find(x=>slotOf(x)===slot&&!x.spare);return !old||itemVal(it)>itemVal(old);}
 // 전설은 착용품보다 약하거나 같은 부위가 있어도 예비로 보관한다 (신화 합성 재료로 모을 수 있게)
-const SPARE_MAX=8;function spareCount(s){return s.items.filter(x=>x.spare).length;}
-function canKeepSpare(s,it){return (it.grade||0)===3&&!!slotOf(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce);}
+const SPARE_MAX=12;function spareCount(s){return s.items.filter(x=>x.spare).length;}
+function canKeepSpare(s,it){return (it.grade||0)===3&&!!slotOf(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce||!!s.buyKeep);}
+// 상점의 전설 장비는 보유품과 예비 칸 수에 관계없이 언제나 살 수 있다(사면 예비로 보관된다)
+function shopLegend(it){return (it.grade||0)===3&&!!slotOf(it);}
 // 같은 부위에서 가장 좋은 것을 착용하고 나머지 전설은 예비로 둔다
 function normSlots(o,ap){const by={};for(const it of o.items){const sl=slotOf(it);if(sl)(by[sl]=by[sl]||[]).push(it);}
   for(const sl in by){const a=by[sl];if(a.length<2&&!a[0].spare)continue;let best=a[0];for(const it of a)if(itemVal(it)>itemVal(best)||(itemVal(it)===itemVal(best)&&!it.spare&&best.spare))best=it;
@@ -263,9 +265,9 @@ function sell(s,idx){
 }
 function buy(s,idx){
   const o=s.shop&&s.shop[idx]; if(!o||o.sold) return null; if(holdFull(s,o.item)) return null;
-  const have=o.cur==='gold'?s.gold:s.fame; if(have<o.price||!(wouldUpgrade(s,o.item)||canKeepSpare(s,o.item))) return null;
+  const have=o.cur==='gold'?s.gold:s.fame; if(have<o.price||!(wouldUpgrade(s,o.item)||canKeepSpare(s,o.item)||shopLegend(o.item))) return null;
   if(o.cur==='gold') s.gold-=o.price; else s.fame-=o.price;
-  o.sold=true; noteGot(s,o.item); o.item.src=o.cur==='gold'?'상점 구매 (금화)':'상점 구매 (명성)'; o.item.where=placeName(s); equip(s,o.item); checkCombos(s,s.comboOut||null); return o.item;
+  o.sold=true; noteGot(s,o.item); o.item.src=o.cur==='gold'?'상점 구매 (금화)':'상점 구매 (명성)'; o.item.where=placeName(s); s.buyKeep=shopLegend(o.item); equip(s,o.item); delete s.buyKeep; checkCombos(s,s.comboOut||null); return o.item;
 }
 const MINIONS=[
   ['임프','고블린','해골 병사','구울','하피','늑대인간','가고일','오우거','저주받은 기사','서큐버스'],
@@ -454,7 +456,9 @@ function duelPlan(A0,B0){const L=[];let A=A0,B=B0;
 function duel(A,B,r){const d=duelPlan(A,B);return {win:r()<d.p,log:d.log,how:d.how,p:d.p};}
 function mythFx(s){return [...(s.combos||[]).map(id=>COMBO_BY[id].e),...(s.mythics||[]).map(id=>MYTH_BY[id].e),...(s.hidFx?[s.hidFx]:[])];}
 function cmb(s,key,base){let v=base;for(const e of mythFx(s)){if(e[key]!=null)v=key==='mult'?v*e[key]:v+e[key];}return v;}
-function mythMats(s){const by={};s.items.forEach((it,i)=>{const sl=slotOf(it);if(sl&&it.grade===3&&(it.plus||0)>=MYTH_PLUS&&(by[sl]==null||(it.spare&&!s.items[by[sl]].spare)))by[sl]=i;});return Object.values(by).slice(0,4);}
+// 같은 부위에 재료 후보가 여럿이면 강화 수치가 가장 낮은 것을 바친다(같으면 예비 전설 우선). 높은 것은 남아 착용된다.
+function mythMats(s){const by={};s.items.forEach((it,i)=>{const sl=slotOf(it);if(!(sl&&it.grade===3&&(it.plus||0)>=MYTH_PLUS))return;const cur=by[sl]==null?null:s.items[by[sl]];
+  if(!cur||(it.plus||0)<(cur.plus||0)||((it.plus||0)===(cur.plus||0)&&it.spare&&!cur.spare))by[sl]=i;});return Object.values(by).slice(0,4);}
 function mythCheck(s){const st=STAGES[s.stage];const where=!!(st&&st.endless&&st.hunt==null);const mats=mythMats(s);
   return {where,mats,fame:s.fame>=MYTH_FAME,ok:where&&mats.length>=4&&s.fame>=MYTH_FAME&&!s.dead};}
 function mythFuse(s){const c=mythCheck(s);if(!c.ok)return null;s.fame-=MYTH_FAME;
@@ -622,7 +626,7 @@ function hiddenQuiz(){return [
   ['PvP 스탯이 효과를 내기 시작하는 최소 수치는?',String(PVP_MIN),['3','10','1','5']],
   ['부활은 최대 몇 회까지 지닐 수 있나?',REVIVE_MAX+'회',['2회','3회','5회','1회']],
   ['지휘 스킬 없이 용병은 최대 몇 명인가?',MERC_CAP+'명',['8명','10명','20명','12명']],
-  ['예비 전설은 최대 몇 개까지 보관하나?',SPARE_MAX+'개',['5개','10개','12개','8개']],
+  ['예비 전설은 최대 몇 개까지 보관하나?',SPARE_MAX+'개',['8개','10개','15개','20개']],
   ['끝없는 전장은 몇 층마다 자동 저장되나?','5층',['3층','10층','1층','5층']],
   ['히든 영웅이 태어날 확률은?','0.1%',['1%','0.01%','5%','0.1%']],
   ['공허의 옥좌는 몇 번째 세계인가?','5번째',['3번째','4번째','6번째','5번째']],
@@ -992,7 +996,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.4';
+const ENGINE_VERSION='1.5.5';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
