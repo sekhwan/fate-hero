@@ -399,6 +399,12 @@ header.hb h1 span{background:inherit;-webkit-background-clip:text;background-cli
 header.hb .helpBtn{font-family:"Nanum Myeongjo",serif;font-weight:700;background:linear-gradient(180deg,#4a3418,#2a1c0c);border:1px solid #c99a3a;box-shadow:inset 0 1px 0 rgba(255,220,140,.35),0 2px 0 #120a02;color:#f4e3b8;border-radius:2px}
 header.hb .helpBtn:hover{background:linear-gradient(180deg,#5c4220,#33230e);color:#fff0c0}
 .hbCounter{font-family:"Nanum Myeongjo",serif;font-weight:700;background:linear-gradient(180deg,#3a2810,#1e1408);border:1px solid #c99a3a;box-shadow:inset 0 1px 0 rgba(255,220,140,.3)}
+
+/* 초상: 액자 없이 그림만. 출신은 옆 글자로 이미 보이므로 뒤에 은은한 빛만 남긴다 */
+.portrait{border:0!important;box-shadow:none!important;background:radial-gradient(circle at 50% 55%,color-mix(in srgb,var(--pc) 26%,transparent),transparent 68%)!important;overflow:visible!important;filter:none!important}
+.portrait .ptag,.portrait .pcrest{display:none!important}
+.portrait img{object-fit:contain;-webkit-mask-image:linear-gradient(180deg,#000 72%,transparent 100%);mask-image:linear-gradient(180deg,#000 72%,transparent 100%)}
+.portrait .pfb svg{color:#3a3340}
 /* 처음 10분: 처음 만날 때 하나씩 열리는 화면 */
 body.ob-combo #cmbBox,body.ob-skill .skills,body.ob-comp .party,body.ob-merc #mercBox,body.ob-inv .pInv,body.ob-inv .gt[data-gt="inv"],body.ob-end .pvpBox,body.ob-end [data-rk="world"]{display:none!important}
 body.ob-inv .gearBody .pShop{display:block!important}
