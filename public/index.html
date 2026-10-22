@@ -642,6 +642,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .tipBox.withImg{display:flex;gap:12px;align-items:flex-start;max-width:min(420px,calc(100vw - 24px))} .tipBox .tipTx{min-width:0} .tipBox .tipTx div+div{margin-top:2px}
 .tipBox .tipImg{flex:none;width:112px;height:112px;margin:0!important;border-radius:8px;border:1px solid var(--line);background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.08),rgba(0,0,0,.35));display:flex;align-items:center;justify-content:center}
 .tipBox .tipImg img{width:104px;height:104px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,.7))}
+.tipBox .tipImg.comp{width:150px;height:150px;border-color:rgba(240,166,200,.55);background:radial-gradient(circle at 50% 55%,rgba(240,166,200,.2),rgba(0,0,0,.35) 70%)} .tipBox .tipImg.comp img{width:146px;height:146px}
 .tipBox .tipImg.g1{border-color:var(--g1);box-shadow:0 0 8px color-mix(in srgb,var(--g1) 40%,transparent)} .tipBox .tipImg.g2{border-color:var(--g2);box-shadow:0 0 10px color-mix(in srgb,var(--g2) 45%,transparent)} .tipBox .tipImg.g3{border-color:var(--g3);box-shadow:0 0 14px rgba(232,169,58,.7)}
 
 /* 구역 색: 전투(붉은색) · 정비(청록색) · 상점(금색) */
@@ -1256,8 +1257,8 @@ function renderHero(){
   const hb=$('hpBar');hb.style.width=(Math.max(0,tmp.hp)/tmp.maxHp*100)+'%';hb.className=tmp.hp/tmp.maxHp<0.35?'low':'';
   $('fameNum').textContent=fmt(tmp.fame); $('fameTitle').textContent=fameTitle(tmp.fame);
   const slots=[['히로인','heroine','명성 30 이상일 때만 만날 수 있다'],['친구','friend','길 위에서 우연히 만난다'],['펫','pet','길 위에서 우연히 만난다']];
-  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
-    `<span class="pc ${tmp.spouse?'on':''}"${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
+  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}${c&&COMP_IMG[c.name]?` data-ti="${COMP_IMG[c.name]}"`:''}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
+    `<span class="pc ${tmp.spouse?'on':''}"${tmp.spouse&&COMP_IMG[tmp.spouse]?` data-ti="${COMP_IMG[tmp.spouse]}"`:''}${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
   $('skillBox').innerHTML=ROLES.map(role=>{const rk=roleRanks(tmp,role),m=mastery(tmp,role);const mine=SKILLS.filter(k=>k.role===role&&sk(tmp,k.id));
     const bar=Array.from({length:SKV.mT2},(_,i)=>`<i class="${i<rk?'f':''}"></i>`).join('');
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
@@ -1943,10 +1944,10 @@ document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key
 {const box=document.createElement('div');box.className='tipBox';box.hidden=true;box.setAttribute('role','tooltip');document.body.appendChild(box);
  let cur=null,pinned=false;
  const show=el=>{cur=el;const t=el.dataset.tt,l=(el.dataset.tl||'').split('¦').filter(Boolean);
-   const im=el.querySelector('img.iI');const gm=(el.className.match(/\bg([0-3])\b/)||[])[1];
+   const ti=el.dataset.ti;const im=ti?null:el.querySelector('img.iI');const gm=(el.className.match(/\bg([0-3])\b/)||[])[1];const src=ti||(im&&im.getAttribute('src'));
    const txt=`<b>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');
-   box.classList.toggle('withImg',!!im);
-   box.innerHTML=im?`<div class="tipImg g${gm||0}"><img src="${im.getAttribute('src')}" alt=""></div><div class="tipTx">${txt}</div>`:txt;box.hidden=false;
+   box.classList.toggle('withImg',!!src);
+   box.innerHTML=src?`<div class="tipImg ${ti?'comp':'g'+(gm||0)}"><img src="${src}" alt=""></div><div class="tipTx">${txt}</div>`:txt;box.hidden=false;
    const r=el.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;let x=Math.min(Math.max(12,r.left),innerWidth-bw-12),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);box.style.left=x+'px';box.style.top=y+'px';};
  const hide=()=>{box.hidden=true;cur=null;pinned=false;};
  document.addEventListener('mouseover',e=>{if(pinned)return;const el=e.target.closest&&e.target.closest('[data-tt]');if(el){if(el!==cur)show(el);}else if(cur)hide();});
