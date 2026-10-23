@@ -158,7 +158,7 @@ const QUESTS=[
 const FAME_TITLES=[[-1e9,'악명 높은 자'],[0,'무명'],[20,'마을의 이름'],[60,'지방의 영웅'],[150,'왕국의 영웅'],[400,'살아있는 전설']];
 function fameTitle(f){let t=FAME_TITLES[0][1];for(const [m,n] of FAME_TITLES) if(f>=m) t=n; return t;}
 const DEMON_W=1.12;
-let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.04; let ITEM_MULT=1/3; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
+let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.015; let ITEM_MULT=1/3; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
 const EXPLORE_TXT=[
   ['이끼 낀 동굴 입구가 보인다.','무너진 성채의 지하로 내려가는 계단이 있다.','안개 낀 늪지대가 펼쳐져 있다.','버려진 광산 갱도가 입을 벌리고 있다.'],
   ['뼈로 쌓은 탑이 서 있다.','재가 내리는 폐허 도시가 보인다.','망자들의 무덤이 끝없이 이어진다.'],
@@ -325,21 +325,21 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.187, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.173, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
-  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.115, regions:[
+  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.083, regions:[
     ['망각의 강','뱃사공의 망령'],['비명의 숲','자살나무 정령'],['재의 평원','재의 기사'],['불타는 도시 디스','이단 심문관'],['얼음 호수','배신자들의 군주'],
     ['피의 강','켄타우로스 왕'],['역병의 늪','파리 대왕'],['거짓의 골짜기','기만의 대공'],['탐욕의 금고','금고지기'],['분노의 투기장','지옥 검투사'],
     ['교만의 첨탑','루시퍼의 그림자'],['지하 세계 왕좌','하데스의 섭정']]},
-  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.14, regions:[
+  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.068, regions:[
     ['마계 1층 · 색욕','아스모데우스'],['마계 2층 · 탐식','벨제붑'],['마계 3층 · 탐욕','맘몬'],['마계 4층 · 나태','벨페고르'],
     ['마계 5층 · 질투','레비아탄'],['마계 6층 · 분노','사탄'],['마계 7층 · 교만','루시퍼'],['마계 핵','칠대죄의 합일체']]},
-  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.2, regions:[
+  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.15, regions:[
     ['무저갱의 가장자리','이름 없는 자'],['끝없는 낙하','공허 포식자'],['시간이 멈춘 곳','종말의 시계공'],['별이 꺼진 하늘','별을 삼킨 자'],
     ['심연의 눈','바라보는 자'],['원초의 혼돈','태초의 악']]},
-  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.6, regions:[
+  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.35, regions:[
     ['옥좌로 가는 계단','최후의 근위대장'],['거울의 방','또 하나의 나'],['공허의 옥좌','악의 근원']]},
   {name:'끝없는 전장', sub:'쓰러뜨린 악들이 끝없이 되살아나는 곳', endless:true, total:1, base:70, growth:1.115, regions:[]},
 ];
@@ -364,9 +364,9 @@ const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
 
 // ===== 스킬 =====
 // 레벨업과 지배자 처치 때마다 3개 중 1개를 고른다. 같은 스킬은 3랭크까지.
-let SKV={blade:0.16,giant:0.15,boss:0.10,command:0.05,cmdcap:2,cmdHire:3,grit:0.6,flee:0.5,talk:0.5,camp:0.5,scholar:0.3,fame:1.2,famecap:0.15,lucky:6,charm:9,treasure:2.0,appraise:0.25,smith:0.04,ward:0.45,merchant:2.0,discount:0.12,startPicks:0,conquerPicks:1,pickFrom:3,pickEvery:2,mT1:3,mT2:6,mPow:[0,0.12,0.5],mGold:[0,0.3,0.8],mEnh:[0,0.03,0.06],mStat:[0,5,15],mDmg:[0,0.5,0.8],mXp:[0,0.5,1.5],mItem:[0,0.45,1.1],mGrit:[0,0.15,0.4],mRetry:[1.05,0.88,0.75]};
+let SKV={blade:0.16,giant:0.15,boss:0.10,command:0.05,cmdcap:2,cmdHire:3,grit:0.6,flee:0.5,talk:0.5,camp:0.5,scholar:0.3,fame:1.2,famecap:0.15,lucky:6,charm:9,treasure:2.0,appraise:0.25,smith:0.04,ward:0.45,merchant:2.0,discount:0.12,startPicks:0,conquerPicks:1,pickFrom:3,pickEvery:2,mT1:3,mT2:6,mPow:[0,0.12,0.5],mGold:[0,0.3,0.8],mEnh:[0,0.03,0.06],mStat:[0,5,15],mDmg:[0,0.5,0.8],mXp:[0,0.5,1.5],mItem:[0,0,0],mGrit:[0,0.15,0.4],mRetry:[1.05,0.88,0.75]};
 const ROLES=['전투','생존','성장','재물'];
-const MASTERY={'전투':t=>`전투력 +${Math.round(SKV.mPow[t]*100)}%`,'생존':t=>`부활 +1(이미 1회면 최대 생명력 +25%), 받는 피해 -${Math.round(SKV.mDmg[t]*100)}%, 최종 지배자 재도전 +${t}, 재도전마다 지배자 약화 ${Math.round((1-SKV.mRetry[t])*100)}%, 생명력 절반 이하일 때 전투력 +${Math.round(SKV.mGrit[t]*100)}%`,'성장':t=>`모든 능력치 +${SKV.mStat[t]}, 경험치 +${Math.round(SKV.mXp[t]*100)}%`,'재물':t=>`장비 효과 +${Math.round(SKV.mItem[t]*100)}%, 금화 +${Math.round(SKV.mGold[t]*100)}%, 강화 확률 +${Math.round(SKV.mEnh[t]*100)}%p`};
+const MASTERY={'전투':t=>`전투력 +${Math.round(SKV.mPow[t]*100)}%`,'생존':t=>`부활 +1(이미 1회면 최대 생명력 +25%), 받는 피해 -${Math.round(SKV.mDmg[t]*100)}%, 최종 지배자 재도전 +${t}, 재도전마다 지배자 약화 ${Math.round((1-SKV.mRetry[t])*100)}%, 생명력 절반 이하일 때 전투력 +${Math.round(SKV.mGrit[t]*100)}%`,'성장':t=>`모든 능력치 +${SKV.mStat[t]}, 경험치 +${Math.round(SKV.mXp[t]*100)}%`,'재물':t=>`금화 +${Math.round(SKV.mGold[t]*100)}%, 강화 확률 +${Math.round(SKV.mEnh[t]*100)}%p`};
 function roleRanks(s,role){let v=0;for(const k in (s.skills||{})) if(SKILL_BY[k]&&SKILL_BY[k].role===role) v+=s.skills[k];return v;}
 function mastery(s,role){const v=roleRanks(s,role);return v>=SKV.mT2?2:v>=SKV.mT1?1:0;}
 let GW=[2,5,0.03,0.25]; // 영웅·전설 가중치(기본, 보너스 비례)
@@ -1098,7 +1098,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.3';
+const ENGINE_VERSION='1.9.4';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
