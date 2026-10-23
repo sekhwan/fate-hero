@@ -643,13 +643,13 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .wbMine .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
 .wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
-.crest{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none}.crest img{width:100%;height:100%;object-fit:contain;border-radius:4px;box-shadow:0 0 0 2px var(--c1,#b8862b)}.crest svg{display:block}
+.crest{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none;box-shadow:0 1px 3px #000a}.crest img{width:100%;height:100%;object-fit:contain;background:var(--c2,#3a1a1a);box-shadow:inset 0 0 0 2px var(--c1,#b8862b);outline:2px solid var(--c1,#b8862b);outline-offset:-2px}.crest svg{display:block}
 .legTag{font-size:10.5px;padding:0 5px;border:1px solid #6b5a30;color:#d8b860;border-radius:6px;white-space:nowrap}
 .legList{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:5px}.legList li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:7px 10px;border-radius:4px}
 .legList li .li{font-size:22px}.legList li>div{flex:1}.legList li small{color:var(--muted)}.legList .lx{font-size:12.5px;color:var(--muted)}.legList li em{font-style:normal;color:var(--holy);font-size:13px}.legList .btn{padding:6px 12px;font-size:13px;flex:none;width:auto;min-width:84px}
 .hrName{font:inherit;background:none;border:0;color:inherit;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:6px;text-align:left}.hrName:hover b{text-decoration:underline}
 .rkHouse{margin-right:5px;display:inline-flex;vertical-align:-4px}
-.houseM .hsWrap{display:flex;gap:18px;flex-wrap:wrap}.hsPrev{flex:none;width:150px;text-align:center}.hsName{font-family:var(--display);font-size:20px;margin-top:6px;word-break:break-all}
+.houseM .hsWrap{display:flex;gap:18px;flex-wrap:wrap}.hsPrev{flex:none;width:190px;text-align:center}.hsName{font-family:var(--display);font-size:20px;margin-top:6px;word-break:break-all}
 .hsForm{flex:1;min-width:240px;display:flex;flex-direction:column;gap:6px}.hsForm label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
 .hsForm input[type=text],.hsForm #hsName{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px}
 .hsL{font-size:13px;color:var(--muted);margin-top:6px}.hsL small{font-size:11.5px}.hsPick{display:flex;flex-wrap:wrap;gap:4px}.hsPick.sym .mode{font-size:18px;padding:2px 6px}
@@ -1379,14 +1379,16 @@ function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE
     if(r.ok&&authKeep(r.j,email)){await acctAfterLogin();showToast('로그인','연대기를 불러와 합쳤다','ok',2200);}else{m.className='msg err';m.textContent=AUTH_ERR((r.j&&(r.j.msg||r.j.error_description||r.j.message))||'');}};
   $('acGo').onclick=go;$('acPw').onkeydown=e=>{if(e.key==='Enter')go();};}
 // ===== 가문: 이름·문장·색, 족보. 가입한 계정에 하나 =====
-const CREST_SHAPES=['방패','둥근 방패','깃발','마름모'],CREST_SYMS=['🦁','🐉','💀','⭐','🌙','🔥','⚔️','👑','🦅','🌲','❄️','⚒️','🐺','🌹','👁️','⚡'];
+const CREST_SHAPES=['단색','가로띠','세로띠','대각선'],CREST_SYMS=['🦁','🐉','💀','⭐','🌙','🔥','⚔️','👑','🦅','🌲','❄️','⚒️','🐺','🌹','👁️','⚡'];
 const HOUSE_COLORS=['#b8862b','#e8c860','#c0392b','#7f1d1d','#d35400','#27ae60','#14532d','#2e86c1','#1e3a8a','#8e44ad','#ecf0f1','#2c3e50','#3a1a1a','#111111'];
 let HOUSE=store.get('house',null),houseDraft=null,housePending=null,houseMembers=null,acctThen=null;
 function jwtSub(){try{const seg=AUTH.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(seg.padEnd(Math.ceil(seg.length/4)*4,'='))))).sub;}catch(e){return null;}}
-function crestSvg(h,size){const sh=(h.crest&&h.crest.shape)|0,sy=CREST_SYMS[((h.crest&&h.crest.sym)|0)%CREST_SYMS.length],c1=h.color1||'#b8862b',c2=h.color2||'#3a1a1a';
-  const path=sh===1?'<circle cx="50" cy="52" r="42"/>':sh===2?'<path d="M14 8H86V88L50 72L14 88Z"/>':sh===3?'<path d="M50 4L94 52L50 98L6 52Z"/>':'<path d="M12 8H88V44C88 72 70 88 50 96C30 88 12 72 12 44Z"/>';
-  return `<svg class="crestSvg" viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><g fill="${c2}" stroke="${c1}" stroke-width="6">${path}</g><text x="50" y="${sh===2?47:56}" text-anchor="middle" dominant-baseline="middle" font-size="40">${sy}</text></svg>`;}
-function crestHtml(h,size){if(!h)return '';size=size||32;if(h.crest_url&&!h.crest_hidden)return `<span class="crest" style="--c1:${h.color1};width:${size}px;height:${size}px"><img src="${esc(h.crest_url)}" alt="" onerror="this.style.visibility='hidden'"></span>`;return `<span class="crest" style="width:${size}px;height:${size}px">${crestSvg(h,size)}</span>`;}
+// 가문 깃발: 국기처럼 가로 3 : 세로 2. 바탕(바탕색) + 무늬(테두리색) + 가운데 상징
+function crestSvg(h,size){const sh=(h.crest&&h.crest.shape)|0,sy=CREST_SYMS[((h.crest&&h.crest.sym)|0)%CREST_SYMS.length],c1=h.color1||'#b8862b',c2=h.color2||'#3a1a1a';const W=Math.round(size*1.5);
+  const pat=sh===1?`<rect x="0" y="66" width="150" height="34" fill="${c1}"/>`:sh===2?`<rect x="0" y="0" width="44" height="100" fill="${c1}"/>`:sh===3?`<path d="M0 100L150 0V24L36 100Z" fill="${c1}"/>`:'';
+  const cx=sh===2?97:75,cy=sh===1?36:52;
+  return `<svg class="crestSvg" viewBox="0 0 150 100" width="${W}" height="${size}" aria-hidden="true"><rect x="0" y="0" width="150" height="100" fill="${c2}"/>${pat}<rect x="1.5" y="1.5" width="147" height="97" fill="none" stroke="${c1}" stroke-width="3"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="${sh===1?40:46}">${sy}</text></svg>`;}
+function crestHtml(h,size){if(!h)return '';size=size||32;const W=Math.round(size*1.5);if(h.crest_url&&!h.crest_hidden)return `<span class="crest" style="--c1:${h.color1};--c2:${h.color2||'#3a1a1a'};width:${W}px;height:${size}px"><img src="${esc(h.crest_url)}" alt="" onerror="this.style.visibility='hidden'"></span>`;return `<span class="crest" style="width:${W}px;height:${size}px">${crestSvg(h,size)}</span>`;}
 async function houseLoad(){if(!acctOn())return null;const uid=jwtSub();if(!uid)return null;
   const r=await fetch(`${RANK.url}/rest/v1/houses?owner=eq.${uid}&select=id,name,crest,crest_url,crest_hidden,color1,color2,unnamed,score,spent,legacy`,{headers:rankHeaders()});const rows=r.ok?await r.json():[];HOUSE=rows[0]||null;store.set('house',HOUSE);return HOUSE;}
 // 판이 끝났을 때: 가문이 있으면 족보에 조용히 올리고, 없으면 가문을 세우자고 권한다
@@ -1407,8 +1409,8 @@ function renderHouse(){const B=$('houseBody');if(!B)return;$('houseTitle').textC
   B.innerHTML=`${housePending&&!HOUSE&&hero?`<p class="lead">쓰러진 <b>${esc(hero.name)}</b>이(가) 족보의 1대 조상이 된다.</p>`:''}
    <div class="hsWrap"><div class="hsPrev">${crestHtml(prev,120)}<div class="hsName" style="color:${d.color1}">${esc(d.name||'가문 이름')}</div></div>
    <div class="hsForm"><label>가문 이름 <input id="hsName" maxlength="12" placeholder="2~12자" value="${esc(d.name)}"></label>
-    <div class="hsL">문장 그림 올리기 <small>(올리면 이 그림을 쓴다 · 256px로 줄여 저장)</small></div><div class="row"><input type="file" id="hsFile" accept="image/*">${prev.crest_url?'<button class="btn ghost" type="button" id="hsNoImg">그림 빼기</button>':''}</div>
-    <div class="hsL">또는 조합 문장</div><div class="hsPick">${CREST_SHAPES.map((n,i)=>`<button type="button" class="mode" data-sh="${i}" aria-pressed="${d.crest.shape===i}">${n}</button>`).join('')}</div>
+    <div class="hsL">깃발 그림 올리기 <small>(가로 3 : 세로 2 · 384×256으로 줄여 저장 · 남는 곳은 바탕색)</small></div><div class="row"><input type="file" id="hsFile" accept="image/*">${prev.crest_url?'<button class="btn ghost" type="button" id="hsNoImg">그림 빼기</button>':''}</div>
+    <div class="hsL">또는 깃발 만들기 (무늬 · 상징)</div><div class="hsPick">${CREST_SHAPES.map((n,i)=>`<button type="button" class="mode" data-sh="${i}" aria-pressed="${d.crest.shape===i}">${n}</button>`).join('')}</div>
     <div class="hsPick sym">${CREST_SYMS.map((y,i)=>`<button type="button" class="mode" data-sy="${i}" aria-pressed="${d.crest.sym===i}">${y}</button>`).join('')}</div>
     <div class="hsL">가문 색 (테두리 · 바탕)</div><div class="hsPick col">${HOUSE_COLORS.map(c=>`<button type="button" class="sw" data-c1="${c}" style="background:${c}" aria-pressed="${d.color1===c}" title="테두리"></button>`).join('')}</div>
     <div class="hsPick col">${HOUSE_COLORS.map(c=>`<button type="button" class="sw" data-c2="${c}" style="background:${c}" aria-pressed="${d.color2===c}" title="바탕"></button>`).join('')}</div>
@@ -1420,7 +1422,7 @@ function renderHouse(){const B=$('houseBody');if(!B)return;$('houseTitle').textC
   $('hsFile').onchange=async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{d.file=await crestShrink(f);renderHouse();}catch(err){$('hsMsg').className='msg err';$('hsMsg').textContent='그림을 읽지 못했다.';}};
   $('hsGo').onclick=houseSave;}
 // 올린 그림을 256×256 webp로 줄인다
-function crestShrink(file){return new Promise((ok,no)=>{const img=new Image();const u=URL.createObjectURL(file);img.onload=()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');const k=Math.min(256/img.width,256/img.height);const w=img.width*k,h=img.height*k;g.drawImage(img,(256-w)/2,(256-h)/2,w,h);URL.revokeObjectURL(u);
+function crestShrink(file){return new Promise((ok,no)=>{const img=new Image();const u=URL.createObjectURL(file);img.onload=()=>{const c=document.createElement('canvas');c.width=384;c.height=256;const g=c.getContext('2d');const k=Math.min(384/img.width,256/img.height);const w=img.width*k,h=img.height*k;g.drawImage(img,(384-w)/2,(256-h)/2,w,h);URL.revokeObjectURL(u);
   const tryQ=q=>c.toBlob(b=>{if(!b)return no(new Error('blob'));if(b.size>250000&&q>0.4)return tryQ(q-0.15);ok({blob:b,url:URL.createObjectURL(b)});},'image/webp',q);tryQ(0.85);};img.onerror=no;img.src=u;});}
 async function houseSave(){const d=houseDraft,m=$('hsMsg');m.className='msg';m.textContent='저장하는 중…';$('hsGo').disabled=true;
   try{let url=d.url;const uid=jwtSub();
