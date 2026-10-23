@@ -185,5 +185,5 @@ export async function verifySubmission(body, secret, now = Date.now()) {
     title: cleanTitle(body.title),
     updated_at: new Date(now).toISOString(),
   };
-  return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, alive: !sum.dead, wbActs: log.filter((a) => a[0] === 'W').map((a) => String(a[1])), maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };
+  return { row, summary: { hero: row.hero, race: row.race, kills: row.kills, power: row.power, reach: row.reach }, card: sum.card, rawTitle: typeof body.title === 'string' ? body.title.slice(0, 30) : null, alive: !sum.dead, wbActs: log.filter((a) => a[0] === 'W').map((a) => String(a[1])), maxFloorE: Math.max(0, Math.floor(sum.maxFloorE || 0)) };
 }

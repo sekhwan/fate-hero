@@ -48,6 +48,16 @@ Deno.serve(async (req) => {
     } catch (e) { console.error('reward check', e); return json({ error: '서버 오류' }, 500); }
   }
 
+  // 월드 보스 칭호: 그 닉네임이 실제로 받은 칭호일 때만 붙인다
+  if (!verified.row.title && verified.rawTitle) {
+    try {
+      const q = `world_boss_titles?nickname=eq.${encodeURIComponent(verified.row.nickname)}&title=eq.${encodeURIComponent(verified.rawTitle)}&select=title&limit=1`;
+      const tr = await fetch(restUrl(q), { headers: adminHeaders() });
+      const rows = tr.ok ? await tr.json() : [];
+      if (Array.isArray(rows) && rows.length) verified.row.title = verified.rawTitle;
+    } catch (e) { console.error('title check', e); }
+  }
+
   try {
     const up = await fetch(restUrl('runs?on_conflict=seed'), {
       method: 'POST',

@@ -1,0 +1,30 @@
+# 월드 보스 주간 마감: 매주 월요일 0시 1분(한국 시간)에 지난주 보스를 마감하고 칭호를 나눠 준다.
+# (그 전에 누가 등록하면 서버가 먼저 마감한다. 같은 함수라 두 번 지급되지 않는다)
+name: wb-close
+on:
+  schedule:
+    - cron: '1 15 * * 0'
+  workflow_dispatch:
+permissions:
+  contents: read
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  close:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: close last week
+        run: |
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          AUTH=""; case "$SERVICE" in eyJ*) AUTH="Authorization: Bearer $SERVICE";; esac
+          B="https://$PROJECT_REF.supabase.co/rest/v1"
+          H=(-H "apikey: $SERVICE" -H "Content-Type: application/json")
+          [ -n "$AUTH" ] && H+=(-H "$AUTH")
+          echo "closed weeks: $(curl -fsS -X POST "${H[@]}" "$B/rpc/wb_close" -d '{}')"
+          echo "this week: $(curl -fsS -X POST "${H[@]}" "$B/rpc/wb_current" -d '{}' | jq -c '{boss_name,hp_max}')"
