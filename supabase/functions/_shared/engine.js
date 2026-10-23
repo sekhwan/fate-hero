@@ -200,7 +200,7 @@ const TIER_NOUN=[null,
   {str:'흑요석 대검',con:'무저갱 방패',agi:'허공 걸음',int:'바라보는 눈',cha:'침묵의 관',luk:'꺼진 별',mult:'혼돈의 핵',win:'종말의 나팔',flee:'균열석'},
   {str:'신검',con:'성벽',agi:'날개',int:'진리서',cha:'왕관',luk:'운명석',mult:'근원 인장',win:'승리의 관',flee:'차원문'}];
 const TIER_NAME=['지상계','지하 세계','마계','심연','공허'];
-const TIER_STAT=[1,1.9,3.3,5.5,8.5];
+const TIER_STAT=[1,1.4,1.8,2.3,2.8];
 function tierOf(s){return Math.min(worldOf(s.stage),4);}
 function itemNameOf(k,grade,tier){return tier?`${TIER_PRE[tier][grade]} ${TIER_NOUN[tier][k]}`:ITEM_NAMES[k][grade];}
 function makeItem(r,grade,kind,tier){
@@ -234,11 +234,11 @@ function slotOf(it){return it.stat||(it.mult?'mult':it.win?'win':it.flee?'flee':
 // 강화: +10이면 기본 수치의 3배
 const ENH_BONUS=[0,0.15,0.35,1.5,3,5,8,12,18,26,40];
 // 전설 전용 강화 곡선: +6까지는 완만(같은 강화의 영웅보다 약 1.5배), +7부터 급격히 뛴다
-const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,9.43,14,20,30]; // +7은 +6의 약 1.8배
+const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,10.8,16,23,34]; // +7은 +6의 약 1.8배
 const ENH_RATE=[0.9,0.8,0.7,0.6,0.5,0.4,0.33,0.26,0.2,0.15];
 const ENH_BREAK={1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1};
 const GRADE_ENH=[0.15,0.35,0.7,1.0]; // 등급별 강화 효율: 일반 15%, 희귀 35%, 영웅 70%, 전설 100%
-let ENH_SCALE=0.6;
+let ENH_SCALE=0.3;
 function enhB(it){return ((it.grade||0)===3?ENH_BONUS_LEG:ENH_BONUS)[it.plus||0]*GRADE_ENH[it.grade||0]*ENH_SCALE;}
 function enhF(it){return 1+enhB(it);}
 function effV(it){const b=it.boost||1;if(b!==1&&it.v){const r=effVRaw(it);return Math.max(r,Math.round(r*b));}return effVRaw(it);}
@@ -736,7 +736,7 @@ function winParts(s,E){const ratio=power(s)/E;const tt=Math.tanh(Math.log(ratio)
   return {ratio,base,pw,luck:luck>0?luck*pw:luck,under:under*pw,fame:Math.min(FAME_CAP+SKV.famecap*sk(s,'fame'),fameBonus(s))*pw,item:Math.min(ITEM_CAP,itemSum(s,'win')*curseF(s))*pw};}
 function winProb(s,E,floor){const w=winParts(s,E);return clamp(w.base+w.luck+w.under+w.fame+w.item+cmb(s,'win',0)+compAdd(s,'win'),floor==null?FLOOR:floor,0.95);}
 function unpacified(s){let k=0;for(let j=0;j<s.region;j++) if(!(s.pacified&&s.pacified[j])) k++;return k;}
-let UNP_PEN=0.04; let CARRY_ADJ=1.0; let BONUS_MIN=0.15; let CARRY_STEP=[1,6.5,3,2.6,2.6,0.6]; let CARRY_REF=[0,350,750,1300,2300,4400]; let CARRY_ALPHA=0.5; let FRESH=[1,1.6,1.6,1.65,1.8,1]; let FAME_CAP=0.1, ITEM_CAP=0.2;
+let UNP_PEN=0.04; let CARRY_ADJ=1.0; let BONUS_MIN=0.15; let CARRY_STEP=[1,6.15,2.65,2.2,2.2,0.6]; let CARRY_REF=[0,350,750,1300,2300,4400]; let CARRY_ALPHA=0.5; let FRESH=[1,1.6,1.6,1.65,1.8,1]; let FAME_CAP=0.1, ITEM_CAP=0.2;
 const PROC_PTS=[[8,0],[10,0.015],[20,0.08],[30,0.18],[35,0.30],[40,0.50]];
 function procCurve(v){if(v<=PROC_PTS[0][0])return 0;for(let i=1;i<PROC_PTS.length;i++){const [x1,y1]=PROC_PTS[i-1],[x2,y2]=PROC_PTS[i];if(v<=x2)return y1+(y2-y1)*(v-x1)/(x2-x1);}return 0.5;}
 const RESIST=[0,6,12,18,24,30];
@@ -1106,7 +1106,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.5';
+const ENGINE_VERSION='1.9.6';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
