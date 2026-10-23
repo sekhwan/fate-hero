@@ -53,7 +53,18 @@ Deno.serve(async (req) => {
     const ranks = rk.ok ? await rk.json() : null;
     let world = null;
     try { world = await worldRank(verified); } catch (e) { console.error('world', e); }
-    return json({ ok: true, summary: verified.summary, ranks, world });
+    // 월드 보스: 실패해도 랭킹 등록은 성공으로 둔다
+    let boss = null;
+    try {
+      const row = verified.row;
+      const wb = await fetch(restUrl('rpc/wb_apply'), {
+        method: 'POST',
+        headers: adminHeaders(),
+        body: JSON.stringify({ p_seed: row.seed, p_nick: row.nickname, p_title: row.title, p_kills: row.kills, p_stage: Math.min(5, Math.floor((row.reach_score || 0) / 1000)) }),
+      });
+      if (wb.ok) boss = await wb.json(); else console.error('world boss', wb.status, await wb.text());
+    } catch (e) { console.error('world boss', e); }
+    return json({ ok: true, summary: verified.summary, ranks, world, boss });
   } catch (e) {
     console.error(e);
     return json({ error: '서버 오류' }, 500);
