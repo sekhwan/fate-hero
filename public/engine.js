@@ -179,7 +179,7 @@ const GRADES=[
   {id:0,name:'일반',cls:'g0',stat:2,mult:1.04,gold:40,fame:0},
   {id:1,name:'희귀',cls:'g1',stat:5,mult:1.10,gold:130,fame:25},
   {id:2,name:'영웅',cls:'g2',stat:11,mult:1.25,gold:420,fame:70},
-  {id:3,name:'전설',cls:'g3',stat:30,mult:1.75,gold:1400,fame:180}, // 기본은 영웅의 약 2.7~3배, +7에서 크게 뛴다
+  {id:3,name:'전설',cls:'g3',stat:30,mult:1.75,gold:1400,fame:180}, // 기본은 영웅의 약 2.7~3배, +7은 +6의 약 1.8배
 ];
 const ITEM_NAMES={
   str:['녹슨 장검','기사의 장검','불꽃의 대검','용살검 그람'],
@@ -234,7 +234,7 @@ function slotOf(it){return it.stat||(it.mult?'mult':it.win?'win':it.flee?'flee':
 // 강화: +10이면 기본 수치의 3배
 const ENH_BONUS=[0,0.15,0.35,1.5,3,5,8,12,18,26,40];
 // 전설 전용 강화 곡선: +6까지는 완만(같은 강화의 영웅보다 약 1.5배), +7부터 급격히 뛴다
-const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,20,26,34,50];
+const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,9.43,14,20,30]; // +7은 +6의 약 1.8배
 const ENH_RATE=[0.9,0.8,0.7,0.6,0.5,0.4,0.33,0.26,0.2,0.15];
 const ENH_BREAK={1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1};
 const GRADE_ENH=[0.15,0.35,0.7,1.0]; // 등급별 강화 효율: 일반 15%, 희귀 35%, 영웅 70%, 전설 100%
@@ -883,10 +883,13 @@ function hurt(s,frac,out){
 }
 // 금화·가격 배율: 지역을 지날 때마다 오르고, 세계를 넘어가도 내려가지 않는다
 // 경제 배수: 본 세계에서는 지역마다 커지고, 끝없는 전장 진입 뒤에는 층마다 1.1%씩만 커진다 (금화 숫자 폭주 방지)
-let GOLD_IN=0.25; const ECON_LATE=1.011;
+let GOLD_IN=0.2; const ECON_LATE=1.011;
 function econP(s){const P=Math.max(0,s.prog||0);return s.progE!=null?Math.min(P,s.progE):P;}
 function econLate(s){const P=Math.max(0,s.prog||0);return s.progE!=null&&P>s.progE?Math.pow(ECON_LATE,P-s.progE):1;}
-function econ(s,b){const P=econP(s);return Math.pow(b,Math.min(P,14))*Math.pow(1+(b-1)*0.35,Math.max(0,P-14))*econLate(s);}
+function econRaw(s,b){const P=econP(s);return Math.pow(b,Math.min(P,14))*Math.pow(1+(b-1)*0.35,Math.max(0,P-14))*econLate(s);}
+// 금화 인플레 억제: 모든 금화 수입·가격에 같은 비율(ECON_K)을 곱해 숫자만 작게 한다 (구매력은 그대로). 마계에서 약 1/100.
+const ECON_K=0.14;
+function econ(s,b){return econRaw(s,b)*Math.pow(econRaw(s,1.3),ECON_K-1);}
 function rs(s,b){return Math.pow(b,Math.min(Math.max(0,s.region),14));}
 function placeName(s){const st=STAGES[s.stage];const rg=st.regions[Math.max(0,s.region)];return rg?rg[0]:st.name;}
 function gainItem(s,out,bonus,src){
@@ -1093,7 +1096,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.2';
+const ENGINE_VERSION='1.9.3';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
