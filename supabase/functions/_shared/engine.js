@@ -210,7 +210,7 @@ function makeItem(r,grade,kind,tier){
   const keys=['str','con','agi','int','cha','luk','mult','win','flee'];
   const k=kind||keys[Math.floor(r()*keys.length)];
   const base={grade,tier}; const q=grade>=2?Math.round((0.8+r()*0.4)*100)/100:1; if(q!==1)base.q=q;
-  if(k==='mult'){const m=1+(g.mult-1)*(1+0.45*tier)*q;return Object.assign(base,{name:itemNameOf('mult',grade,tier),mult:m,d:`전투력 +${Math.round((m-1)*ITEM_MULT*100)}%`});}
+  if(k==='mult'){const m=1+(g.mult-1)*(1+0.45*tier)*q;return Object.assign(base,{name:itemNameOf('mult',grade,tier),mult:m,d:`전투력 +${pctTxt((m-1)*ITEM_MULT)}%`});}
   if(k==='win'){const v=[0.02,0.04,0.06,0.10][grade]*q;return Object.assign(base,{name:itemNameOf('win',grade,tier),win:v,d:`승리확률 +${Math.round(v*100)}%p`});}
   if(k==='flee'){const v=[0.05,0.12,0.22,0.40][grade]*q;return Object.assign(base,{name:itemNameOf('flee',grade,tier),flee:v,d:`도망 확률 +${Math.round(v*100)}%p`});}
   const sv=Math.max(1,Math.round(((k==='cha'||k==='luk')?[1,3,6,11][grade]:g.stat*TIER_STAT[tier])*q));
@@ -255,8 +255,10 @@ function itemVal(it){return it.v?effV(it):it.mult?effMult(it)-1:it.win?effWin(it
 function itemName(it){return (it.plus?`+${it.plus} `:'')+it.name;}
 // 실제로 착용했을 때의 수치 (재물 숙련의 장비 효과 보너스 포함)
 function itemTxt(s,it){if(!slotOf(it))return it.d;const b=1+SKV.mItem[mastery(s,'재물')];return itemDesc(Object.assign({},it,{boost:b}))+(b>1?` (재물 숙련 +${Math.round((b-1)*100)}% 포함)`:'');}
+// 10% 미만은 소수점 한 자리까지 보여 준다 (강화 1단계 차이도 보이게)
+function pctTxt(v){const p=v*100;return p<10?(Math.round(p*10)/10).toFixed(1):String(Math.round(p));}
 function itemDescAt(it,plus){const c=Object.assign({},it,{plus});return itemDesc(c);}
-function itemDesc(it){if(it.heal||it.revive)return it.d;if(it.stat)return `${STAT_NAMES[it.stat]} +${effV(it)}`;if(it.mult)return `전투력 +${Math.round((effMult(it)-1)*100)}%`;if(it.win)return `승리확률 +${(effWin(it)*100).toFixed(it.plus?1:0)}%p`;return `도망 확률 +${(effFlee(it)*100).toFixed(it.plus?1:0)}%p`;}
+function itemDesc(it){if(it.heal||it.revive)return it.d;if(it.stat)return `${STAT_NAMES[it.stat]} +${effV(it)}`;if(it.mult)return `전투력 +${pctTxt(effMult(it)-1)}%`;if(it.win)return `승리확률 +${(effWin(it)*100).toFixed(it.plus?1:0)}%p`;return `도망 확률 +${(effFlee(it)*100).toFixed(it.plus?1:0)}%p`;}
 const ENH_BASE=[20,35,60,100];
 // 전설 장비 강화는 강화비에 보유 금화의 10%가 더해진다
 const ENH_TAX_FROM=5, ENH_TAX=0; // 금화 경제 재조정 뒤 전설 강화의 보유 금화 비례 비용은 없앴다
