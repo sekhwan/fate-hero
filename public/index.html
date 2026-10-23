@@ -543,6 +543,18 @@ img.rI{width:16px;height:16px;object-fit:contain;vertical-align:-3px}
 .compPic img{width:100%;height:100%;object-fit:contain;-webkit-mask-image:linear-gradient(180deg,#000 75%,transparent);mask-image:linear-gradient(180deg,#000 75%,transparent)}
 .decide .compOffer{clear:both}
 header.hb .helpBtn{border:0!important;background:url('art/ui_button.webp') center/100% 100% no-repeat!important;box-shadow:0 2px 4px rgba(0,0,0,.5)!important;padding:8px 22px;text-shadow:0 1px 2px #000}
+/* 머리글 버튼: 주요(가문·랭킹) · 안내(링크) · 개인(오른쪽 위 칩) */
+.hbNav{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+header.hb .helpBtn.hbBig{font-size:16px;padding:10px 30px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.02em}
+.hbLinks{display:inline-flex;gap:14px;margin-left:6px}
+.hbLink{font:inherit;font-size:13px;background:none;border:0;padding:4px 0;color:#e8d8b0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(232,216,176,.35);text-underline-offset:4px;text-shadow:0 1px 3px #000}
+.hbLink:hover{color:#fff;text-decoration-color:#fff}.hbLink[aria-pressed="true"]{color:var(--brass)}
+.hbSide{align-self:flex-start;display:flex;flex-direction:column;gap:6px;align-items:flex-end;position:relative;z-index:2}
+.hbChips{display:flex;gap:6px}
+.hbChip{font:inherit;font-size:12.5px;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:rgba(14,10,18,.78);border:1px solid rgba(217,180,90,.5);color:#efe2c4;cursor:pointer;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+.hbChip:hover{border-color:#ffd77a;color:#fff}#bgmBtn.hbChip{width:30px;justify-content:center;padding:4px 0}
+#acctBtn.hbChip.on{border-color:var(--holy)}
+@media (max-width:640px){.hbSide{position:absolute;top:10px;right:10px}header.hb .hbSub{margin-right:136px}.hbSide .hbCounter{position:static!important}.hbChip{font-size:11px;padding:3px 8px}header.hb .helpBtn.hbBig{font-size:14px;padding:8px 18px;flex:1;justify-content:center}.hbNav{gap:8px}.hbLinks{width:100%;justify-content:center;margin:2px 0 0}}
 header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!important}
 .modal{border-style:solid!important;border-width:14px!important;border-color:transparent!important;border-image-source:url('art/ui_panel_frame.webp')!important;border-image-slice:64!important;border-image-width:14px!important;background:linear-gradient(rgba(22,17,13,.94),rgba(22,17,13,.96)),url('art/ui_wood.webp');background-size:auto,320px}
 .modal::before,.modal::after{content:"";position:absolute;top:-10px;width:56px;height:56px;background:url('art/ui_corner.webp') center/contain no-repeat;pointer-events:none}
@@ -951,9 +963,10 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hbTitle">
       <div><h1>운명의 <span>용사</span></h1><p class="hbSub">무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까</p></div></div>
       <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="helpBtn" type="button" id="helpBtn">게임 방법 보기</button><button class="helpBtn" type="button" id="obBtn" aria-pressed="false">모든 정보 보기</button><button class="helpBtn" type="button" id="chronBtn">📜 용사 연대기</button><button class="helpBtn" type="button" id="rankBtn" hidden>랭킹 보기</button><button class="helpBtn" type="button" id="bgmBtn" aria-pressed="false">♪ 배경음 켜기</button><button class="helpBtn" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button></div>
+      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">🏰 가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">🏆 랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button><button class="hbLink" type="button" id="obBtn" aria-pressed="false">모든 정보 보기</button></span></div>
     </div>
-    <div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
+    <div class="hbSide"><div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
+      <div class="hbChips"><button class="hbChip" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button><button class="hbChip" type="button" id="bgmBtn" aria-pressed="false" title="배경음 켜기">♪</button></div></div>
   </header>
   <div class="wbBar" id="wbBar" hidden></div>
 
@@ -1019,13 +1032,13 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 <div class="modalBg" id="chronModal" hidden role="dialog" aria-modal="true" aria-labelledby="chronTitle">
   <div class="modal">
     <button class="x" type="button" id="chronClose" aria-label="닫기">×</button>
-    <h2 id="chronTitle">용사 연대기</h2>
+    <h2 id="chronTitle">가문</h2>
     <p class="lead" id="chronLead"></p>
     <div class="rankTabs" role="tablist">
-      <button class="mode" type="button" data-ch="hero" aria-pressed="true">용사 도감</button>
+      <button class="mode" type="button" data-ch="fam" aria-pressed="true">가문 · 족보</button>
+      <button class="mode" type="button" data-ch="hero" aria-pressed="false">용사 도감</button>
       <button class="mode" type="button" data-ch="mon" aria-pressed="false">몬스터 도감</button>
       <button class="mode" type="button" data-ch="ach" aria-pressed="false">업적 칭호</button>
-      <button class="mode" type="button" data-ch="fam" aria-pressed="false">가문 기록</button>
     </div>
     <div id="chronBody"></div>
   </div>
@@ -1273,7 +1286,7 @@ function chBattle(n,res){if(!n||n.type!=='battle'||!res||!['win','talk','talkFai
   const nm=String(n.name).replace(/의 망령$/,'');if(!chron.m[nm]){chron.m[nm]=1;}else chron.m[nm]++;chron.st.kills++;if(n.boss)chAch('boss1');chSave();}
 function chEnd(){if(!run||!chRun.started)return;chron.st.deaths+=run.dead?1:0;
   if(run.dead&&run.stage===0&&(!chron.st.quick||chRun.dec<chron.st.quick.d)){chron.st.quick={d:chRun.dec,n:`${hero.name} (${hero.race.name} ${hero.wealth.name})`,by:lastOut&&lastOut.text?String(lastOut.text).slice(0,40):''};}chSave();}
-let chTab='hero';
+let chTab='fam';
 function openChron(){$('chronModal').hidden=false;$('chronClose').focus();renderChron();}
 function closeChron(){$('chronModal').hidden=true;$('chronBtn').focus();}
 function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ch===chTab));
@@ -1322,7 +1335,8 @@ async function acctAfterLogin(){const p=await rpc('my_profile');if(!p)return;PRO
   const merged=chMerge(chron,p.chron);Object.keys(chron).forEach(k=>delete chron[k]);Object.assign(chron,merged);store.set('chron',chron);await rpc('save_chron',{p_chron:chron});acctRender();if(typeof renderAll==='function')renderAll();if(acctThen==='house'){acctThen=null;closeAcct();openHouse();}}
 function acctQueueSave(){try{if(!acctOn())return;}catch(e){return;}clearTimeout(acctSaveT);acctSaveT=setTimeout(()=>rpc('save_chron',{p_chron:chron}).then(ok=>{if(ok){store.set('chronSyncAt',Date.now());}}).catch(()=>{}),4000);}
 function nickLocked(){return acctOn()&&PROF&&PROF.nickname?PROF.nickname:null;}
-function acctRender(){const b=$('acctBtn');if(b){b.hidden=!RANK.on;b.innerHTML=acctOn()?`${HOUSE?crestHtml(HOUSE,18):'👤'} ${esc(PROF&&PROF.nickname?PROF.nickname:'내 계정')}`:'👤 가입 · 로그인';b.classList.toggle('on',acctOn());}
+function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE?`${crestHtml(HOUSE,22)} ${esc(HOUSE.name)}`:'🏰 가문';const t=$('chronTitle');if(t)t.textContent=acctOn()&&HOUSE?HOUSE.name:'가문';}
+  const b=$('acctBtn');if(b){b.hidden=!RANK.on;b.innerHTML=acctOn()?`${HOUSE?crestHtml(HOUSE,18):'👤'} ${esc(PROF&&PROF.nickname?PROF.nickname:'내 계정')}`:'👤 가입 · 로그인';b.classList.toggle('on',acctOn());}
   const B=$('acctBody');if(!B||$('acctModal').hidden)return;
   if(acctOn()){const at=store.get('chronSyncAt',0);
     B.innerHTML=`<p class="lead">${esc(AUTH.email)} 으로 로그인했다. 연대기(도감·업적·칭호)가 서버에 저장되어 다른 기기에서도 이어진다.</p>
@@ -2355,7 +2369,7 @@ const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,ba
       out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setValueAtTime(0,ctx.currentTime);out.gain.linearRampToValueAtTime(0.85,ctx.currentTime+1.5);
       clearInterval(timer);timer=setInterval(tick,25);return true;},
     stop(){if(!ctx)return;on=false;const t=ctx.currentTime;out.gain.cancelScheduledValues(t);out.gain.setValueAtTime(out.gain.value,t);out.gain.linearRampToValueAtTime(0,t+0.6);setTimeout(()=>{if(!on){clearInterval(timer);ctx.suspend();}},700);}};})();
-function syncBgm(){const b=$('bgmBtn');b.setAttribute('aria-pressed',BGM.on);b.textContent=BGM.on?'♪ 배경음 끄기':'♪ 배경음 켜기';}
+function syncBgm(){const b=$('bgmBtn');b.setAttribute('aria-pressed',BGM.on);b.textContent=BGM.on?'♪':'🔇';b.title=BGM.on?'배경음 끄기':'배경음 켜기';}
 $('bgmBtn').onclick=()=>{if(BGM.on){BGM.stop();store.set('bgm',0);}else{if(BGM.start())store.set('bgm',1);}syncBgm();};
 if(store.get('bgm',1)){const kick=(ev)=>{if(ev&&ev.target&&ev.target.closest&&ev.target.closest('#bgmBtn'))return;document.removeEventListener('pointerdown',kick);document.removeEventListener('keydown',kick);if(!BGM.on){BGM.start();syncBgm();}};document.addEventListener('pointerdown',kick);document.addEventListener('keydown',kick);}
 document.addEventListener('visibilitychange',()=>{});
@@ -2367,7 +2381,7 @@ function openHelp(){TRACK.st.help++;TRACK.ev('help');fillHelpSkills();const m=$(
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}
 $('helpBtn').onclick=openHelp;
 $('chronBtn').onclick=openChron;$('acctBtn').onclick=openAcct;$('houseClose').onclick=closeHouse;$('houseModal').addEventListener('click',e=>{if(e.target.id==='houseModal')closeHouse();});document.addEventListener('keydown',e=>{if(!$('houseModal').hidden&&e.key==='Escape')closeHouse();});$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
-if(RANK.on){$('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank();}
+$('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank(RANK.on?undefined:'boss');
 $('rankClose').onclick=closeRank;$('rankModal').addEventListener('click',e=>{if(e.target.id==='rankModal')closeRank();});
 document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{rankCol=b.dataset.rk;loadRank();});
 document.addEventListener('keydown',e=>{if(!$('rankModal').hidden&&e.key==='Escape')closeRank();},true);$('helpClose').onclick=closeHelp;$('pvpBtn').onclick=openDuel;$('cmbHead').onclick=()=>$('cmbBox').classList.toggle('open');$('duelClose').onclick=closeDuel;$('duelAgain').onclick=runDuels;document.addEventListener('keydown',e=>{if(!$('duelModal').hidden&&e.key==='Escape')closeDuel();},true);
