@@ -1030,7 +1030,7 @@ function choose(s,optId){
         break; }
       case 'gpass': text='도박꾼을 무시하고 지나갔다.'; break;
       case 'ctake': {s.bossCurse=(s.bossCurse||0)+CURSE_BOSS;const g=s.r()<0.2?3:2;const it=makeItem(s.r,g,null,tierOf(s));it.src='저주받은 제단';it.where=placeName(s);noteGot(s,it);equip(s,it);checkCombos(s,out);s.fame+=2+g*4;
-        out.push({t:'item g3',x:`전설 아이템: ${it.name} (${itemTxt(s,it)})`,got:{name:it.name,d:itemTxt(s,it),grade:3,src:it.src,spare:!!it.spare,kept:s.items.includes(it),slot:slotOf(it),heal:false,revive:false}});if(s.lastEquipNote)out.push({t:'good',x:s.lastEquipNote});
+        out.push({t:'item g'+g,x:`${GRADES[g].name} 아이템: ${it.name} (${itemTxt(s,it)})`,got:{name:it.name,d:itemTxt(s,it),grade:g,src:it.src,spare:!!it.spare,kept:s.items.includes(it),slot:slotOf(it),heal:false,revive:false}});if(s.lastEquipNote)out.push({t:'good',x:s.lastEquipNote});
         out.push({t:'bad',x:`저주: 다음 지배자전 승률 -${Math.round(s.bossCurse*100)}%p`});text='무구를 집어 들자 등골이 서늘해졌다.';s.lastEvent={ok:true,head:'저주받은 보물',sub:it.name};break;}
       case 'cleave': text='불길한 제단을 그냥 지나쳤다.'; break;
       case 'oheal': hurt(s,0.2,out); if(!s.dead){s.oath={left:OATH_AFTER};text=`기사가 무릎을 꿇었다. "${OATH_AFTER}지역 뒤, 반드시 곁에서 싸우겠습니다."`;out.push({t:'comp',x:`맹세: ${OATH_AFTER}지역 뒤 지배자전에 기사 합류`});s.lastEvent={ok:true,head:'기사의 맹세',sub:`${OATH_AFTER}지역 뒤 합류`};} else text='치료하다 힘이 다했다.'; break;
