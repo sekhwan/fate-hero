@@ -130,6 +130,20 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .wbAtk.cd{animation:none;background:#3a2a2a;border-color:#6b4a40;color:#d8c0b0}
 @media (max-width:640px){#wbFx .wbFxBoss{width:130px;height:130px}#wbFx .wbCards{gap:6px;flex-wrap:nowrap}#wbFx .wbCard{width:calc(33% - 4px);padding:8px 4px}#wbFx .wbCard .ic img{width:40px;height:40px}#wbFx .wbCard span{font-size:12px}#wbFx .wbCard em{font-size:11px}}
 @media (prefers-reduced-motion:reduce){#wbFx *{animation-duration:.01s!important;transition-duration:.01s!important}}
+/* 보상 미리보기 (월드 보스 탭) */
+.wbPrev{margin:12px 0;padding:10px 12px;border:1px solid #6b4a20;background:linear-gradient(#241a0c,#16110a)}
+.wbPrevH{font-family:var(--display);color:#ffd77a;font-size:18px;margin-bottom:8px}.wbPrevH small{font-family:var(--body);font-size:12px;color:var(--muted);margin-left:8px}.wbPrevH small b{color:var(--fg)}
+.wbPrev .wbCards{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:6px}
+.wbPrev .wbCard{width:180px;padding:10px 8px;border:2px solid #6ea8ff;background:linear-gradient(#1c2238,#0e1220);border-radius:6px;display:flex;flex-direction:column;gap:3px;align-items:center;text-align:center;animation:wbPrevF 3s ease-in-out infinite}
+.wbPrev .wbCard:nth-child(2){animation-delay:.4s}.wbPrev .wbCard:nth-child(3){animation-delay:.8s}
+@keyframes wbPrevF{50%{transform:translateY(-3px)}}
+.wbPrev .wbCard .ic{font-size:34px;line-height:1}.wbPrev .wbCard .ic img{width:48px;height:48px}
+.wbPrev .wbCard b{font-size:12px;color:#9cc3ff}.wbPrev .wbCard span{font-weight:700;font-size:13px}.wbPrev .wbCard em{font-style:normal;font-size:11px;color:#c8bfae}
+.wbPrev .wbCard.g3{border-color:#e8a93a;background:linear-gradient(#3a2808,#1a1004);box-shadow:0 0 16px #e8a93a66}.wbPrev .wbCard.g3 b{color:#ffd77a}
+.wbPrev .wbCard.myth{border-color:#fff;background:linear-gradient(135deg,#ff6a6a,#ffd36a,#6aff9a,#6ac8ff,#c86aff);background-size:300% 300%;color:#1a1020;box-shadow:0 0 20px #ffffff88;animation:wbPrevF 3s ease-in-out infinite .8s,wbRain 6s linear infinite}
+@keyframes wbRain{0%{background-position:0 50%}50%{background-position:100% 50%}100%{background-position:0 50%}}
+.wbPrev .wbCard.myth b,.wbPrev .wbCard.myth em{color:#1a1020}
+@media (max-width:640px){.wbPrev .wbCards{flex-wrap:nowrap;gap:6px}.wbPrev .wbCard{width:calc(33% - 4px);padding:6px 3px}.wbPrev .wbCard .ic img{width:34px;height:34px}.wbPrev .wbCard span{font-size:11px}.wbPrev .wbCard em{font-size:10px}}
 /* 명성 도박꾼(야바위) 전체 화면 */
 #gbFx{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#3a2a12 0,#140c06 55%,#050302 100%);color:#f5ead2}
 #gbFx.on{display:flex;animation:gbIn .35s ease-out} @keyframes gbIn{from{opacity:0;transform:scale(1.04)}to{opacity:1;transform:none}}
@@ -1798,7 +1812,7 @@ async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w'
       if(B.cooldown){wbSetNext(B.next_at);msg.className='msg err';msg.textContent=(BS?'':msg.textContent+' · ')+`월드 보스: 이 용사는 ${wbWaitTxt()} 뒤에 다시 공격할 수 있다.`;}
       else if(B.skipped){msg.textContent+=' · 월드 보스 피해는 「⚔ 공격하기」로만 들어간다 (그사이 처치는 쌓여 있다).';}
       else{msg.textContent+=B.delta>0?` · 월드 보스 ${B.boss}에게 ${fmt(B.delta)} 피해 (이번 주 내 피해 ${fmt(B.damage)} · ${B.rank}위${B.w>1?' · 출신 세계 도달 ×1.5':''}) · 남은 생명력 ${fmt(B.hp_left)}`:` · 월드 보스: 늘어난 처치가 없어 추가 피해 없음`;
-        if(B.next_at)wbSetNext(B.next_at);
+        if(B.next_at)wbSetNext(B.next_at);if(B.reward_reason==='daily_limit')store.set('wbRw',{seed:heroSeed,day:new Date(Date.now()+WB_KST).toISOString().slice(0,10),left:0});
         const rw=B.reward?wbApplyReward(B.reward):null;
         if(B.delta>0&&BS)wbAttackFx(pct0,B,rw);else{if(B.killed_now)showToast('⚡ 최후의 일격!',`${B.boss}을(를) 쓰러뜨렸다`,'ok',3500,3);wbHitFx(pct0,B);}}}
     const wr=$(W?'wRes':BS?'bRes':'rankWorld');if(wr&&!BS)wr.innerHTML=worldHtml(j.world);if(W||BS)btn.disabled=false;if(BS){WB_MSG=msg.textContent;if(rankCol==='boss')setTimeout(renderBossBox,1800);}
@@ -1887,7 +1901,7 @@ function wbApplyReward(R){if(!run||run.dead)return null;const arg=`${R.n}:${R.co
   const r=wbRewardSync(run,arg,ckOk?ck.snap:null);if(!r)return null;logAct(['W',arg]);if(ckOk)store.set('ckpt',ck);chUpdate();prevStats=null;flushCombos();renderAll();
   const lg=$('log');if(lg){const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.className='legend';
     li.innerHTML=`<span class="t">${progTxt()}</span><div><b>월드 보스 보상</b> · ${r.got.map(g=>g.myth?`<span class="item g3">신화 ${esc(g.name)}</span>`:`<span class="item g${g.it.grade}">${esc(itemName(g.it))}</span>${g.kept?'':' (판매)'}`).join(', ')}</div>`;lg.prepend(li);}
-  r.left=R.left;return r;}
+  r.left=R.left;store.set('wbRw',{seed:heroSeed,day:new Date(Date.now()+WB_KST).toISOString().slice(0,10),left:R.left});return r;}
 // 공격 연출 (전체 화면): 베기 → 피해 숫자 → 생명력이 줄어드는 막대 → 보상 카드
 function wbAttackFx(pct0,B,rw){const p1=B.hp_max?Math.max(0,B.hp_left)/B.hp_max*100:0;const k=MON_IMG[B.boss];
   let o=$('wbFx');if(!o){o=document.createElement('div');o.id='wbFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','월드 보스 공격');document.body.appendChild(o);}
@@ -1907,6 +1921,14 @@ function wbAttackFx(pct0,B,rw){const p1=B.hp_max?Math.max(0,B.hp_left)/B.hp_max*
   setTimeout(()=>o.classList.add('rw'),2600);setTimeout(()=>o.classList.add('done'),2600+(rw?rw.got.length*450:0)+300);
   const close=()=>{o.className='';o.innerHTML='';if(!wasPaused&&paused)togglePause();renderWbBar(true);};
   o.querySelector('.wbFxOk').onclick=close;o.onkeydown=e=>{if(e.key==='Escape')close();};setTimeout(()=>o.querySelector('.wbFxOk').focus(),2700);}
+// 받을 수 있는 보상 미리보기: 지금 용사의 세계 수준으로 만든 예시 (실제 부위·이름은 받을 때 정해진다)
+function wbRwLeft(){const v=store.get('wbRw',null);return v&&v.seed===heroSeed&&v.day===new Date(Date.now()+WB_KST).toISOString().slice(0,10)?v.left:3;}
+function wbPreviewHtml(e){if(!run)return '';const R=rng(hashStr('wbex'+heroSeed+'|'+(run.stage||0)));const h=makeItem(R,2,null,tierOf(run));const l=makeItem(R,3,null,tierOf(run));l.plus=7;
+  const cnt=e&&e.dmg?Math.min(3,Math.max(1,Math.floor(e.dmg/10000))):1;const left=run.dead?0:wbRwLeft();
+  const card=(it,cls,lab,pc)=>`<div class="wbCard ${cls}"><div class="ic">${itemIcon(it)}</div><b>${lab} · ${pc}</b><span>${esc(itemName(it))}</span><em>${esc(itemDesc(it))}</em></div>`;
+  return `<div class="wbPrev"><div class="wbPrevH">🎁 받을 수 있는 보상 <small>${run.dead?'쓰러진 용사는 보상을 받지 못한다':`이번 공격 예상 <b>${cnt}개</b> · 오늘 남은 보상 <b>${left}번</b>`}</small></div>
+   <div class="wbCards">${card(h,'g2','영웅','99%')}${card(l,'g3','+7 전설','1%')}<div class="wbCard myth"><div class="ic">🌈</div><b>신화 · 0.01%</b><span>4종 중 하나</span><em>${MYTHS.map(m=>esc(m.name)).join(' · ')}</em></div></div>
+   <small style="color:var(--muted)">예시 아이템은 지금 세계 수준으로 만든 것이다. 실제 부위와 이름은 받을 때 무작위로 정해진다.</small></div>`;}
 function wbCanAttack(){return !!(RANK.on&&run&&runToken&&runLog&&runLog[0]&&runLog[0][2]===0);}
 async function renderWbBar(force){const b=$('wbBar');if(!b)return;const cur=await wbLoad(force);const pct=wbPct(cur);b.hidden=false;
   b.innerHTML=`<span class="wbTag">시범</span><button type="button" class="wbOpen" title="월드 보스 정보와 기여 순위 보기"><span class="wbN"><span class="wbL">⚔ 월드 보스 · </span>${esc(cur.boss.name)}</span>${wbHpHtml(pct,cur.killed)}<span class="wbP">${cur.killed?'토벌 완료':cur.started?pct.toFixed(1)+'%':'첫 공격 대기'}</span><span class="wbT">${wbLeft(cur.end-Date.now())}</span></button><button type="button" class="wbAtk${wbNextAt()?' cd':''}" title="지금 용사의 기록을 랭킹에 등록해 보스에게 피해를 준다">${wbNextAt()?'⏳ '+wbWaitTxt():'⚔ 공격하기'}</button>`;
@@ -1923,6 +1945,7 @@ async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p c
      ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(store.get('nick',''))}" autocomplete="nickname"><button class="btn" type="button" id="bSubmit" ${wbNextAt()?'disabled':''}>${wbNextAt()?`⏳ ${wbWaitTxt()} 뒤 공격 가능`:run.dead?'마지막 공격 (랭킹 등록)':'이 용사로 공격 (랭킹 등록)'}</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
        :`<div class="msg" style="margin-top:6px;color:var(--muted)">${cur.fake?'서버에 연결된 공개 페이지에서 공격할 수 있다.':!run?'먼저 「이 운명으로 출정」을 눌러 용사를 내보내자.':'이 용사는 지상계에서 서버 연결로 시작한 용사가 아니라 공격할 수 없다.'}</div>`}
      <small style="color:var(--muted)">살아 있는 용사는 1시간에 한 번 공격할 수 있고, 그사이 늘어난 처치만큼 피해가 들어간다. 쓰러진 용사의 마지막 등록은 언제든 피해가 들어간다(보상 없음). 등록하면 용사 랭킹에도 올라간다.</small><br><small style="color:var(--muted)">피해 = 100 × √(이번 주 같은 닉네임으로 등록한 처치 수 합계), 한 주 최대 ${fmt(WB_CAP)}. 같은 용사를 다시 등록하면 늘어난 만큼만 더해진다.</small></div>
+   ${wbPreviewHtml(e)}
    <h3>기여 순위</h3><div class="tblWrap"><table class="rankTbl wbRank"><thead><tr><th>순위</th><th>닉네임</th><th style="text-align:right">피해</th><th style="text-align:right">몫</th></tr></thead><tbody>${cur.rows.length?'':'<tr><td colspan="4">아직 기여한 용사가 없다. 첫 공격의 주인공이 되어 보자.</td></tr>'}${cur.rows.slice(0,50).map((x,i)=>`<tr><td class="n">${i+1}</td><td class="${x.nick===cur.lastHit?'lh':''}">${esc(x.nick)}${titleTag(x.title)}${x.nick===cur.lastHit?' <small>⚡마지막 일격</small>':''}</td><td class="n">${fmt(x.dmg)}</td><td class="n">${(x.dmg/Math.max(1,cur.dealt)*100).toFixed(1)}%</td></tr>`).join('')}</tbody></table></div>
    <h3>지난 토벌</h3><div class="wbHist">${hist}</div>
    <h3>보상 <small style="font-weight:400;color:var(--muted)">칭호 지급(주간 마감)은 준비 중</small></h3>
