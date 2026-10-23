@@ -130,6 +130,33 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .wbAtk.cd{animation:none;background:#3a2a2a;border-color:#6b4a40;color:#d8c0b0}
 @media (max-width:640px){#wbFx .wbFxBoss{width:130px;height:130px}#wbFx .wbCards{gap:6px;flex-wrap:nowrap}#wbFx .wbCard{width:calc(33% - 4px);padding:8px 4px}#wbFx .wbCard .ic img{width:40px;height:40px}#wbFx .wbCard span{font-size:12px}#wbFx .wbCard em{font-size:11px}}
 @media (prefers-reduced-motion:reduce){#wbFx *{animation-duration:.01s!important;transition-duration:.01s!important}}
+/* 신화 아이템 입체 그림 */
+.m3d{--sz:220px;width:var(--sz);height:var(--sz);perspective:700px;position:relative;margin:0 auto}
+.m3d.big{--sz:250px}.m3d.huge{--sz:clamp(160px,28vmin,240px)}.m3d.sm{--sz:72px}
+.m3dIn{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.8,.2,1);animation:m3dFloat 3.6s ease-in-out infinite}
+.m3d.hov .m3dIn{transition:transform .08s linear}
+@keyframes m3dFloat{50%{translate:0 -6px}}
+.m3dRing{position:absolute;inset:4%;border-radius:50%;transform:translateZ(-40px);background:conic-gradient(from 0deg,transparent,var(--mc) 8%,transparent 16%,var(--mc2) 33%,transparent 41%,var(--mc) 58%,transparent 66%,var(--mc2) 83%,transparent 91%);-webkit-mask:radial-gradient(circle,transparent 52%,#000 54%,#000 62%,transparent 64%,transparent 74%,#000 75%,#000 77%,transparent 78%);mask:radial-gradient(circle,transparent 52%,#000 54%,#000 62%,transparent 64%,transparent 74%,#000 75%,#000 77%,transparent 78%);animation:m3dSpin 40s linear infinite;opacity:.85;filter:drop-shadow(0 0 8px var(--mc))}
+.m3dRing::after{content:"";position:absolute;inset:18%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--mc) 55%,transparent),transparent 70%);-webkit-mask:none;mask:none}
+@keyframes m3dSpin{to{rotate:360deg}}
+.m3dAura{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transform:translateZ(-25px) scale(1.05);animation:m3dSpin 60s linear infinite reverse;opacity:.95}
+.m3dItem{position:absolute;inset:12%;width:76%;height:76%;object-fit:contain;transform:translateZ(45px);filter:drop-shadow(0 10px 18px #000a) drop-shadow(0 0 14px var(--mc))}
+.m3dItem.fb{filter:drop-shadow(0 10px 18px #000a) drop-shadow(0 0 18px var(--mc)) saturate(1.3) hue-rotate(var(--hue,0deg))}
+.m3dShine{position:absolute;inset:10%;transform:translateZ(46px);background:linear-gradient(115deg,transparent 38%,#ffffff99 50%,transparent 60%);background-size:260% 100%;background-position:var(--gx,120%) 0;mix-blend-mode:screen;-webkit-mask:radial-gradient(circle,#000 40%,transparent 68%);mask:radial-gradient(circle,#000 40%,transparent 68%);animation:m3dShine 3s ease-in-out infinite;pointer-events:none}
+.m3d.hov .m3dShine{animation:none}
+@keyframes m3dShine{0%{background-position:150% 0}55%,100%{background-position:-60% 0}}
+.m3dParts{position:absolute;inset:0;transform:translateZ(20px);pointer-events:none;overflow:visible}
+.m3dParts i{position:absolute;left:calc(var(--x)*1%);bottom:10%;width:5px;height:5px;border-radius:50%;background:var(--mc2);box-shadow:0 0 8px var(--mc),0 0 3px #fff;opacity:0;animation:m3dRise 3.2s ease-in infinite;animation-delay:var(--d);scale:var(--s)}
+@keyframes m3dRise{0%{opacity:0;transform:translateY(0)}15%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--sz) * -0.8)) translateX(10px)}}
+.m3d.sm .m3dParts,.m3d.sm .m3dRing::after{display:none}
+#mythCard{position:fixed;z-index:95;width:300px;padding:16px 14px 14px;border:1px solid #ffd36b;background:radial-gradient(ellipse at 50% 30%,#2a1f3a,#120d18 75%);box-shadow:0 0 0 1px #000,0 18px 40px #000c,0 0 30px #c07bff44;border-radius:8px;text-align:center;opacity:0;pointer-events:none;transform:translateY(6px) scale(.97);transition:opacity .18s,transform .18s}
+#mythCard.on{opacity:1;transform:none}
+#mythCard.none .m3d{filter:grayscale(.85) brightness(.6)}
+#mythCard .mcName{font-family:var(--display);font-size:22px;color:#ffe08a;margin-top:6px;background:linear-gradient(90deg,#ff9a9a,#ffe08a,#9affc8,#9ad6ff,#d59aff);-webkit-background-clip:text;background-clip:text;color:transparent}
+#mythCard .mcSlot{font-size:12px;color:var(--muted);margin-top:2px}#mythCard .mcD{font-size:13px;margin-top:8px;line-height:1.5}#mythCard .mcNo{font-size:12px;color:var(--muted);margin-top:8px}
+.mys[data-myth]{cursor:pointer}
+#mythFx .mfIco .m3d{margin:0 auto 6px}#mythFx .mfIco:has(.m3d){font-size:0;line-height:0}
+@media (prefers-reduced-motion:reduce){.m3dIn,.m3dRing,.m3dAura,.m3dShine,.m3dParts i{animation:none!important}}
 /* 보상 미리보기 (월드 보스 탭) */
 .wbPrev{margin:12px 0;padding:10px 12px;border:1px solid #6b4a20;background:linear-gradient(#241a0c,#16110a)}
 .wbPrevH{font-family:var(--display);color:#ffd77a;font-size:18px;margin-bottom:8px}.wbPrevH small{font-family:var(--body);font-size:12px;color:var(--muted);margin-left:8px}.wbPrevH small b{color:var(--fg)}
@@ -1435,15 +1462,36 @@ function previewPower(it){if(!(it.mult||['str','int','agi','con'].includes(it.st
 function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHTML='';return;}
   const st=STAGES[run.stage];const c=mythCheck(run);const own=run.mythics||[];
   if(!(st.endless&&st.hunt==null)&&!own.length){box.innerHTML='';return;}
-  const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}"${tipAttr(m.name+' · '+m.slot,[m.d,has?'장착 중':'아직 없다'])}><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
+  const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}" data-myth="${m.id}" tabindex="0"><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
   const matNames=c.mats.map(i=>itemName(run.items[i]));
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
   box.innerHTML=`<div class="myth"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
     <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
     <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></div>`;
+  box.querySelectorAll('[data-myth]').forEach(el=>{const m=MYTH_BY[el.dataset.myth];const v=own.includes(m.id)?((run.mythV||{})[m.id]||20):0;
+    el.onmouseenter=el.onfocus=()=>mythCardShow(el,m,v);el.onmouseleave=el.onblur=mythCardHide;el.onclick=()=>{const c=$('mythCard');if(c&&c.classList.contains('on'))mythCardHide();else mythCardShow(el,m,v);};});
   const b=$('mythBtn');if(b)b.onclick=doMyth;}
 // 신화 합성 전체 화면 연출: 의식(재료 4개가 마법진으로 빨려 듦) → 성공은 무지개 폭발, 실패는 금이 가며 산산조각
 const MYTH_ICON={'월계관':'🌿','목걸이':'📿','반지':'💍','귀걸이':'✨'};
+// 신화 아이템 입체 그림: 본체(art/myth/myth_id.webp)와 후광(myth_id_aura.webp) 두 겹 + 코드 효과(기울기·광택·회전 문양·입자·부유).
+// 그림이 오기 전에는 전설 아이콘으로 대신 보여 준다.
+const MYTH_LOOK={apollo:{c:'#ffe7a0',c2:'#fff6dc',fb:'con'},freyja:{c:'#7cc8ff',c2:'#dff2ff',fb:'mult'},odin:{c:'#ff4a6a',c2:'#c06bff',fb:'luk'},hecate:{c:'#ffb3d1',c2:'#9ff0d0',fb:'win'}};
+function mythArtHtml(m,cls){const L=MYTH_LOOK[m.id]||{c:'#ffd77a',c2:'#fff',fb:'mult'};
+  return `<div class="m3d ${cls||''}" style="--mc:${L.c};--mc2:${L.c2}" data-tilt="1"><div class="m3dIn"><div class="m3dRing"></div><img class="m3dAura" src="art/myth/myth_${m.id}_aura.webp" alt="" onerror="this.remove()">
+    <img class="m3dItem" src="art/myth/myth_${m.id}.webp" alt="${esc(m.name)}" onerror="this.onerror=null;this.src='art/icon/icon_${L.fb}_g3.webp';this.classList.add('fb')"><div class="m3dShine"></div>
+    <div class="m3dParts">${Array.from({length:14},(_,i)=>`<i style="--x:${(i*37)%100};--d:${(i*0.29)%3.2}s;--s:${0.6+((i*7)%5)/6}"></i>`).join('')}</div></div></div>`;}
+// 마우스(또는 손가락) 위치로 기울인다. 손을 떼면 천천히 제자리로.
+function bindTilt(root,area){const el=root.querySelector('.m3dIn');if(!el)return;const A=area||root;
+  const mv=e=>{const r=A.getBoundingClientRect();const p=e.touches?e.touches[0]:e;const x=(p.clientX-r.left)/r.width-0.5,y=(p.clientY-r.top)/r.height-0.5;el.style.setProperty('--ry',(x*30).toFixed(1)+'deg');el.style.setProperty('--rx',(-y*30).toFixed(1)+'deg');el.style.setProperty('--gx',((x+0.5)*100).toFixed(0)+'%');root.classList.add('hov');};
+  const lv=()=>{el.style.setProperty('--ry','0deg');el.style.setProperty('--rx','0deg');root.classList.remove('hov');};
+  A.addEventListener('mousemove',mv);A.addEventListener('touchmove',mv,{passive:true});A.addEventListener('mouseleave',lv);A.addEventListener('touchend',lv);}
+// 신화 칸에 마우스를 올리면 뜨는 큰 그림 카드
+function mythCardShow(slotEl,m,v){let c=$('mythCard');if(!c){c=document.createElement('div');c.id='mythCard';document.body.appendChild(c);}
+  c.innerHTML=`${mythArtHtml(m,'big')}<div class="mcName">${esc(m.name)}</div><div class="mcSlot">${esc(m.slot)} · 신화${v?` · PvP ${PVP_NAME[m.pvp]} +${v}`:''}</div><div class="mcD">${esc(m.d)}</div>${v?'':'<div class="mcNo">아직 없다 · 신화 합성 또는 월드 보스 보상(0.01%)으로 얻는다</div>'}`;
+  c.classList.toggle('none',!v);const r=slotEl.getBoundingClientRect();const W=300,H=430;let x=r.right+12,y=r.top+r.height/2-H/2;
+  if(x+W>innerWidth-8)x=r.left-W-12;if(x<8){x=Math.max(8,(innerWidth-W)/2);y=r.bottom+8;}y=Math.max(8,Math.min(innerHeight-H-8,y));
+  c.style.left=x+'px';c.style.top=y+'px';c.classList.add('on');bindTilt(c.querySelector('.m3d'),slotEl);}
+function mythCardHide(){const c=$('mythCard');if(c)c.classList.remove('on');}
 function mythShow(r,mats){let o=$('mythFx');if(!o){o=document.createElement('div');o.id='mythFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');document.body.appendChild(o);}
   const wasPaused=typeof paused!=='undefined'&&paused;if(!wasPaused&&typeof togglePause==='function')togglePause();
   const ok=r.ok,m=r.m;let head,sub,big;
@@ -1453,7 +1501,7 @@ function mythShow(r,mats){let o=$('mythFx');if(!o){o=document.createElement('div
   else {head='신화 탄생';sub=`${m.d}<br>PvP ${PVP_NAME[m.pvp]} <b>+${r.v}</b>`;}
   o.className='mf charge wait';
   o.innerHTML=`<div class="mfRing"></div><div class="mfMats">${mats.map((x,k)=>`<span style="--k:${k}">${x.ic||'✦'}</span>`).join('')}</div><div class="mfCore"></div><button type="button" class="mfGo">운명을 시험한다</button>
-    <div class="mfRes">${ok?`<div class="mfRays"></div><div class="mfIco">${MYTH_ICON[m.slot]||'✦'}</div><div class="mfHead">${head}</div><div class="mfName myName">${esc(m.name)}</div>`:`<div class="mfShards">${mats.map((x,k)=>`<span style="--k:${k}">${x.ic||'✦'}</span>`).join('')}</div><div class="mfHead">${head}</div>`}
+    <div class="mfRes">${ok?`<div class="mfRays"></div><div class="mfIco">${mythArtHtml(m,'huge')}</div><div class="mfHead">${head}</div><div class="mfName myName">${esc(m.name)}</div>`:`<div class="mfShards">${mats.map((x,k)=>`<span style="--k:${k}">${x.ic||'✦'}</span>`).join('')}</div><div class="mfHead">${head}</div>`}
     <div class="mfSub">${sub}</div><button type="button" class="mfOk">확인</button></div>`;
   void o.offsetWidth;o.classList.add('on');
   let kd2=null;const close=()=>{o.className='mf';o.innerHTML='';document.removeEventListener('keydown',kd);if(kd2)document.removeEventListener('keydown',kd2);if(!wasPaused&&typeof togglePause==='function'&&paused)togglePause();};
@@ -1910,7 +1958,7 @@ function wbApplyReward(R){if(!run||run.dead)return null;const arg=`${R.n}:${R.co
 function wbAttackFx(pct0,B,rw){const p1=B.hp_max?Math.max(0,B.hp_left)/B.hp_max*100:0;const k=MON_IMG[B.boss];
   let o=$('wbFx');if(!o){o=document.createElement('div');o.id='wbFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','월드 보스 공격');document.body.appendChild(o);}
   const wasPaused=paused;if(run&&!run.dead&&!run.over&&!wasPaused)togglePause();
-  const cards=rw?rw.got.map((g,i)=>g.myth?`<div class="wbCard myth" style="--i:${i}"><div class="ic">🌈</div><b>신화</b><span>${esc(g.name)}</span><em>PvP +${g.v}</em></div>`
+  const cards=rw?rw.got.map((g,i)=>g.myth?`<div class="wbCard myth" style="--i:${i}"><div class="ic">${mythArtHtml(MYTH_BY[g.myth],'sm')}</div><b>신화</b><span>${esc(g.name)}</span><em>PvP +${g.v}</em></div>`
      :`<div class="wbCard g${g.it.grade}" style="--i:${i}"><div class="ic">${itemIcon(g.it)}</div><b>${g.it.grade>=3?'전설 +7':'영웅'}</b><span>${esc(itemName(g.it))}</span><em>${esc(itemDesc(g.it))}${g.kept?(g.spare?' · 예비로 보관':' · 착용'):' · 더 좋은 장비가 있어 판매'}</em></div>`).join(''):'';
   const note=rw?`오늘 남은 보상 ${rw.left}번`:B.reward_reason==='daily_limit'?'오늘 받을 수 있는 보상 3번을 모두 받았다 (피해는 들어갔다)':'';
   o.className='on';o.innerHTML=`<div class="wbFxIn"><div class="wbFxBoss">${k?`<img src="mon/m${k}.webp" alt="">`:''}<i class="sl s1"></i><i class="sl s2"></i><i class="sl s3"></i></div>
@@ -1931,7 +1979,7 @@ function wbPreviewHtml(e){if(!run)return '';const R=rng(hashStr('wbex'+heroSeed+
   const cnt=e&&e.dmg?Math.min(3,Math.max(1,Math.floor(e.dmg/10000))):1;const left=run.dead?0:wbRwLeft();
   const card=(it,cls,lab,pc)=>`<div class="wbCard ${cls}"><div class="ic">${itemIcon(it)}</div><b>${lab} · ${pc}</b><span>${esc(itemName(it))}</span><em>${esc(itemDesc(it))}</em></div>`;
   return `<div class="wbPrev"><div class="wbPrevH">🎁 받을 수 있는 보상 <small>${run.dead?'쓰러진 용사는 보상을 받지 못한다':`이번 공격 예상 <b>${cnt}개</b> · 오늘 남은 보상 <b>${left}번</b>`}</small></div>
-   <div class="wbCards">${card(h,'g2','영웅','99%')}${card(l,'g3','+7 전설','1%')}<div class="wbCard myth"><div class="ic">🌈</div><b>신화 · 0.01%</b><span>4종 중 하나</span><em>${MYTHS.map(m=>esc(m.name)).join(' · ')}</em></div></div>
+   <div class="wbCards">${card(h,'g2','영웅','99%')}${card(l,'g3','+7 전설','1%')}<div class="wbCard myth"><div class="ic">${mythArtHtml(MYTHS[Math.floor(Date.now()/4000)%MYTHS.length],'sm')}</div><b>신화 · 0.01%</b><span>4종 중 하나</span><em>${MYTHS.map(m=>esc(m.name)).join(' · ')}</em></div></div>
    <small style="color:var(--muted)">예시 아이템은 지금 세계 수준으로 만든 것이다. 실제 부위와 이름은 받을 때 무작위로 정해진다.</small></div>`;}
 // 월드 보스 칭호: 닉네임에 붙은 칭호를 서버에서 읽고, 새로 받은 것은 알려 준다
 async function wbTitlesLoad(notify){const nick=store.get('nick','');if(!RANK.on||!nick)return [];
