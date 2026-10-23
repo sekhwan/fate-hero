@@ -1688,7 +1688,7 @@ function renderShop(t){
     return `<div class="ware g${it.grade||0} ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}">
       <div class="wtop"><span class="gb">${g.name}</span>${tag}</div>
       <div class="wbody"><div class="wico">${itemIcon(it)}</div><div class="wtx">
-      <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${it.d}</div></div></div>
+      <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${esc(itemTxt(run,it))}</div></div></div>
       <button type="button" class="buy c-${o.cur}" data-buy="${i}" ${dis?'disabled':''}>${o.sold?'판매 완료':`<span>구매</span><b>${o.cur==='gold'?COIN:STAR}${fmtS(o.price)}</b>`}</button>
       ${!o.sold&&poor&&up&&!full?`<div class="wneed">${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다</div>`:''}</div>`;}).join('')+'</div>'+autoNote;
   box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
@@ -1862,7 +1862,7 @@ function showToast(head,sub,kind,ms,tier,small){let t=$('toast');if(!t){t=docume
   clearTimeout(toastT);toastT=setTimeout(()=>{t.classList.remove('show');setTimeout(()=>{t.hidden=true;},200);},ms||1000);}
 function logSell(r){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>판매</b> · ${r.it.name}을(를) 팔았다.<div class="fx"><span class="good">금화 +${fmtS(r.g)}</span></div></div>`;lg.prepend(li);}
 function logBuy(items,why){const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();
-  items.forEach(it=>{const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${why?'자동 구매':'구매'}</b> · ${why||'상점에서 물건을 샀다.'}<div class="fx"><span class="g${it.grade}">${GRADES[it.grade].name} 아이템: ${it.name} (${it.d})</span></div></div>`;lg.prepend(li);});}
+  items.forEach(it=>{const li=document.createElement('li');li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${why?'자동 구매':'구매'}</b> · ${why||'상점에서 물건을 샀다.'}<div class="fx"><span class="g${it.grade}">${GRADES[it.grade].name} 아이템: ${it.name} (${esc(itemTxt(run,it))})</span></div></div>`;lg.prepend(li);});}
 // 설명 말풍선: data-tt(제목) + data-tl(줄들, ¦로 구분). 마우스를 올리거나 눌러서 연다.
 // 전투력 구성: 기본값 × 각 배율 (엔진 power()와 같은 순서)
 function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSum(s,k):0;
