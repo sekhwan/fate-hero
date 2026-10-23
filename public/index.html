@@ -365,13 +365,30 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .modal .tblWrap{overflow-x:auto}
 .rankTabs{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0 10px}
 /* 월드 보스 */
-.wbBar{display:flex;align-items:center;gap:10px;width:100%;margin:6px 0 2px;padding:6px 12px;background:linear-gradient(90deg,#2a1214,#1c1922 70%);border:1px solid #6b2a22;color:var(--fg);font:inherit;font-size:13px;cursor:pointer;text-align:left}
-.wbBar:hover{border-color:var(--ember)}
+.wbBar{display:flex;align-items:center;gap:10px;width:100%;margin:6px 0 2px;padding:7px 10px;background:linear-gradient(90deg,#2a1214,#1c1922 70%);border:1px solid #6b2a22;color:var(--fg);font-size:13px;position:relative;animation:wbGlow 2.6s ease-in-out infinite}
+@keyframes wbGlow{0%,100%{box-shadow:0 0 0 #d8533b00}50%{box-shadow:0 0 14px #d8533b66}}
+.wbOpen{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0;text-align:left}
+.wbOpen:hover .wbN{text-decoration:underline}
+.wbAtk{flex:none;font:inherit;font-weight:700;font-size:13px;color:#fff3e6;background:linear-gradient(#c0392b,#7a1a12);border:1px solid #ff9a6a;padding:5px 12px;cursor:pointer;animation:wbAtkP 1.6s ease-in-out infinite}
+.wbAtk:hover{filter:brightness(1.2)}
+@keyframes wbAtkP{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.wbDmg{position:absolute;right:120px;top:-6px;color:#fff;font-weight:800;font-size:20px;text-shadow:0 0 6px #d8533b,0 2px 0 #000;animation:wbDmgUp 1.6s ease-out forwards;pointer-events:none}
+@keyframes wbDmgUp{0%{opacity:0;transform:translateY(8px) scale(.8)}15%{opacity:1;transform:translateY(-4px) scale(1.25)}100%{opacity:0;transform:translateY(-26px) scale(1)}}
+.wbAtkH{color:#ffb08a!important;margin-right:6px}
+@media (prefers-reduced-motion:reduce){.wbBar,.wbAtk,.wbHp i::after,.wbHp em{animation:none!important}}
 .wbBar .wbN{font-family:var(--display);color:#ffb08a;white-space:nowrap}
 .wbBar .wbT{color:var(--muted);white-space:nowrap;font-size:12px}
-.wbHp{flex:1;min-width:60px;height:10px;background:#0d0b10;border:1px solid #4a2a26;position:relative;overflow:hidden}
-.wbHp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#7a1410,#d8533b 70%,#ff9a6a);transition:width .6s}
-.wbHp.dead i{background:#3a3340}
+.wbHp{flex:1;min-width:60px;height:14px;background:#0d0b10;border:1px solid #6b2a22;position:relative;overflow:hidden;border-radius:2px;box-shadow:inset 0 1px 3px #000}
+.wbHp b{position:absolute;left:0;top:0;bottom:0;background:#ffe2a8;transition:width .9s ease-in}
+.wbHp i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(180deg,#ff8a5c,#d8533b 45%,#8a1a12);transition:width .45s ease-out;overflow:hidden}
+.wbHp i::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,transparent 30%,#ffffff66 50%,transparent 70%);background-size:200% 100%;animation:wbShine 2.2s linear infinite}
+@keyframes wbShine{from{background-position:150% 0}to{background-position:-50% 0}}
+.wbHp em{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 9%,#00000055 9% 9.4%);pointer-events:none}
+.wbHp.low i{animation:wbLow .8s ease-in-out infinite}
+@keyframes wbLow{50%{filter:brightness(1.6)}}
+.wbHp.hit{animation:wbShake .35s}
+@keyframes wbShake{20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(1px)}}
+.wbHp.dead i{background:#3a3340}.wbHp.dead i::after{display:none}
 .wbTag{font-size:11px;padding:0 6px;border:1px solid var(--muted);color:var(--muted);white-space:nowrap}
 .wbTop{display:flex;gap:16px;align-items:center;margin:4px 0 12px}
 .wbArt{width:150px;height:150px;flex:none;background:radial-gradient(circle at 50% 60%,#4a1a14,#14121a 70%);border:1px solid #6b2a22;display:flex;align-items:center;justify-content:center;overflow:hidden}
@@ -380,7 +397,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .wbInfo{flex:1;min-width:0}
 .wbInfo h3{margin:0 0 2px!important;font-size:22px!important;color:#ffb08a!important}
 .wbInfo .wbSub{color:var(--muted);font-size:13px}
-.wbBig{height:18px;margin:8px 0 4px}
+.wbBig{height:22px;margin:8px 0 4px;display:block}
 .wbNums{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);flex-wrap:wrap;gap:4px}
 .wbNums b{color:var(--fg)}
 .wbMine{margin:10px 0;padding:8px 12px;border:1px dashed var(--brass);font-size:13px}
@@ -389,7 +406,7 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .wbHist span{padding:2px 8px;border:1px solid var(--line)}
 .wbHist .ok{border-color:var(--holy);color:var(--holy)} .wbHist .no{border-color:var(--ember);color:var(--ember)}
 .wbRank td.lh{color:#ffb08a}
-@media (max-width:640px){.wbInfo h3{font-size:18px!important}.wbTop{gap:10px}.wbArt{width:96px;height:96px}.wbRank tbody tr:nth-child(n+11){display:none}.wbBar .wbT{display:none}}
+@media (max-width:640px){.wbDmg{right:90px}.wbBar{gap:6px;padding:6px}.wbOpen{gap:6px}.wbBar .wbN{font-size:12px}.wbBar .wbTag,.wbBar .wbL{display:none}.wbBar .wbP{font-size:12px}.wbBar .wbHp{min-width:50px}.wbAtk{padding:5px 8px;font-size:12px}.wbInfo h3{font-size:18px!important}.wbTop{gap:10px}.wbArt{width:96px;height:96px}.wbRank tbody tr:nth-child(n+11){display:none}.wbBar .wbT{display:none}}
 .rankTbl td,.rankTbl th{white-space:nowrap}
 .rankTbl td.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums}
 .rankTbl tr.me td{color:var(--brass)}
@@ -532,6 +549,9 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .botTag{display:inline-block;font-size:10px;padding:0 5px;margin-left:4px;border:1px solid #5b5470;border-radius:8px;color:var(--muted);vertical-align:1px}
 .wRes{margin-top:10px} .wRes .wSum{font-weight:700;margin:6px 0} .wRes .wRounds{font-size:12.5px;color:var(--muted);margin:4px 0 8px;line-height:1.6}
 .wRes details{border:1px solid #3a3446;border-radius:6px;padding:6px 10px;margin-top:6px} .wRes summary{cursor:pointer;font-size:13px}
+.wbMine .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
+.wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
 .rankBox{margin-top:14px;padding:12px 14px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
 .rankBox .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
 .rankBox input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
@@ -832,7 +852,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     </div>
     <div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
   </header>
-  <button class="wbBar" id="wbBar" type="button" hidden></button>
+  <div class="wbBar" id="wbBar" hidden></div>
 
   <nav class="stages" id="stages" aria-label="스테이지"></nav>
 
@@ -1729,18 +1749,18 @@ function worldHtml(w){if(!w)return '';
    ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}</span></div><div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
 function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('hero');}
 let lastSubmitted=null;
-async function submitRun(which){const W=which==='w';
-  const nick=($(W?'wNick':'rankNick').value||'').trim().slice(0,12);const msg=$(W?'wMsg':'rankMsg');
+async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w':BS?'b':'rank';
+  const nick=($(P+'Nick').value||'').trim().slice(0,12);const msg=$(P+'Msg');
   if(!nick){msg.className='msg err';msg.textContent='닉네임을 입력해 주세요.';return;}
-  store.set('nick',nick);const btn=$(W?'wSubmit':'rankSubmit');btn.disabled=true;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
+  store.set('nick',nick);const btn=$(P+'Submit');btn.disabled=true;const pct0=WB?wbPct(WB):null;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
   try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:rankHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,title:chRepTitle(),log:runLog,...(runToken.batch?{batch:runToken.batch}:{})})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
     lastSubmitted=heroSeed;const k=j.ranks||{};
     msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
     if(j.boss){const B=j.boss;msg.textContent+=B.delta>0?` · 월드 보스 ${B.boss}에게 ${fmt(B.delta)} 피해 (이번 주 내 피해 ${fmt(B.damage)} · ${B.rank}위${B.w>1?' · 출신 세계 도달 ×1.5':''}) · 남은 생명력 ${fmt(B.hp_left)}`:` · 월드 보스: 늘어난 처치가 없어 추가 피해 없음`;
-      if(B.killed_now)showToast('⚡ 최후의 일격!',`${B.boss}을(를) 쓰러뜨렸다`,'ok',3500,3);renderWbBar(true);}
-    const wr=$(W?'wRes':'rankWorld');if(wr)wr.innerHTML=worldHtml(j.world);if(W)btn.disabled=false;
+      if(B.killed_now)showToast('⚡ 최후의 일격!',`${B.boss}을(를) 쓰러뜨렸다`,'ok',3500,3);wbHitFx(pct0,B);}
+    const wr=$(W?'wRes':BS?'bRes':'rankWorld');if(wr&&!BS)wr.innerHTML=worldHtml(j.world);if(W||BS)btn.disabled=false;if(BS){WB_MSG=msg.textContent;if(rankCol==='boss')setTimeout(renderBossBox,1800);}
   }catch(e){msg.className='msg err';msg.textContent='서버에 연결하지 못했다. 잠시 후 다시 시도해 주세요.';btn.disabled=false;}
 }
 let rankCol='hero',rankSort='reach_score';
@@ -1793,7 +1813,7 @@ function wbFake(idx,now){const R=rng(idx*2654435761>>>0);const w=wbWeek(idx*7*WB
   const lastHit=killed&&rows.length?rows[Math.floor(R()*Math.min(rows.length,25))].nick:null;
   return {idx,boss:b,start:w.start,end:w.end,hpMax,dealt,left:hpMax-dealt,killed,killAt,rows,lastHit,players:rows.length};}
 // 서버 자료를 화면용 모양으로 바꾼다. 서버가 없는 미리보기(테스트 페이지)에서는 가짜 수치를 쓴다.
-let WB=null,WB_BUSY=null;const WB_FAKE=!RANK.on;
+let WB=null,WB_BUSY=null,WB_MSG='';const WB_FAKE=!RANK.on;
 function wbDate(ms){return new Date(ms+WB_KST).toISOString().slice(0,10);}
 async function wbLoad(force){const w=wbWeek();
   if(WB_FAKE){const f=wbFake(w.idx);return WB={...f,fake:true,started:true,hist:[1,2,3,4,5].map(d=>{const h=wbFake(w.idx-d,w.idx*7*WB_DAY);return {name:h.boss.name,killed:h.killed,lastHit:h.lastHit};})};}
@@ -1811,22 +1831,34 @@ function wbDmg(kills,W){return Math.min(WB_CAP,Math.round(100*Math.sqrt(Math.max
 function wbMyEst(cur){if(!run)return null;const kills=run.kills||0;const reach=Math.max(run.stage||0,run.huntFrom||0,(run.maxStage||0));const W=reach>=cur.boss.wi?1.5:1;return {kills,W,dmg:wbDmg(kills,W)};}
 function wbEstHtml(){const cur={boss:wbBoss(wbWeek().idx)};const e=wbMyEst(cur);if(!e)return '';
   return `<div class="msg">월드 보스 <b>${esc(cur.boss.name)}</b>(시범): 이 기록을 등록하면 약 <b>${fmt(e.dmg)}</b> 피해 (처치 ${fmt(e.kills)}${e.W>1?` · ${esc(cur.boss.world)} 도달 ×1.5`:''})</div>`;}
+function wbHpHtml(pct,dead,big){return `<span class="wbHp${big?' wbBig':''}${dead?' dead':''}${pct<25&&!dead?' low':''}"><b style="width:${pct}%"></b><i style="width:${pct}%"></i><em></em></span>`;}
+// 피해를 넣은 직후: 막대가 줄고, 줄어든 몫이 하얗게 번쩍인 뒤 천천히 사라진다
+async function wbHitFx(pct0,B){await renderWbBar(true);const p1=WB?wbPct(WB):null;if(pct0==null||p1==null||!(B&&B.delta>0))return;
+  document.querySelectorAll('.wbHp').forEach(h=>{const i=h.querySelector('i'),g=h.querySelector('b');if(!i||!g)return;i.style.transition='none';g.style.transition='none';i.style.width=pct0+'%';g.style.width=pct0+'%';h.classList.add('hit');void h.offsetWidth;
+    i.style.transition='';i.style.width=p1+'%';setTimeout(()=>{g.style.transition='';g.style.width=p1+'%';},500);setTimeout(()=>h.classList.remove('hit'),900);});
+  const f=document.createElement('span');f.className='wbDmg';f.textContent='-'+fmt(B.delta);const bar=$('wbBar');if(bar){bar.appendChild(f);setTimeout(()=>f.remove(),1600);}}
+function wbCanAttack(){return !!(RANK.on&&run&&runToken&&runLog&&runLog[0]&&runLog[0][2]===0);}
 async function renderWbBar(force){const b=$('wbBar');if(!b)return;const cur=await wbLoad(force);const pct=wbPct(cur);b.hidden=false;
-  b.innerHTML=`<span class="wbTag">시범</span><span class="wbN">⚔ 월드 보스 · ${esc(cur.boss.name)}</span><span class="wbHp ${cur.killed?'dead':''}"><i style="width:${pct}%"></i></span><span>${cur.killed?'토벌 완료':cur.started?pct.toFixed(1)+'%':'첫 공격 대기'}</span><span class="wbT">${wbLeft(cur.end-Date.now())}</span>`;
+  b.innerHTML=`<span class="wbTag">시범</span><button type="button" class="wbOpen" title="월드 보스 정보와 기여 순위 보기"><span class="wbN"><span class="wbL">⚔ 월드 보스 · </span>${esc(cur.boss.name)}</span>${wbHpHtml(pct,cur.killed)}<span class="wbP">${cur.killed?'토벌 완료':cur.started?pct.toFixed(1)+'%':'첫 공격 대기'}</span><span class="wbT">${wbLeft(cur.end-Date.now())}</span></button><button type="button" class="wbAtk" title="지금 용사의 기록을 랭킹에 등록해 보스에게 피해를 준다">⚔ 공격하기</button>`;
+  b.querySelector('.wbOpen').onclick=()=>openRank('boss');b.querySelector('.wbAtk').onclick=()=>{openRank('boss');setTimeout(()=>{const n=$('bNick');if(n)n.focus();},400);};
   b.title='이번 주 월드 보스. 랭킹에 등록한 기록이 모두 이 보스의 생명력을 깎는다. 누르면 기여 순위를 본다.';}
 async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p class="msg">불러오는 중…</p>';const cur=await wbLoad(true);if(rankCol!=='boss')return;const pct=wbPct(cur);const e=wbMyEst(cur);const k=MON_IMG[cur.boss.name];
   const hist=cur.hist.length?cur.hist.map(h=>`<span class="${h.killed?'ok':'no'}" title="${h.killed?'토벌 성공 · 마지막 일격 '+esc(h.lastHit||''):'보스 도주'}">${esc(h.name)} ${h.killed?'✓':'✕'}</span>`).join(''):'<span>아직 지난 토벌이 없다</span>';
   box.innerHTML=`<p class="msg" style="color:var(--muted);margin:0 0 8px">${cur.fake?'⚠ 화면 미리보기다. 아래 숫자와 순위는 모두 가짜다 (서버에 연결된 공개 페이지에서는 실제 기록이 나온다).':'시범 운영 중이다. 정식 출시 때 월드 보스 기록과 칭호는 초기화된다.'}</p>
    <div class="wbTop"><div class="wbArt ${cur.killed?'dead':''}">${k?`<img src="mon/m${k}.webp" alt="${esc(cur.boss.name)}">`:''}</div>
     <div class="wbInfo"><h3>세계를 삼키는 ${esc(cur.boss.name)}</h3><div class="wbSub">${esc(cur.boss.world)}의 마지막 지배자 · 매주 월요일 0시 교대 · ${wbLeft(cur.end-Date.now())}</div>
-     <div class="wbHp wbBig ${cur.killed?'dead':''}"><i style="width:${pct}%"></i></div>
+     ${wbHpHtml(pct,cur.killed,true)}
      <div class="wbNums">${cur.started?`<span>생명력 <b>${fmt(cur.left)}</b> / ${fmt(cur.hpMax)}</span><span>참여 <b>${cur.players}</b>명</span><span>${cur.killed?`토벌 완료 · 마지막 일격 <b>${esc(cur.lastHit||'')}</b>`:`${pct.toFixed(1)}% 남음`}</span>`:'<span>아직 아무도 공격하지 않았다. 생명력은 첫 등록 때 정해진다.</span>'}</div></div></div>
-   <div class="wbMine">${e?`지금 용사를 등록하면 약 <b>${fmt(e.dmg)}</b> 피해 · 처치 ${fmt(e.kills)}${e.W>1?` · ${esc(cur.boss.world)}에 닿아 ×1.5`:` · ${esc(cur.boss.world)}에 닿으면 ×1.5`}`:'용사를 출정시키고 랭킹에 등록하면 이 보스에게 피해를 준다.'}<br><small style="color:var(--muted)">피해 = 100 × √(이번 주 같은 닉네임으로 등록한 처치 수 합계), 한 주 최대 ${fmt(WB_CAP)}. 같은 용사를 다시 등록하면 늘어난 만큼만 더해진다.</small></div>
+   <div class="wbMine"><b class="wbAtkH">⚔ 공격하기</b> ${e?`지금 용사를 등록하면 약 <b>${fmt(e.dmg)}</b> 피해 · 처치 ${fmt(e.kills)}${e.W>1?` · ${esc(cur.boss.world)}에 닿아 ×1.5`:` · ${esc(cur.boss.world)}에 닿으면 ×1.5`}`:'용사를 출정시킨 뒤 여기서 등록하면 이 보스에게 피해를 준다.'}
+     ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(store.get('nick',''))}" autocomplete="nickname"><button class="btn" type="button" id="bSubmit">이 용사로 공격 (랭킹 등록)</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
+       :`<div class="msg" style="margin-top:6px;color:var(--muted)">${cur.fake?'서버에 연결된 공개 페이지에서 공격할 수 있다.':!run?'먼저 「이 운명으로 출정」을 눌러 용사를 내보내자.':'이 용사는 지상계에서 서버 연결로 시작한 용사가 아니라 공격할 수 없다.'}</div>`}
+     <small style="color:var(--muted)">진행 중에도 공격할 수 있다. 같은 용사를 다시 등록하면 그사이 늘어난 처치만큼 더 들어간다. 등록하면 용사 랭킹에도 올라간다.</small><br><small style="color:var(--muted)">피해 = 100 × √(이번 주 같은 닉네임으로 등록한 처치 수 합계), 한 주 최대 ${fmt(WB_CAP)}. 같은 용사를 다시 등록하면 늘어난 만큼만 더해진다.</small></div>
    <h3>기여 순위</h3><div class="tblWrap"><table class="rankTbl wbRank"><thead><tr><th>순위</th><th>닉네임</th><th style="text-align:right">피해</th><th style="text-align:right">몫</th></tr></thead><tbody>${cur.rows.length?'':'<tr><td colspan="4">아직 기여한 용사가 없다. 첫 공격의 주인공이 되어 보자.</td></tr>'}${cur.rows.slice(0,50).map((x,i)=>`<tr><td class="n">${i+1}</td><td class="${x.nick===cur.lastHit?'lh':''}">${esc(x.nick)}${titleTag(x.title)}${x.nick===cur.lastHit?' <small>⚡마지막 일격</small>':''}</td><td class="n">${fmt(x.dmg)}</td><td class="n">${(x.dmg/Math.max(1,cur.dealt)*100).toFixed(1)}%</td></tr>`).join('')}</tbody></table></div>
    <h3>지난 토벌</h3><div class="wbHist">${hist}</div>
    <h3>보상 <small style="font-weight:400;color:var(--muted)">칭호와 연대기 기록만. 전투력에는 영향이 없다 · 주간 마감과 지급은 준비 중</small></h3>
-   <table><tr><th>참여</th><td>피해 1 이상 · 칭호 「토벌대원」</td></tr><tr><th>처치</th><td>보스를 잡은 주의 참여자 전원 · 칭호 「${esc(cur.boss.name)} 토벌자」</td></tr><tr><th>선봉</th><td>기여 상위 10% · 칭호 「선봉장」</td></tr><tr><th>마지막 일격</th><td>생명력을 0으로 만든 등록 · 칭호 「최후의 일격」</td></tr><tr><th>주간 1위</th><td>칭호 「토벌대장」</td></tr></table>`;}
-renderWbBar();setInterval(()=>renderWbBar(),WB_FAKE?60000:300000);$('wbBar').onclick=()=>openRank('boss');
+   <table><tr><th>참여</th><td>피해 1 이상 · 칭호 「토벌대원」</td></tr><tr><th>처치</th><td>보스를 잡은 주의 참여자 전원 · 칭호 「${esc(cur.boss.name)} 토벌자」</td></tr><tr><th>선봉</th><td>기여 상위 10% · 칭호 「선봉장」</td></tr><tr><th>마지막 일격</th><td>생명력을 0으로 만든 등록 · 칭호 「최후의 일격」</td></tr><tr><th>주간 1위</th><td>칭호 「토벌대장」</td></tr></table>`;
+  const sb=$('bSubmit');if(sb)sb.onclick=()=>submitRun('b');}
+renderWbBar();setInterval(()=>renderWbBar(),WB_FAKE?60000:300000);
 function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name,at:Date.now()});logAct(['S']);}
 function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}
 function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
