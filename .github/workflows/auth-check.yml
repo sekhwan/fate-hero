@@ -1,0 +1,44 @@
+# 계정 설정 점검: auth 설정 값과 실제 가입·로그인 동작을 확인하고, 결과(비밀 값 없음)를 auth-check-out 브랜치에 남긴다.
+name: auth-check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: check
+        run: |
+          mkdir -p out
+          API="https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth"
+          curl -fsS "$API" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" | jq -c '{external_email_enabled,mailer_autoconfirm,disable_signup,password_min_length,smtp_host:(.smtp_host!=null and .smtp_host!="")}' > out/config.json || echo '{"error":"config read failed"}' > out/config.json
+          ANON=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          B="https://$PROJECT_REF.supabase.co"
+          MAIL="authcheck+$(date +%s)@example.com"
+          R=$(curl -sS -X POST "$B/auth/v1/signup" -H "apikey: $ANON" -H "Content-Type: application/json" -d "{\"email\":\"$MAIL\",\"password\":\"1234~fate-hero\"}")
+          echo "$R" | jq -c '{session:(.access_token!=null),user:((.user.id // .id)!=null),error:(.msg // .error_description // .error // null)}' > out/signup.json
+          T=$(echo "$R" | jq -r '.access_token // empty')
+          if [ -n "$T" ]; then
+            curl -sS -X POST "$B/rest/v1/rpc/my_profile" -H "apikey: $ANON" -H "Authorization: Bearer $T" -H "Content-Type: application/json" -d '{}' > out/profile.json
+            L=$(curl -sS -X POST "$B/auth/v1/token?grant_type=password" -H "apikey: $ANON" -H "Content-Type: application/json" -d "{\"email\":\"$MAIL\",\"password\":\"1234~fate-hero\"}")
+            echo "$L" | jq -c '{login:(.access_token!=null)}' > out/login.json
+          fi
+          UID_=$(echo "$R" | jq -r '.user.id // .id // empty')
+          if [ -n "$UID_" ]; then
+            AH=(-H "apikey: $SERVICE"); case "$SERVICE" in eyJ*) AH+=(-H "Authorization: Bearer $SERVICE");; esac
+            curl -sS -X DELETE "$B/auth/v1/admin/users/$UID_" "${AH[@]}" -o /dev/null -w '%{http_code}' > out/cleanup.txt
+          fi
+          cat out/*
+          git config user.name check-bot; git config user.email check-bot@users.noreply.github.com
+          git checkout --orphan auth-check-out; git rm -rfq --cached . ; git add -f out; git commit -qm "auth check"; git push -f origin auth-check-out
