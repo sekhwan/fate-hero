@@ -840,6 +840,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .qi{font-style:normal;display:inline-grid;place-items:center;width:15px;height:15px;border:1px solid var(--line);border-radius:50%;font-size:10px;color:var(--muted);margin-left:2px;vertical-align:1px}
 .tipBox{position:fixed;z-index:80;max-width:min(320px,calc(100vw - 24px));background:#211d28;border:1px solid var(--brass);box-shadow:0 8px 28px rgba(0,0,0,.55);padding:10px 12px;font-size:13px;line-height:1.5;color:var(--fg);pointer-events:none}
 .tipBox b{display:block;color:var(--brass);font-size:13.5px;margin-bottom:4px}
+.tipBox b.tg0{color:var(--g0)} .tipBox b.tg1{color:var(--g1)} .tipBox b.tg2{color:var(--g2)} .tipBox b.tg3{color:var(--g3)}
 .tipBox div{color:var(--fg)} .tipBox div+div{margin-top:2px}
 .tipBox.withImg{display:flex;gap:12px;align-items:flex-start;max-width:min(420px,calc(100vw - 24px))} .tipBox .tipTx{min-width:0} .tipBox .tipTx div+div{margin-top:2px}
 .tipBox .tipImg{flex:none;width:112px;height:112px;margin:0!important;border-radius:8px;border:1px solid var(--line);background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.08),rgba(0,0,0,.35));display:flex;align-items:center;justify-content:center}
@@ -2487,7 +2488,7 @@ document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key
  let cur=null,pinned=false;
  const show=el=>{cur=el;const t=el.dataset.tt,l=(el.dataset.tl||'').split('¦').filter(Boolean);
    const ti=el.dataset.ti;const im=ti?null:el.querySelector('img.iI');const gm=(el.className.match(/\bg([0-3])\b/)||[])[1];const src=ti||(im&&im.getAttribute('src'));
-   const txt=`<b>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');
+   const txt=`<b${gm!=null&&!ti?` class="tg${gm}"`:''}>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');
    box.classList.toggle('withImg',!!src);
    box.innerHTML=src?`<div class="tipImg ${ti?'comp':'g'+(gm||0)}"><img src="${src}" alt=""></div><div class="tipTx">${txt}</div>`:txt;box.hidden=false;
    const r=el.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;let x=Math.min(Math.max(12,r.left),innerWidth-bw-12),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);box.style.left=x+'px';box.style.top=y+'px';};
