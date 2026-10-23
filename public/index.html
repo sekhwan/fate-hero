@@ -1212,7 +1212,9 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     </ul>
     <h3>능력치</h3>
     <div class="tblWrap"><table>
-      <tr><th>힘·지능·민첩·체력</th><td>전투력을 올린다. 지능은 회유·함정 회피, 민첩은 도망, 체력은 최대 생명력에도 쓰인다.</td></tr>
+      <tr><th>힘·민첩</th><td>전투력을 올린다(힘이 더 크게). 민첩은 도망에도 쓰인다.</td></tr>
+      <tr><th>체력</th><td>최대 생명력을 올린다. 전투력에는 들어가지 않는다.</td></tr>
+      <tr><th>지능</th><td>10을 넘는 1점마다 경험치 +3%, 전투 스킬(검술·거인 사냥·지배자 사냥·지휘) 효과 +1%(최대 +150%). 회유·함정 회피에도 쓰인다. 전투력에 직접 들어가지는 않는다.</td></tr>
       <tr><th>행운</th><td>승률 +0.5%p/점, 그리고 <b>행운의 일격</b>: 승률과 상관없이 무조건 이긴다.</td></tr>
       <tr><th>매력</th><td>회유 +3%p/점, 그리고 <b>매혹</b>: 회유를 고르면 무조건 굴복시킨다.</td></tr>
     </table></div>
@@ -1872,16 +1874,16 @@ function logBuy(items,why){const lg=$('log');const e=lg.querySelector('.empty');
 // 설명 말풍선: data-tt(제목) + data-tl(줄들, ¦로 구분). 마우스를 올리거나 눌러서 연다.
 // 전투력 구성: 기본값 × 각 배율 (엔진 power()와 같은 순서)
 function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSum(s,k):0;
-  const base=(t.str-ic('str'))*1.3+(t.agi-ic('agi'))*1.05+(t.int-ic('int'))*1.15+(t.con-ic('con'))*0.95+s.hero.wealth.gear*1.6;
+  const base=((t.str-ic('str'))*1.3+(t.agi-ic('agi'))*1.05)*BASE_K+s.hero.wealth.gear*1.6;
   const prod=a=>a.reduce((x,y)=>x*y,1);
   const combo=prod((s.combos||[]).map(id=>COMBO_BY[id].e.mult||1)),myth=prod((s.mythics||[]).map(id=>MYTH_BY[id].e.mult||1)),hid=(s.hidFx&&s.hidFx.mult)||1;
   const mi=cf<1?1+(s.multItems-1)*cf:s.multItems;
   const rows=[['종족 '+s.hero.race.name,s.hero.race.mult],['특성',traitSum(s.hero,'mult',1)],['조합',combo],['신화',myth],['히든 이벤트',hid],
     ['장비'+(cf<1?' (저주 -15%)':''),mi],['레벨 '+s.lvl,1+LVL_B*(s.lvl-1)],['용병 '+s.allies+'명',1+mercPer(s)*s.allies],
-    ['동료·배우자·펫',compMult(s)],['검술 스킬',1+SKV.blade*sk(s,'blade')],['전투 숙련',1+SKV.mPow[mastery(s,'전투')]],
+    ['동료·배우자·펫',compMult(s)],['검술 스킬'+(skAmp(s)>1.0001?` (지능 증폭 +${Math.round((skAmp(s)-1)*100)}%)`:''),1+SKV.blade*sk(s,'blade')*skAmp(s)],['전투 숙련',1+SKV.mPow[mastery(s,'전투')]],
     ['궁지(생명력 50% 미만)',s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1],['도망 사기 저하',Math.pow(0.9,s.fleeDebuff||0)]];
   const pct=x=>{const v=(x-1)*100;return (v>=0?'+':'')+(Math.abs(v)>=1e5?fmt(v):Math.abs(v)>=10?Math.round(v).toLocaleString('ko-KR'):v.toFixed(1))+'%';};
-  const out=[`기본 ${fmt(base*10)} (능력치·출신 기본 장비)`];
+  const out=[`기본 ${fmt(base*10)} (힘·민첩·출신 기본 장비)`];
   for(const [n,x] of rows)if(Math.abs(x-1)>1e-9)out.push(`${n} ×${x>=100?fmt(x):x.toFixed(2)} (${pct(x)})`);
   out.push(`= 전투력 ${fmt(power(s)/s.stageCarry*10)}`);return out;}
 function tipAttr(title,lines){return ` data-tt="${esc(title)}" data-tl="${esc((lines||[]).filter(Boolean).join('¦'))}" tabindex="0"`;}
