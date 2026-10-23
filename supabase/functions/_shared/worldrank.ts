@@ -13,7 +13,7 @@ export async function worldRank(v: any) {
   if (!c || !(v.maxFloorE >= 1)) return null;
   const id = String(v.row.seed);
   const H = adminHeaders();
-  const sel = 'id,nickname,race,power,hp,ass,rev,bls,cur,ladder,is_bot,fights_done';
+  const sel = 'id,nickname,race,power,hp,ass,rev,bls,cur,ladder,r0,is_bot,fights_done';
   const [mineR, othersR] = await Promise.all([
     fetch(restUrl(`pvp_cards?id=eq.${id}&select=${sel}`), { headers: H }),
     fetch(restUrl(`pvp_cards?id=neq.${id}&select=${sel}&order=ladder.desc&limit=5000`), { headers: H }),
@@ -26,25 +26,33 @@ export async function worldRank(v: any) {
     id, nickname: v.row.nickname, race: String(c.race).slice(0, 20),
     power: int(c.power, 9e15), hp: int(c.hp, 9e12) || 100,
     ass: int(c.ass, 9999), rev: int(c.rev, 9999), bls: int(c.bls, 9999), cur: int(c.cur, 9999),
-    floor: int(v.maxFloorE, 1e7), fights_done: prev ? prev.fights_done : 0, ladder: prev ? prev.ladder : null,
+    floor: int(v.maxFloorE, 1e7), fights_done: prev ? prev.fights_done : 0, ladder: prev ? prev.ladder : null, r0: prev ? prev.r0 : null,
   };
   const plan = planWorld(E, me, others, v.row.seed);
-  const { ladder: _l, fights_done: _f, ...base } = me;
+  const { ladder: _l, fights_done: _f, r0: _r, ...base } = me;
   const up = await fetch(restUrl('pvp_cards?on_conflict=id'), {
     method: 'POST',
     headers: { ...H, Prefer: 'resolution=merge-duplicates,return=minimal' },
-    body: JSON.stringify({ ...base, seed: v.row.seed, hero: v.row.hero, title: v.row.title ?? null, ladder: plan.ladder, fights_done: plan.fightsDone, is_bot: false, updated_at: new Date().toISOString() }),
+    body: JSON.stringify({ ...base, seed: v.row.seed, hero: v.row.hero, title: v.row.title ?? null, ladder: plan.ladder, r0: plan.r0, fights_done: plan.fightsDone, is_bot: false, updated_at: new Date().toISOString() }),
   });
   if (!up.ok) throw new Error('pvp upsert ' + up.status + ' ' + (await up.text()));
+  // 방어한 쪽 점수도 함께 움직인다 (덧셈으로 반영해서 동시에 들어온 대전끼리 덮어쓰지 않는다)
+  if (plan.defDeltas.length) await applyDeltas(plan.defDeltas);
   if (plan.matches.length) {
     const ins = await fetch(restUrl('pvp_matches'), {
       method: 'POST',
       headers: { ...H, Prefer: 'return=minimal' },
       // deno-lint-ignore no-explicit-any
-      body: JSON.stringify(plan.matches.map((m: any) => ({ attacker: id, defender: m.defender, milestone: m.milestone, win: m.win, p: m.p, log: { how: m.how, log: m.log, opp: m.opp, oppRank: m.oppRank } }))),
+      body: JSON.stringify(plan.matches.map((m: any) => ({ attacker: id, defender: m.defender, milestone: m.milestone, win: m.win, p: m.p, log: { how: m.how, log: m.log, opp: m.opp, oppRank: m.oppRank, ex: m.ex, pts: m.pts } }))),
     });
     if (!ins.ok) console.error('pvp matches', ins.status, await ins.text());
   }
-  return { rank: plan.rank, startRank: plan.startRank, total: plan.total, rounds: plan.rounds, matches: plan.matches, isNew: !prev };
+  return { rank: plan.rank, startRank: plan.startRank, total: plan.total, rounds: plan.rounds, matches: plan.matches, isNew: !prev, points: plan.points, pointsFrom: plan.pointsFrom, defDeltas: plan.defDeltas };
 }
 
+
+// 점수 변화 더하기 (서버 전용 함수)
+export async function applyDeltas(p: { id: string; d: number }[]) {
+  const r = await fetch(restUrl('rpc/pvp_apply'), { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ p }) });
+  if (!r.ok) throw new Error('pvp apply ' + r.status + ' ' + (await r.text()));
+}

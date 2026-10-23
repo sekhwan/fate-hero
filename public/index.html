@@ -1113,7 +1113,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   <div class="modal">
     <button class="x" type="button" id="duelClose" aria-label="닫기">×</button>
     <h2 id="duelTitle">월드랭킹 대전</h2>
-    <p class="lead">월드랭킹에서는 끝없는 전장 5층마다 순위 위아래 10위 안의 용사와 붙는다. 한 번에 상대 4명과 붙고, 순위는 2.5 × (승 − 패)만큼 움직인다 (3승 1패 +5위, 4승 +10위). 상대는 그 용사가 마지막으로 등록한 카드로 싸운다.</p>
+    <p class="lead">월드랭킹 순위는 <b>대전 점수</b> 순서다. 처음 등록하면 체급(전투력·생명력)으로 시작 점수를 받는다. 끝없는 전장 5층마다 점수 순위 위아래 10위 안의 용사 4명과 붙고, 이기면 오르고 지면 내려간다. 강한 상대를 이길수록 많이 오르고, 약한 상대에게 질수록 많이 내려간다. 공격받은 쪽 점수도 반대로 움직인다. 다시 등록할 때 체급이 커졌으면 그만큼 점수가 더해진다. 상대는 그 용사가 마지막으로 등록한 카드로 싸운다.</p>
     <div id="worldBox"></div>
     <h3 style="margin-top:14px">연습 대전 <small style="font-weight:400;color:var(--muted)">가짜 상대 5명 · 기록에 남지 않는다</small></h3>
     <table class="pvTbl"><tr><th>상성</th><td>암살 &gt; 부활 &gt; 축복 &gt; 저주 &gt; 암살</td></tr><tr><th>규칙</th><td id="pvpRule"></td></tr></table>
@@ -1261,7 +1261,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li><b>배속</b> 1×~8×, <b>일시정지</b>(스페이스바), 선택지는 숫자 키 1~3으로도 고를 수 있다.</li>
       <li>제목 아래 <b>배경음</b> 버튼으로 신나는 배경음악을 켜고 끌 수 있다. 깊은 세계로 갈수록 음이 높아져 긴장감이 커진다.</li>
       <li>아주 드물게(천 명 중 한 명) <b>히든 영웅</b>이 태어난다.</li>
-      <li><b>월드랭킹</b>(공개 배포판): 끝없는 전장에 들어서면 영웅 정보의 <b>PvP 스탯 → 월드랭킹 대전</b>에서 등록할 수 있다. 등록할 때마다 새로 넘은 5층마다 앞뒤 10위 안의 상대 4명과 대전하고, 순위가 2.5 × (승 − 패)만큼 움직인다. 이름 옆에 '봇'이 붙은 용사는 연습 상대다.</li>
+      <li><b>월드랭킹</b>(공개 배포판): 끝없는 전장에 들어서면 영웅 정보의 <b>PvP 스탯 → 월드랭킹 대전</b>에서 등록할 수 있다. 순위는 대전 점수 순서다. 처음엔 체급으로 시작 점수를 받고, 새로 넘은 5층마다 앞뒤 10위 안의 상대 4명과 대전해 점수가 오르내린다(강한 상대를 이길수록 크게 오른다). 공격받은 쪽 점수도 함께 움직인다. 이름 옆에 '봇'이 붙은 용사는 연습 상대다.</li>
       <li><b>랭킹</b>(공개 배포판): 여정이 끝나면 닉네임으로 기록을 등록할 수 있다. 처치한 악마, 최종 전투력, 도달 기록 세 가지로 순위를 매긴다. 지상계에서 시작한 용사만 오른다.</li>
     </ul>
   </div>
@@ -2086,14 +2086,15 @@ function worldBoxHtml(){
 }
 function bindWorldBox(){const b=$('wSubmit');if(b)b.onclick=()=>submitRun('w');const o=$('wOpen');if(o)o.onclick=()=>{closeDuel();openRank('world');};}
 function worldHtml(w){if(!w)return '';
-  const head=w.isNew?`첫 등록 → ${w.startRank}위로 배치`:`${w.startRank}위에서 출발`;
-  if(!w.rounds.length)return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명</div><div class="wRounds">${head}. 새로 넘은 5층 구간이 없어 대전은 없었다 (카드만 갱신).</div>`;
+  const P=v=>v==null?'':` · ${fmt(v)}점`;const sg=v=>(v>0?'+':'')+v;
+  const head=w.isNew?`첫 등록 → 체급으로 시작 점수${P(w.pointsFrom)}, ${w.startRank}위로 배치`:`${w.startRank}위${P(w.pointsFrom)}에서 출발`;
+  if(!w.rounds.length)return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명${P(w.points)}</div><div class="wRounds">${head}. 새로 넘은 5층 구간이 없어 대전은 없었다 (카드만 갱신).</div>`;
   const tw=w.rounds.reduce((a,r)=>a+r.w,0),tl=w.rounds.reduce((a,r)=>a+r.l,0);
   const st=c=>PVP_KEYS.filter(k=>c[k]).map(k=>PVP_NAME[k]+' '+c[k]).join(' · ')||'PvP 스탯 없음';
   const byM={};for(const m of w.matches)(byM[m.milestone]=byM[m.milestone]||[]).push(m);
-  return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명 · 대전 ${w.rounds.length}회 ${tw}승 ${tl}패</div>
-   <div class="wRounds">${head}.<br>${w.rounds.map(r=>`${r.floor}층: ${r.w}승 ${r.l}패 → ${r.delta>0?'+'+r.delta:r.delta}위 (${r.from}위 → ${r.to}위)`).join('<br>')}</div>
-   ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}</span></div><div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
+  return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명${P(w.points)} · 대전 ${w.rounds.length}회 ${tw}승 ${tl}패</div>
+   <div class="wRounds">${head}.${w.rounds[0]&&w.rounds[0].pts!=null?'<br><small>점수는 기대 승률보다 잘 싸우면 오르고 못 싸우면 내려간다. 훨씬 약한 상대에게 이기면 조금, 지면 크게 움직인다.</small>':''}<br>${w.rounds.map(r=>`${r.floor}층: ${r.w}승 ${r.l}패 → ${r.pts!=null?`점수 ${sg(r.pts)}`:`${sg(r.delta)}위`} (${r.from}위 → ${r.to}위)`).join('<br>')}</div>
+   ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}${m.pts!=null?` · 점수 ${sg(m.pts)}`:''}</span></div>${m.ex!=null?`<div class="ds">점수로 본 기대 승률 ${Math.round(m.ex*100)}% · 실제 승률 ${Math.round(m.p*100)}%</div>`:''}<div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
 function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('hero');}
 let lastSubmitted=null;
 async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w':BS?'b':'rank';
@@ -2132,15 +2133,15 @@ async function loadRank(){
   document.querySelectorAll('[data-rk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rk===rankCol));
   $('bossBox').hidden=rankCol!=='boss'&&rankCol!=='house';$('rankTblWrap').hidden=rankCol==='boss'||rankCol==='house';if(rankCol==='boss'){renderBossBox();return;}if(rankCol==='house'){renderHouseRank();return;}
   const SC=[['reach_score','도달'],['power','전투력'],['kills','처치']];
-  $('rankHead').innerHTML=rankCol==='world'?'<tr><th>순위</th><th>닉네임</th><th>용사</th><th style="text-align:right">전투력 · 생명력</th><th style="text-align:right">도달 층</th></tr>'
+  $('rankHead').innerHTML=rankCol==='world'?'<tr><th>순위</th><th>닉네임</th><th>용사</th><th style="text-align:right" title="대전 점수. 이 점수 순서가 순위다">점수 · 층</th><th style="text-align:right">전투력 · 생명력</th></tr>'
     :`<tr><th>순위</th><th>닉네임</th><th>용사</th>${SC.map(([k,l])=>`<th style="text-align:right"><button type="button" class="rkSort" data-sort="${k}" aria-pressed="${rankSort===k}" title="${l} 순으로 정렬">${l}${rankSort===k?' ▼':''}</button></th>`).join('')}</tr>`;
   $('rankHead').querySelectorAll('[data-sort]').forEach(b=>b.onclick=()=>{rankSort=b.dataset.sort;loadRank();});
   const NC=rankCol==='world'?5:6;const body=$('rankBody');body.innerHTML=`<tr><td colspan="${NC}">불러오는 중…</td></tr>`;
-  if(rankCol==='world'){try{const r=await fetch(`${RANK.url}/rest/v1/pvp_cards?select=seed,nickname,title,hero,race,power,hp,floor,is_bot&order=ladder.desc&limit=100`,{headers:rankHeaders()});
+  if(rankCol==='world'){try{const r=await fetch(`${RANK.url}/rest/v1/pvp_cards?select=seed,nickname,title,hero,race,power,hp,floor,is_bot,ladder&order=ladder.desc&limit=100`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
     if(!rows.length){body.innerHTML='<tr><td colspan="5">아직 아무도 끝없는 전장에 오르지 않았다.</td></tr>';return;}
     body.innerHTML=rows.map((x,i)=>{
-      return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${titleTag(x.title)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${heroCell(x)}</td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td class="n">${fmt(x.floor||0)}층</td></tr>`;}).join('');
+      return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${titleTag(x.title)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${heroCell(x)}</td><td class="n"><b>${fmt(Math.round(x.ladder||0))}</b><small class="hMeta">${fmt(x.floor||0)}층</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td></tr>`;}).join('');
   }catch(e){body.innerHTML='<tr><td colspan="5">월드랭킹을 불러오지 못했다.</td></tr>';}return;}
   try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,title,hero,race,kills,power,reach,updated_at,user_id,legacy_lv,rare_comp&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
