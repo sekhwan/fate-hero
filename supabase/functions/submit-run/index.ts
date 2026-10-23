@@ -3,6 +3,23 @@ import { LIMITS, verifySubmission } from '../_shared/verify.js';
 import { adminHeaders, cors, json, restUrl, runSecret } from '../_shared/http.ts';
 import { worldRank } from '../_shared/worldrank.ts';
 
+// 요청의 Authorization이 로그인한 사람의 토큰이면 그 사람의 id (공개 키나 없음이면 null)
+async function userFromRequest(req: Request): Promise<string | null> {
+  const m = /^Bearer\s+(.+)$/i.exec(req.headers.get('authorization') ?? '');
+  if (!m) return null;
+  const tok = m[1];
+  try {
+    const seg = (tok.split('.')[1] ?? '').replace(/-/g, '+').replace(/_/g, '/');
+    const p = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(seg.padEnd(Math.ceil(seg.length / 4) * 4, '=')), (c) => c.charCodeAt(0))));
+    if (!p || p.role !== 'authenticated' || !p.sub) return null;
+  } catch { return null; }
+  const base = (Deno.env.get('SUPABASE_URL') ?? '').replace(/\/$/, '');
+  const r = await fetch(`${base}/auth/v1/user`, { headers: { apikey: adminHeaders().apikey, Authorization: `Bearer ${tok}` } });
+  if (!r.ok) return null;
+  const u = await r.json();
+  return u && u.id ? String(u.id) : null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'POST만 받는다' }, 405);
@@ -47,6 +64,26 @@ Deno.serve(async (req) => {
       }
     } catch (e) { console.error('reward check', e); return json({ error: '서버 오류' }, 500); }
   }
+
+  // 계정: 로그인했으면 그 사람의 닉네임으로 등록한다. 가입한 다른 사람의 닉네임은 쓸 수 없다.
+  try {
+    const userId = await userFromRequest(req);
+    const ownerRes = await fetch(restUrl('rpc/nick_owner'), { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ p_nick: verified.row.nickname }) });
+    const owner = ownerRes.ok ? await ownerRes.json() : null;
+    if (userId) {
+      const pr = await fetch(restUrl(`profiles?id=eq.${userId}&select=nickname`), { headers: adminHeaders() });
+      const prof = pr.ok ? (await pr.json())[0] : null;
+      if (prof && prof.nickname) verified.row.nickname = prof.nickname;
+      else if (owner && owner !== userId) return json({ error: '이 닉네임은 가입한 다른 사람의 것이다. 다른 닉네임을 써 주세요.' }, 400);
+      else {
+        await fetch(restUrl('profiles?on_conflict=id'), { method: 'POST', headers: { ...adminHeaders(), Prefer: 'resolution=merge-duplicates,return=minimal' },
+          body: JSON.stringify({ id: userId, nickname: verified.row.nickname, updated_at: new Date().toISOString() }) });
+      }
+      (verified.row as Record<string, unknown>).user_id = userId;
+    } else if (owner) {
+      return json({ error: '이 닉네임은 가입한 사람의 것이다. 그 계정으로 로그인하거나 다른 닉네임을 써 주세요.' }, 400);
+    }
+  } catch (e) { console.error('account', e); }
 
   // 월드 보스 칭호: 그 닉네임이 실제로 받은 칭호일 때만 붙인다
   if (!verified.row.title && verified.rawTitle) {

@@ -28,6 +28,12 @@ jobs:
         run: supabase link --project-ref "$PROJECT_REF" -p "$SUPABASE_DB_PASSWORD"
       - name: db push
         run: supabase db push -p "$SUPABASE_DB_PASSWORD"
+      - name: auth 설정 (이메일 가입 켜기, 인증 메일 없이 바로 가입)
+        run: |
+          API="https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth"
+          curl -fsS -X PATCH "$API" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            -d '{"external_email_enabled":true,"mailer_autoconfirm":true,"disable_signup":false}' >/dev/null && echo "auth config patched" || echo "auth config patch failed (계속 진행)"
+          curl -fsS "$API" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" | jq -c '{external_email_enabled,mailer_autoconfirm,disable_signup,password_min_length,external_anonymous_users_enabled}' || true
       - name: RUN_SECRET (처음 한 번만 무작위로 만든다)
         run: |
           # 목록 조회가 실패하면(권한 부족 등) 절대 새로 만들지 않는다. 새로 만들면 이미 발급된 모든 용사가 등록 불가가 된다.

@@ -629,6 +629,14 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .wbMine .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
 .wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
+.acForm{display:flex;flex-direction:column;gap:8px;max-width:360px}
+.acForm input[type=email],.acForm input[type=password]{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:10px 12px;border-radius:2px}
+.acAgree{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:flex-start}.acAgree a{color:var(--brass)}
+.acMail{font-size:20px;font-weight:700;color:var(--brass);padding:10px 12px;border:1px dashed var(--brass);margin:6px 0 8px;word-break:break-all}
+.acctM .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.acctM .msg{font-size:13px;margin-top:8px}.acctM .msg.err{color:var(--ember)}
+#acctBtn.on{border-color:var(--holy)!important}
+.acHint a{color:var(--brass)}
 .rankBox{margin-top:14px;padding:12px 14px;border:1px solid var(--line);background:rgba(255,255,255,.02)}
 .rankBox .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
 .rankBox input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
@@ -925,7 +933,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hbTitle">
       <div><h1>운명의 <span>용사</span></h1><p class="hbSub">무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까</p></div></div>
       <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="helpBtn" type="button" id="helpBtn">게임 방법 보기</button><button class="helpBtn" type="button" id="obBtn" aria-pressed="false">모든 정보 보기</button><button class="helpBtn" type="button" id="chronBtn">📜 용사 연대기</button><button class="helpBtn" type="button" id="rankBtn" hidden>랭킹 보기</button><button class="helpBtn" type="button" id="bgmBtn" aria-pressed="false">♪ 배경음 켜기</button></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="helpBtn" type="button" id="helpBtn">게임 방법 보기</button><button class="helpBtn" type="button" id="obBtn" aria-pressed="false">모든 정보 보기</button><button class="helpBtn" type="button" id="chronBtn">📜 용사 연대기</button><button class="helpBtn" type="button" id="rankBtn" hidden>랭킹 보기</button><button class="helpBtn" type="button" id="bgmBtn" aria-pressed="false">♪ 배경음 켜기</button><button class="helpBtn" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button></div>
     </div>
     <div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
   </header>
@@ -1002,6 +1010,13 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <button class="mode" type="button" data-ch="fam" aria-pressed="false">가문 기록</button>
     </div>
     <div id="chronBody"></div>
+  </div>
+</div>
+<div class="modalBg" id="acctModal" hidden role="dialog" aria-modal="true" aria-labelledby="acctTitle">
+  <div class="modal acctM">
+    <button class="x" type="button" id="acctClose" aria-label="닫기">×</button>
+    <h2 id="acctTitle">내 계정</h2>
+    <div id="acctBody"></div>
   </div>
 </div>
 <div class="modalBg" id="rankModal" hidden role="dialog" aria-modal="true" aria-labelledby="rankTitle">
@@ -1205,7 +1220,7 @@ const ACH=[
 ];
 let chron=(c=>Object.assign({h:{},m:{},a:{},st:{runs:0,kills:0,deaths:0,best:0,bestName:'',quick:null}},c||{}))(store.get('chron',null));
 let chRun={dec:0,near:0,started:false,start:0};
-function chSave(){store.set('chron',chron);}
+function chSave(){store.set('chron',chron);if(typeof acctQueueSave==='function')acctQueueSave();}
 // 대표 칭호: 직접 고른 것, 없으면 가장 귀한 것. 랭킹 닉네임 옆에 붙는다.
 const ACH_RARE=['hidden','f200','allin','f100','myth','w4','enh10','near10','royal','hidq','party','marry','w0','boss1'];
 function chRepTitle(){if(chron.rep&&String(chron.rep).startsWith('wb:'))return String(chron.rep).slice(3);const id=chron.rep&&chron.a[chron.rep]?chron.rep:ACH_RARE.find(x=>chron.a[x]);const a=id&&ACH.find(x=>x[0]===id);return a?a[4]:null;}
@@ -1257,6 +1272,61 @@ function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAt
     B.innerHTML=`<table class="famTbl">${rows.map(([a,b])=>`<tr><td>${a}</td><td>${esc(String(b))}</td></tr>`).join('')}</table><p class="chLegend">이 기록은 이 브라우저에만 저장된다. 기기를 바꾸면 이어지지 않는다.</p>`;}}
 // ===== 랭킹 연동 (config.js의 FATE_CONFIG가 있을 때만 켜진다) =====
 const RANK=(()=>{const c=window.FATE_CONFIG||{};const url=(c.supabaseUrl||'').replace(/\/$/,'');return {on:!!(url&&c.anonKey),url,key:c.anonKey||''};})();
+// ===== 계정 (이메일·비밀번호 4자리 가입). 가입하지 않으면 지금처럼 손님으로 플레이한다 =====
+const PW_PAD='~fate-hero'; // 서버 최소 길이(6자)를 맞추려고 4자리 비밀번호 뒤에 붙인다
+let AUTH=(v=>v&&v.access_token?v:null)(store.get('auth',null)),PROF=store.get('prof',null),acctSaveT=null,acctTab='signup',acctPending=null;
+function acctOn(){return !!(RANK.on&&AUTH&&AUTH.access_token);}
+async function authReq(path,body,tok){const h={'apikey':RANK.key,'Content-Type':'application/json'};if(tok)h.Authorization='Bearer '+tok;
+  const r=await fetch(RANK.url+'/auth/v1/'+path,{method:'POST',headers:h,body:JSON.stringify(body||{})});let j={};try{j=await r.json();}catch(e){}return {ok:r.ok,status:r.status,j};}
+function authKeep(j,email){if(!j||!j.access_token)return false;AUTH={access_token:j.access_token,refresh_token:j.refresh_token,expires_at:Date.now()+((j.expires_in||3600)-60)*1000,email:email||(j.user&&j.user.email)||(AUTH&&AUTH.email)||''};store.set('auth',AUTH);return true;}
+async function authFresh(){if(!AUTH)return null;if(Date.now()<AUTH.expires_at)return AUTH.access_token;
+  const r=await authReq('token?grant_type=refresh_token',{refresh_token:AUTH.refresh_token});if(r.ok&&authKeep(r.j))return AUTH.access_token;
+  if(r.status>=400&&r.status<500){AUTH=null;store.set('auth',null);acctRender();}return null;}
+async function userHeaders(){const h=rankHeaders();const t=acctOn()?await authFresh():null;if(t)h.Authorization='Bearer '+t;return h;}
+async function rpc(name,args){const r=await fetch(`${RANK.url}/rest/v1/rpc/${name}`,{method:'POST',headers:await userHeaders(),body:JSON.stringify(args||{})});return r.ok?r.json():null;}
+const AUTH_ERR=m=>/already registered|already exists/i.test(m)?'이미 가입된 이메일이다. 로그인해 주세요.':/Invalid login/i.test(m)?'이메일이나 비밀번호가 맞지 않는다.':/valid email|invalid format|Unable to validate email/i.test(m)?'이메일 주소 형식이 맞지 않는다.':/rate limit|too many/i.test(m)?'잠시 후 다시 시도해 주세요 (요청이 너무 많다).':/Signups not allowed|disabled/i.test(m)?'지금은 가입을 받지 않는다.':m||'서버 오류';
+// 연대기 합치기: 둘 중 더 많이 이룬 쪽을 남긴다 (도감 별·처치 수는 큰 값, 업적은 먼저 이룬 날)
+function chMerge(a,b){const o=JSON.parse(JSON.stringify(a||{}));b=b||{};for(const k of ['h','m']){o[k]=o[k]||{};for(const x in (b[k]||{}))o[k][x]=Math.max(o[k][x]||0,b[k][x]||0);}
+  o.a=o.a||{};for(const x in (b.a||{}))o.a[x]=o.a[x]?Math.min(o.a[x],b.a[x]):b.a[x];
+  o.st=o.st||{};const bs=b.st||{};for(const x in bs){if(typeof bs[x]==='number')o.st[x]=Math.max(o.st[x]||0,bs[x]);else if(o.st[x]==null)o.st[x]=bs[x];}
+  if((bs.best||0)>((a&&a.st&&a.st.best)||0))o.st.bestName=bs.bestName;if(!o.rep&&b.rep)o.rep=b.rep;return o;}
+async function acctAfterLogin(){const p=await rpc('my_profile');if(!p)return;PROF={nickname:p.nickname||null};store.set('prof',PROF);if(PROF.nickname)store.set('nick',PROF.nickname);
+  const merged=chMerge(chron,p.chron);Object.keys(chron).forEach(k=>delete chron[k]);Object.assign(chron,merged);store.set('chron',chron);await rpc('save_chron',{p_chron:chron});acctRender();if(typeof renderAll==='function')renderAll();}
+function acctQueueSave(){try{if(!acctOn())return;}catch(e){return;}clearTimeout(acctSaveT);acctSaveT=setTimeout(()=>rpc('save_chron',{p_chron:chron}).then(ok=>{if(ok){store.set('chronSyncAt',Date.now());}}).catch(()=>{}),4000);}
+function nickLocked(){return acctOn()&&PROF&&PROF.nickname?PROF.nickname:null;}
+function acctRender(){const b=$('acctBtn');if(b){b.hidden=!RANK.on;b.textContent=acctOn()?`👤 ${PROF&&PROF.nickname?PROF.nickname:'내 계정'}`:'👤 가입 · 로그인';b.classList.toggle('on',acctOn());}
+  const B=$('acctBody');if(!B||$('acctModal').hidden)return;
+  if(acctOn()){const at=store.get('chronSyncAt',0);
+    B.innerHTML=`<p class="lead">${esc(AUTH.email)} 으로 로그인했다. 연대기(도감·업적·칭호)가 서버에 저장되어 다른 기기에서도 이어진다.</p>
+      <div class="rankBox"><b>닉네임</b>${PROF&&PROF.nickname?`<div class="msg">「<b style="color:var(--brass)">${esc(PROF.nickname)}</b>」 · 이 닉네임은 내 것이다. 다른 사람은 이 닉네임으로 랭킹에 등록할 수 없다.</div>`
+        :`<div class="msg">랭킹에 쓸 닉네임을 정하면 내 것이 된다.</div><div class="row"><input id="acNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(store.get('nick',''))}"><button class="btn" type="button" id="acNickGo">이 닉네임으로 정하기</button></div><div class="msg" id="acNickMsg"></div>`}</div>
+      <p class="msg" style="color:var(--muted);font-size:13px">연대기 마지막 저장: ${at?new Date(at).toLocaleString():'아직 없음'}</p>
+      <button class="btn ghost" type="button" id="acOut">로그아웃</button>`;
+    const go=$('acNickGo');if(go)go.onclick=async()=>{const m=$('acNickMsg');m.textContent='확인하는 중…';const r=await rpc('claim_nickname',{p_nick:$('acNick').value});if(r&&r.ok){PROF={nickname:r.nickname};store.set('prof',PROF);store.set('nick',r.nickname);acctRender();renderAll();}else{m.className='msg err';m.textContent=(r&&r.error)||'서버 오류';}};
+    $('acOut').onclick=async()=>{try{await authReq('logout',{},AUTH.access_token);}catch(e){}AUTH=null;PROF=null;store.set('auth',null);store.set('prof',null);acctRender();renderAll();};return;}
+  if(acctPending){B.innerHTML=`<p class="lead">이 이메일 주소가 맞나요?</p><div class="acMail">${esc(acctPending.email)}</div><p class="msg" style="color:var(--muted)">확인 메일은 보내지 않는다. 비밀번호를 잃어버리면 이 주소로만 찾을 수 있으니 오타가 없는지 한 번 더 봐 주세요.</p>
+      <div class="row"><button class="btn" type="button" id="acYes">맞다, 가입하기</button><button class="btn ghost" type="button" id="acFix">고치기</button></div><div class="msg" id="acMsg"></div>`;
+    $('acFix').onclick=()=>{acctPending=null;acctRender();};$('acYes').onclick=async()=>{const m=$('acMsg');m.textContent='가입하는 중…';$('acYes').disabled=true;
+      const r=await authReq('signup',{email:acctPending.email,password:acctPending.pw+PW_PAD});
+      if(r.ok&&authKeep(r.j,acctPending.email)){acctPending=null;await acctAfterLogin();showToast('가입 완료','이제 기록이 서버에 저장된다','ok',2500);}
+      else if(r.ok){m.className='msg err';m.textContent='가입은 됐지만 바로 로그인되지 않았다. 잠시 후 로그인해 주세요.';}
+      else{m.className='msg err';m.textContent=AUTH_ERR((r.j&&(r.j.msg||r.j.error_description||r.j.message))||'');$('acYes').disabled=false;}};return;}
+  const S=acctTab==='signup';
+  B.innerHTML=`<div class="rankTabs"><button class="mode" type="button" data-at="signup" aria-pressed="${S}">가입하기</button><button class="mode" type="button" data-at="login" aria-pressed="${!S}">로그인</button></div>
+    <p class="lead">${S?'이메일과 비밀번호 4자리면 끝이다. 가입하면 연대기·칭호가 서버에 저장되고, 닉네임이 내 것이 된다. 가입하지 않아도 지금처럼 플레이할 수 있다.':'가입한 이메일과 비밀번호로 로그인한다.'}</p>
+    <div class="acForm"><input id="acMail" type="email" placeholder="이메일" autocomplete="email" value="${esc(store.get('lastMail',''))}"><input id="acPw" type="password" placeholder="비밀번호 (4자 이상)" autocomplete="${S?'new-password':'current-password'}" minlength="4">
+    ${S?'<label class="acAgree"><input type="checkbox" id="acAgree"> <a href="privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 동의한다 (이메일은 로그인과 비밀번호 찾기에만 쓴다)</label>':''}
+    <button class="btn" type="button" id="acGo">${S?'가입하기':'로그인'}</button></div><div class="msg" id="acMsg"></div>`;
+  B.querySelectorAll('[data-at]').forEach(x=>x.onclick=()=>{acctTab=x.dataset.at;acctRender();});
+  const go=async()=>{const m=$('acMsg');const email=($('acMail').value||'').trim(),pw=$('acPw').value||'';store.set('lastMail',email);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){m.className='msg err';m.textContent='이메일 주소를 확인해 주세요.';return;}
+    if(pw.length<4){m.className='msg err';m.textContent='비밀번호는 4자 이상이다.';return;}
+    if(S){if(!$('acAgree').checked){m.className='msg err';m.textContent='개인정보처리방침에 동의해 주세요.';return;}acctPending={email,pw};acctRender();return;}
+    m.className='msg';m.textContent='로그인하는 중…';const r=await authReq('token?grant_type=password',{email,password:pw+PW_PAD});
+    if(r.ok&&authKeep(r.j,email)){await acctAfterLogin();showToast('로그인','연대기를 불러와 합쳤다','ok',2200);}else{m.className='msg err';m.textContent=AUTH_ERR((r.j&&(r.j.msg||r.j.error_description||r.j.message))||'');}};
+  $('acGo').onclick=go;$('acPw').onkeydown=e=>{if(e.key==='Enter')go();};}
+function openAcct(){$('acctModal').hidden=false;acctRender();$('acctClose').focus();}
+function closeAcct(){$('acctModal').hidden=true;acctPending=null;$('acctBtn').focus();}
 function rankHeaders(){const h={'apikey':RANK.key,'Content-Type':'application/json'};if(RANK.key.startsWith('eyJ'))h.Authorization='Bearer '+RANK.key;return h;}
 const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let heroSeed=0, runToken=null, runLog=null;
@@ -1826,7 +1896,7 @@ function rankBoxHtml(){
   if(runLog[0][2]!==0) return `<div class="rankBox"><div class="msg">랭킹에는 지상계에서 태어나 시작한 용사만 오른다.</div></div>`;
   const nick=store.get('nick','');
   return `<div class="rankBox"><b>랭킹에 등록</b><div class="msg">서버가 이 용사의 모든 행동을 처음부터 다시 재생해 결과를 검증한다. 같은 용사는 마지막 등록 기록으로 갱신된다.</div>
-    <div class="row"><input id="rankNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nick)}" autocomplete="nickname"><button class="btn" type="button" id="rankSubmit">등록</button><button class="btn ghost" type="button" id="rankOpen2">랭킹 보기</button></div>
+    <div class="row"><input id="rankNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="rankSubmit">등록</button><button class="btn ghost" type="button" id="rankOpen2">랭킹 보기</button></div>
     ${wbEstHtml()}<div class="msg" id="rankMsg"></div><div class="wRes" id="rankWorld"></div></div>`;
 }
 function inEndless(){return !!(run&&!run.dead&&(run.stage===5||run.huntFrom===5));}
@@ -1836,7 +1906,7 @@ function worldBoxHtml(){
   if(!runToken||!runLog||runLog[0][2]!==0) return '<div class="rankBox"><div class="msg">서버가 발급한, 지상계에서 시작한 용사만 월드랭킹에 오른다.</div></div>';
   const fl=run.maxFloorE||0,ms=Math.floor(fl/5);const nick=store.get('nick','');
   return `<div class="rankBox"><b>월드랭킹 등록 · 대전</b><div class="msg">지금까지 최고 ${fl}층 → 대전 ${ms}회 분량. 서버가 기록을 처음부터 다시 재생해 검증한 뒤, 아직 치르지 않은 5층 단위 대전을 한꺼번에 치른다. 등록한 시점의 카드가 다른 용사들의 상대가 된다.</div>
-    <div class="row"><input id="wNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nick)}" autocomplete="nickname"><button class="btn" type="button" id="wSubmit">등록하고 대전</button><button class="btn ghost" type="button" id="wOpen">월드랭킹 보기</button></div>
+    <div class="row"><input id="wNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="wSubmit">등록하고 대전</button><button class="btn ghost" type="button" id="wOpen">월드랭킹 보기</button></div>
     <div class="msg" id="wMsg"></div><div class="wRes" id="wRes"></div></div>`;
 }
 function bindWorldBox(){const b=$('wSubmit');if(b)b.onclick=()=>submitRun('w');const o=$('wOpen');if(o)o.onclick=()=>{closeDuel();openRank('world');};}
@@ -1855,10 +1925,11 @@ async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w'
   const nick=($(P+'Nick').value||'').trim().slice(0,12);const msg=$(P+'Msg');
   if(!nick){msg.className='msg err';msg.textContent='닉네임을 입력해 주세요.';return;}
   store.set('nick',nick);const btn=$(P+'Submit');btn.disabled=true;const pct0=WB?wbPct(WB):null;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
-  try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:rankHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,title:chRepTitle(),log:runLog,attack:BS,...(runToken.batch?{batch:runToken.batch}:{})})});
+  try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:await userHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,title:chRepTitle(),log:runLog,attack:BS,...(runToken.batch?{batch:runToken.batch}:{})})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
-    lastSubmitted=heroSeed;const k=j.ranks||{};
+    lastSubmitted=heroSeed;const k=j.ranks||{};if(acctOn()&&!(PROF&&PROF.nickname)){PROF={nickname:nick};store.set('prof',PROF);acctRender();}
+    if(!acctOn())setTimeout(()=>{const mm=$(P+'Msg');if(mm&&!mm.querySelector('.acHint'))mm.insertAdjacentHTML('beforeend',` <span class="acHint">· <a href="#" onclick="openAcct();return false">가입</a>하면 닉네임 「${esc(nick)}」를 내 것으로 지킬 수 있다</span>`);},50);
     msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
     if(j.boss){const B=j.boss;
       if(B.cooldown){wbSetNext(B.next_at);msg.className='msg err';msg.textContent=(BS?'':msg.textContent+' · ')+`월드 보스: 이 용사는 ${wbWaitTxt()} 뒤에 다시 공격할 수 있다.`;}
@@ -2002,7 +2073,7 @@ async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p c
      ${wbHpHtml(pct,cur.killed,true)}
      <div class="wbNums">${cur.started?`<span>생명력 <b>${fmt(cur.left)}</b> / ${fmt(cur.hpMax)}</span><span>참여 <b>${cur.players}</b>명</span><span>${cur.killed?`토벌 완료 · 마지막 일격 <b>${esc(cur.lastHit||'')}</b>`:`${pct.toFixed(1)}% 남음`}</span>`:'<span>아직 아무도 공격하지 않았다. 생명력은 첫 등록 때 정해진다.</span>'}</div></div></div>
    <div class="wbMine"><b class="wbAtkH">⚔ 공격하기</b> ${e?`지금 용사를 등록하면 약 <b>${fmt(e.dmg)}</b> 피해 · 처치 ${fmt(e.kills)}${e.W>1?` · ${esc(cur.boss.world)}에 닿아 ×1.5`:` · ${esc(cur.boss.world)}에 닿으면 ×1.5`}`:'용사를 출정시킨 뒤 여기서 등록하면 이 보스에게 피해를 준다.'}
-     ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(store.get('nick',''))}" autocomplete="nickname"><button class="btn" type="button" id="bSubmit" ${wbNextAt()?'disabled':''}>${wbNextAt()?`⏳ ${wbWaitTxt()} 뒤 공격 가능`:run.dead?'마지막 공격 (랭킹 등록)':'이 용사로 공격 (랭킹 등록)'}</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
+     ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||store.get('nick',''))}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="bSubmit" ${wbNextAt()?'disabled':''}>${wbNextAt()?`⏳ ${wbWaitTxt()} 뒤 공격 가능`:run.dead?'마지막 공격 (랭킹 등록)':'이 용사로 공격 (랭킹 등록)'}</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
        :`<div class="msg" style="margin-top:6px;color:var(--muted)">${cur.fake?'서버에 연결된 공개 페이지에서 공격할 수 있다.':!run?'먼저 「이 운명으로 출정」을 눌러 용사를 내보내자.':'이 용사는 지상계에서 서버 연결로 시작한 용사가 아니라 공격할 수 없다.'}</div>`}
      <small style="color:var(--muted)">살아 있는 용사는 1시간에 한 번 공격할 수 있고, 그사이 늘어난 처치만큼 피해가 들어간다. 쓰러진 용사의 마지막 등록은 언제든 피해가 들어간다(보상 없음). 등록하면 용사 랭킹에도 올라간다.</small><br><small style="color:var(--muted)">피해 = 100 × √(이번 주 같은 닉네임으로 등록한 처치 수 합계), 한 주 최대 ${fmt(WB_CAP)}. 같은 용사를 다시 등록하면 늘어난 만큼만 더해진다.</small></div>
    ${wbPreviewHtml(e)}
@@ -2200,7 +2271,7 @@ function fillHelpSkills(){const t=$('helpSkills');if(!t||t.dataset.done)return;t
 function openHelp(){TRACK.st.help++;TRACK.ev('help');fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}
 $('helpBtn').onclick=openHelp;
-$('chronBtn').onclick=openChron;$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
+$('chronBtn').onclick=openChron;$('acctBtn').onclick=openAcct;$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
 if(RANK.on){$('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank();}
 $('rankClose').onclick=closeRank;$('rankModal').addEventListener('click',e=>{if(e.target.id==='rankModal')closeRank();});
 document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{rankCol=b.dataset.rk;loadRank();});
