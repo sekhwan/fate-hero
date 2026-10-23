@@ -65,9 +65,24 @@ Deno.serve(async (req) => {
     } catch (e) { console.error('reward check', e); return json({ error: '서버 오류' }, 500); }
   }
 
+  // 가문 족보: 로그인한 사람의 끝난 판을 족보에 올린다 (같은 판은 한 번만)
+  let userId: string | null = null;
+  try { userId = await userFromRequest(req); } catch (e) { console.error('user', e); }
+  const addMember = async () => {
+    if (!userId || verified.alive) return null;
+    const r = verified.row;
+    const res = await fetch(restUrl('rpc/house_add_member'), { method: 'POST', headers: adminHeaders(),
+      body: JSON.stringify({ p_owner: userId, p_seed: r.seed, p_hero: r.hero, p_race: r.race, p_reach: r.reach, p_score: r.reach_score, p_kills: r.kills, p_power: r.power, p_alive: false }) });
+    return res.ok ? await res.json() : null;
+  };
+  // 족보 보고만 하는 요청 (랭킹·월드 보스에는 올리지 않는다)
+  if ((body as Record<string, unknown>)?.report_only === true) {
+    if (!userId) return json({ error: '로그인이 필요하다' }, 401);
+    try { return json({ ok: true, house: await addMember() }); } catch (e) { console.error('report', e); return json({ error: '서버 오류' }, 500); }
+  }
+
   // 계정: 로그인했으면 그 사람의 닉네임으로 등록한다. 가입한 다른 사람의 닉네임은 쓸 수 없다.
   try {
-    const userId = await userFromRequest(req);
     const ownerRes = await fetch(restUrl('rpc/nick_owner'), { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ p_nick: verified.row.nickname }) });
     const owner = ownerRes.ok ? await ownerRes.json() : null;
     if (userId) {
@@ -124,7 +139,9 @@ Deno.serve(async (req) => {
       });
       if (wb.ok) boss = await wb.json(); else console.error('world boss', wb.status, await wb.text());
     } catch (e) { console.error('world boss', e); }
-    return json({ ok: true, summary: verified.summary, ranks, world, boss });
+    let house = null;
+    try { house = await addMember(); } catch (e) { console.error('house', e); }
+    return json({ ok: true, summary: verified.summary, ranks, world, boss, house });
   } catch (e) {
     console.error(e);
     return json({ error: '서버 오류' }, 500);

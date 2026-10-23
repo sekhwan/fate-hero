@@ -1,0 +1,36 @@
+# 관리자용: 문제가 된 가문 문장 그림 내리기. Actions 탭 → crest-hide → Run workflow → 가문 이름 입력.
+# 그림만 내리고 가문은 그대로 둔다 (그 가문은 조합 문장으로 보인다).
+name: crest-hide
+on:
+  workflow_dispatch:
+    inputs:
+      house:
+        description: '그림을 내릴 가문 이름'
+        required: true
+permissions:
+  contents: read
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  hide:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      HOUSE: ${{ github.event.inputs.house }}
+    steps:
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: hide crest
+        run: |
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          H=(-H "apikey: $SERVICE" -H "Content-Type: application/json"); case "$SERVICE" in eyJ*) H+=(-H "Authorization: Bearer $SERVICE");; esac
+          B="https://$PROJECT_REF.supabase.co"
+          Q=$(jq -rn --arg n "$HOUSE" '$n|@uri')
+          ROW=$(curl -fsS "${H[@]}" "$B/rest/v1/houses?name=eq.$Q&select=id,owner,name")
+          echo "found: $(echo "$ROW" | jq -c '[.[]|{id,name}]')"
+          OWNER=$(echo "$ROW" | jq -r '.[0].owner // empty'); [ -n "$OWNER" ] || { echo "그런 가문이 없다"; exit 1; }
+          curl -fsS -X PATCH "${H[@]}" "$B/rest/v1/houses?owner=eq.$OWNER" -d '{"crest_hidden":true,"crest_url":null}' -o /dev/null
+          curl -sS -X DELETE "${H[@]}" "$B/storage/v1/object/crests/$OWNER.webp" -o /dev/null -w 'storage delete %{http_code}\n'
+          echo "내렸다: $HOUSE"
