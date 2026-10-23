@@ -1041,7 +1041,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.5.9';
+const ENGINE_VERSION='1.6.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1053,6 +1053,24 @@ function snapFuse(snap,uids,r,s){if(!snap||!r)return;for(const u of uids){const 
   snap.fame=(snap.fame||0)-MYTH_FAME;snap.mythics=(s.mythics||[]).slice();snap.mythV=Object.assign({},s.mythV||{});}
 function enhanceSync(s,idx,snap){const it=s.items[idx];const uid=it&&it.uid;const r=enhance(s,idx);snapEnhance(snap,uid,r);return r;}
 function mythFuseSync(s,snap){const c=mythCheck(s);const uids=c.ok?c.mats.map(i=>s.items[i].uid).filter(Boolean):[];const r=mythFuse(s);if(r)snapFuse(snap,uids,r,s);return r;}
+// 월드 보스 보상: 서버가 정한 등급 코드(h 영웅 · l +7 전설 · m 신화)를 받아 지금 용사에게 준다.
+// 아이템 세부(부위·이름·수치)는 엔진 난수로 정하므로 서버 재생 검증에서 똑같이 나온다. 같은 번호(n)는 한 번만 받는다.
+const WB_REWARD_RE=/^(\d{1,6}):([hlm]{1,3})$/;
+function wbReward(s,arg){const m=WB_REWARD_RE.exec(String(arg));if(!m||s.dead||s.over)return null;const n=+m[1];s.wbGot=s.wbGot||[];if(s.wbGot.includes(n))return null;s.wbGot.push(n);
+  const out=[],got=[];
+  for(const k of m[2]){
+    if(k==='m'){const my=MYTHS[Math.floor(s.r()*MYTHS.length)];const v=10+Math.floor(s.r()*11);s.mythics=s.mythics||[];s.mythV=s.mythV||{};
+      if(s.mythics.includes(my.id)){const old=s.mythV[my.id]||MYTH_PVP;const nv=v>old?v:Math.min(20,old+1);s.mythV[my.id]=nv;got.push({myth:my.id,name:my.name,v:nv,old});}
+      else{s.mythics.push(my.id);s.mythV[my.id]=v;if(my.e.hp){const o=s.maxHp;s.maxHp=hpMax(s);s.hp+=Math.max(0,s.maxHp-o);}got.push({myth:my.id,name:my.name,v});}
+      continue;}
+    const g=k==='l'?3:2;const it=makeItem(s.r,g,null,tierOf(s));if(g===3)it.plus=7;it.src='월드 보스 보상';it.where=placeName(s);noteGot(s,it);
+    const kept=equip(s,it);checkCombos(s,out);got.push({it,kept:s.items.includes(it),spare:!!it.spare,note:s.lastEquipNote});}
+  return {n,got,out};}
+// 저장 지점에도 즉시 반영한다 (불러와도 보상이 사라지지 않게)
+function wbRewardSync(s,arg,snap){const r=wbReward(s,arg);if(!r||!snap)return r;
+  for(const g of r.got){if(g.it&&g.kept){const c=JSON.parse(JSON.stringify(g.it));c.spare=true;(snap.items=snap.items||[]).push(c);}}
+  normSlots(snap,snapApply);snap.items=snap.items.filter(x=>!(x.spare&&(x.grade||0)<3));
+  snap.mythics=(s.mythics||[]).slice();snap.mythV=Object.assign({},s.mythV||{});snap.uidN=s.uidN;snap.wbGot=(s.wbGot||[]).slice();return r;}
 function snapshotRun(s){const o={};for(const k in s){if(k==='r'||k==='queue'||k==='shop'||k==='transit'||k==='hero')continue;o[k]=s[k];}return JSON.parse(JSON.stringify(o));}
 function restoreRun(snap,hero,seed,fromStart){const run=JSON.parse(JSON.stringify(snap));run.hero=hero;run.r=rng(seed);
   const keepFloor=STAGES[run.stage]&&STAGES[run.stage].endless&&STAGES[run.stage].hunt==null&&snap.region>0&&!fromStart; // 끝없는 전장 5층 저장: 그 층에서 다시 시작 (fromStart면 1층부터)
@@ -1080,7 +1098,7 @@ function replayLog(log){
       const o=c.options.find(x=>x.id===a[1]); if(!o||o.disabled) throw new Error(`${i}번째 행동: 고를 수 없는 선택지 ${a[1]}`); choose(s,a[1]); continue; }
     let ok=true;
     if(op==='b') ok=!!buy(s,a[1]|0); else if(op==='s') ok=!!sell(s,a[1]|0); else if(op==='e') ok=!!enhanceSync(s,a[1]|0,snap);
-    else if(op==='M') ok=!!mythFuseSync(s,snap); else if(op==='T') ok=travelHunt(s,a[1]|0); else if(op==='n') ok=advanceStage(s); else if(op==='h') ok=enterHunt(s); else if(op==='l') ok=leaveHunt(s);
+    else if(op==='M') ok=!!mythFuseSync(s,snap); else if(op==='W') ok=!!wbRewardSync(s,a[1],snap); else if(op==='T') ok=travelHunt(s,a[1]|0); else if(op==='n') ok=advanceStage(s); else if(op==='h') ok=enterHunt(s); else if(op==='l') ok=leaveHunt(s);
     else throw new Error(`${i}번째 행동: 알 수 없는 행동 ${op}`);
     if(!ok) throw new Error(`${i}번째 행동: ${op} 실행 불가`);
   }
@@ -1148,5 +1166,5 @@ function isImportant(s,c,mode){
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+globalThis.FateEngine={GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};

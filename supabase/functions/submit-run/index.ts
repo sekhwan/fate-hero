@@ -35,6 +35,19 @@ Deno.serve(async (req) => {
     return json({ error: msg }, 400);
   }
 
+  // 월드 보스 보상 기록(W)은 서버가 실제로 지급한 것과 번호·등급이 모두 같아야 한다
+  if (verified.wbActs && verified.wbActs.length) {
+    try {
+      const rr = await fetch(restUrl(`world_boss_rewards?seed=eq.${verified.row.seed}&select=n,codes`), { headers: adminHeaders() });
+      const issued = new Set(((rr.ok ? await rr.json() : []) as { n: number; codes: string }[]).map((x) => `${x.n}:${x.codes}`));
+      const seen = new Set();
+      for (const w of verified.wbActs) {
+        if (!issued.has(w) || seen.has(w)) return json({ error: '월드 보스 보상 기록이 서버 기록과 다르다' }, 400);
+        seen.add(w);
+      }
+    } catch (e) { console.error('reward check', e); return json({ error: '서버 오류' }, 500); }
+  }
+
   try {
     const up = await fetch(restUrl('runs?on_conflict=seed'), {
       method: 'POST',
@@ -60,7 +73,7 @@ Deno.serve(async (req) => {
       const wb = await fetch(restUrl('rpc/wb_apply'), {
         method: 'POST',
         headers: adminHeaders(),
-        body: JSON.stringify({ p_seed: row.seed, p_nick: row.nickname, p_title: row.title, p_kills: row.kills, p_stage: Math.min(5, Math.floor((row.reach_score || 0) / 1000)) }),
+        body: JSON.stringify({ p_seed: row.seed, p_nick: row.nickname, p_title: row.title, p_kills: row.kills, p_stage: Math.min(5, Math.floor((row.reach_score || 0) / 1000)), p_attack: (body as Record<string, unknown>)?.attack === true, p_alive: !!verified.alive }),
       });
       if (wb.ok) boss = await wb.json(); else console.error('world boss', wb.status, await wb.text());
     } catch (e) { console.error('world boss', e); }
