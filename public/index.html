@@ -1920,7 +1920,9 @@ function renderStage(){
   if(n.kind==='gambler'){box.querySelectorAll('.opt').forEach(b=>{if(b.dataset.id.startsWith('gb:'))b.onclick=()=>gambleShow(b.dataset.id);});if(gbSeen!==n){gbSeen=n;setTimeout(()=>gambleShow(),250);}}
 }
 // ===== 일러스트 연결: 세계 배경 · 장면 · 동료 초상 =====
-const COMP_IMG=(()=>{const L=['성녀 엘리나','마녀 릴리스','여기사 세라','엘프 궁수 아리엔','무희 카르멘','성검의 무녀 하루','용의 공주 이브','떠돌이 검사 카일','드워프 대장장이 브론','도둑 레오','수도사 한','현자 오르빈','아기 드래곤 루비','늑대 회색이','요정 반딧불','검은 고양이 망토','황금 두꺼비 금복이','영주의 딸 리아','길드장의 제자 노엘','공주 이사벨','성녀 마리엘','대장장이의 딸 미라','상단주의 딸 로사','사냥꾼 카야','점성술사 시엘','검성의 손녀 유나','해적 여왕 바네사','쓰러진 기사'];const m={};L.forEach((n,i)=>m[n]='art/comp/c'+String(i+1).padStart(2,'0')+'.webp');return m;})();
+const COMP_IMG=(()=>{const L=['성녀 엘리나','마녀 릴리스','여기사 세라','엘프 궁수 아리엔','무희 카르멘','성검의 무녀 하루','용의 공주 이브','떠돌이 검사 카일','드워프 대장장이 브론','도둑 레오','수도사 한','현자 오르빈','아기 드래곤 루비','늑대 회색이','요정 반딧불','검은 고양이 망토','황금 두꺼비 금복이','영주의 딸 리아','길드장의 제자 노엘','공주 이사벨','성녀 마리엘','대장장이의 딸 미라','상단주의 딸 로사','사냥꾼 카야','점성술사 시엘','검성의 손녀 유나','해적 여왕 바네사','쓰러진 기사'];const m={};L.forEach((n,i)=>m[n]='art/comp/c'+String(i+1).padStart(2,'0')+'.webp');
+  HEROES_M.forEach((c,i)=>m[c.name]='art/comp/comp_h'+String(i+1).padStart(2,'0')+'.webp');SPOUSES_M.forEach((c,i)=>m[c.name]='art/comp/comp_s'+String(i+1).padStart(2,'0')+'.webp');
+  [RARE.heroine_m,RARE.heroine_f,RARE.friend,RARE.pet,RARE.spouse_m,RARE.spouse_f].forEach((c,i)=>m[c.name]='art/comp/comp_r'+String(i+1).padStart(2,'0')+'.webp');return m;})();
 const EXP_IMG=(()=>{const m={};let k=1;EXPLORE_TXT.forEach(a=>a.forEach(t=>{m[t]='art/scene/e'+String(k++).padStart(2,'0')+'.webp';}));return m;})();
 const GIVER_IMG={'영주':'v04','마법사 길드장':'v05','왕':'v06','대주교':'v07'};
 function worldBgIx(s){if(!s)return 1;const st=STAGES[s.stage];if(st&&st.endless&&st.hunt==null)return 6;if(s.huntFrom===5&&st&&st.hunt!=null)return worldOf(s.stage)+1;return Math.min(5,worldOf(s.stage)+1);}
