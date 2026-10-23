@@ -158,7 +158,7 @@ const QUESTS=[
 const FAME_TITLES=[[-1e9,'악명 높은 자'],[0,'무명'],[20,'마을의 이름'],[60,'지방의 영웅'],[150,'왕국의 영웅'],[400,'살아있는 전설']];
 function fameTitle(f){let t=FAME_TITLES[0][1];for(const [m,n] of FAME_TITLES) if(f>=m) t=n; return t;}
 const DEMON_W=1.12;
-let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.04; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
+let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.04; let ITEM_MULT=1/3; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
 const EXPLORE_TXT=[
   ['이끼 낀 동굴 입구가 보인다.','무너진 성채의 지하로 내려가는 계단이 있다.','안개 낀 늪지대가 펼쳐져 있다.','버려진 광산 갱도가 입을 벌리고 있다.'],
   ['뼈로 쌓은 탑이 서 있다.','재가 내리는 폐허 도시가 보인다.','망자들의 무덤이 끝없이 이어진다.'],
@@ -210,7 +210,7 @@ function makeItem(r,grade,kind,tier){
   const keys=['str','con','agi','int','cha','luk','mult','win','flee'];
   const k=kind||keys[Math.floor(r()*keys.length)];
   const base={grade,tier}; const q=grade>=2?Math.round((0.8+r()*0.4)*100)/100:1; if(q!==1)base.q=q;
-  if(k==='mult'){const m=1+(g.mult-1)*(1+0.45*tier)*q;return Object.assign(base,{name:itemNameOf('mult',grade,tier),mult:m,d:`전투력 +${Math.round((m-1)*100)}%`});}
+  if(k==='mult'){const m=1+(g.mult-1)*(1+0.45*tier)*q;return Object.assign(base,{name:itemNameOf('mult',grade,tier),mult:m,d:`전투력 +${Math.round((m-1)*ITEM_MULT*100)}%`});}
   if(k==='win'){const v=[0.02,0.04,0.06,0.10][grade]*q;return Object.assign(base,{name:itemNameOf('win',grade,tier),win:v,d:`승리확률 +${Math.round(v*100)}%p`});}
   if(k==='flee'){const v=[0.05,0.12,0.22,0.40][grade]*q;return Object.assign(base,{name:itemNameOf('flee',grade,tier),flee:v,d:`도망 확률 +${Math.round(v*100)}%p`});}
   const sv=Math.max(1,Math.round(((k==='cha'||k==='luk')?[1,3,6,11][grade]:g.stat*TIER_STAT[tier])*q));
@@ -243,7 +243,8 @@ function enhB(it){return ((it.grade||0)===3?ENH_BONUS_LEG:ENH_BONUS)[it.plus||0]
 function enhF(it){return 1+enhB(it);}
 function effV(it){const b=it.boost||1;if(b!==1&&it.v){const r=effVRaw(it);return Math.max(r,Math.round(r*b));}return effVRaw(it);}
 function effVRaw(it){if(!it.v)return 0;const pl=it.plus||0,soft=it.stat==='cha'||it.stat==='luk';return Math.max(it.v+pl,Math.round(it.v*(soft?1+enhB(it)*0.2:enhF(it))));} // 강화 1단계마다 최소 +1
-function effMult(it){const m=effMultRaw(it);return 1+(m-1)*(it.boost||1);}
+// 장비 전투력% 효과는 ITEM_MULT(1/3)만 반영한다 (설명에 나오는 수치도 이 값)
+function effMult(it){const m=effMultRaw(it);return 1+(m-1)*(it.boost||1)*ITEM_MULT;}
 function effMultRaw(it){if(!it.mult)return 1;const pl=it.plus||0;return 1+Math.max((it.mult-1)*enhF(it),(it.mult-1)+0.01*pl);}
 function effWin(it){return effWinRaw(it)*(it.boost||1);}
 function effWinRaw(it){if(!it.win)return 0;const pl=it.plus||0;return Math.max(it.win*(1+enhB(it)*0.2),it.win+0.005*pl);}
@@ -322,21 +323,21 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.19, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.185, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
-  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.13, regions:[
+  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.11, regions:[
     ['망각의 강','뱃사공의 망령'],['비명의 숲','자살나무 정령'],['재의 평원','재의 기사'],['불타는 도시 디스','이단 심문관'],['얼음 호수','배신자들의 군주'],
     ['피의 강','켄타우로스 왕'],['역병의 늪','파리 대왕'],['거짓의 골짜기','기만의 대공'],['탐욕의 금고','금고지기'],['분노의 투기장','지옥 검투사'],
     ['교만의 첨탑','루시퍼의 그림자'],['지하 세계 왕좌','하데스의 섭정']]},
-  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.18, regions:[
+  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.14, regions:[
     ['마계 1층 · 색욕','아스모데우스'],['마계 2층 · 탐식','벨제붑'],['마계 3층 · 탐욕','맘몬'],['마계 4층 · 나태','벨페고르'],
     ['마계 5층 · 질투','레비아탄'],['마계 6층 · 분노','사탄'],['마계 7층 · 교만','루시퍼'],['마계 핵','칠대죄의 합일체']]},
-  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.32, regions:[
+  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.2, regions:[
     ['무저갱의 가장자리','이름 없는 자'],['끝없는 낙하','공허 포식자'],['시간이 멈춘 곳','종말의 시계공'],['별이 꺼진 하늘','별을 삼킨 자'],
     ['심연의 눈','바라보는 자'],['원초의 혼돈','태초의 악']]},
-  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.8, regions:[
+  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.6, regions:[
     ['옥좌로 가는 계단','최후의 근위대장'],['거울의 방','또 하나의 나'],['공허의 옥좌','악의 근원']]},
   {name:'끝없는 전장', sub:'쓰러뜨린 악들이 끝없이 되살아나는 곳', endless:true, total:1, base:70, growth:1.115, regions:[]},
 ];
@@ -1092,7 +1093,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.0';
+const ENGINE_VERSION='1.9.1';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
