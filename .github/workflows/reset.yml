@@ -28,9 +28,10 @@ jobs:
           curl -fsS "${H[@]}" "$B/runs?select=*&limit=100000" > out/runs.json
           curl -fsS "${H[@]}" "$B/pvp_cards?select=*&limit=100000" > out/pvp_cards.json
           curl -fsS "${H[@]}" "$B/pvp_matches?select=*&limit=100000" > out/pvp_matches.json
+          curl -fsS "${H[@]}" "$B/world_boss_hits?select=*&limit=100000" > out/world_boss_hits.json
           echo "before: runs $(jq length out/runs.json), cards $(jq length out/pvp_cards.json), matches $(jq length out/pvp_matches.json)" | tee out/summary.txt
           git config user.name reset-bot; git config user.email reset-bot@users.noreply.github.com
-          git checkout --orphan reset-backup-2; git rm -rfq --cached . ; git add -f out; git commit -qm "랭킹 초기화 직전 백업"; git push -f origin reset-backup-2
+          git checkout --orphan reset-backup-3; git rm -rfq --cached . ; git add -f out; git commit -qm "랭킹 초기화 직전 백업"; git push -f origin reset-backup-3
           curl -fsS -X DELETE "${H[@]}" "$B/pvp_matches?id=gte.0"
           curl -fsS -X DELETE "${H[@]}" "$B/pvp_cards?is_bot=eq.false"
           curl -fsS -X DELETE "${H[@]}" "$B/runs?seed=not.is.null"
