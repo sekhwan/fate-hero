@@ -545,8 +545,16 @@ img.rI{width:16px;height:16px;object-fit:contain;vertical-align:-3px}
 header.hb .helpBtn{border:0!important;background:url('art/ui_button.webp') center/100% 100% no-repeat!important;box-shadow:0 2px 4px rgba(0,0,0,.5)!important;padding:8px 22px;text-shadow:0 1px 2px #000}
 /* 머리글 버튼: 주요(가문·랭킹) · 안내(링크) · 개인(오른쪽 위 칩) */
 .hbNav{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.hbHouse{display:inline-flex;align-items:center;gap:5px;margin-left:2px}.hbHouse i{font-style:normal;opacity:.6;margin:0 2px}.hbHouse b{font-weight:700;max-width:9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-@media (max-width:640px){.hbHouse b{display:none}}
+.hbFlag{position:relative;display:inline-flex;padding-left:4px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.7))}
+.hbFlag::before{content:"";position:absolute;left:0;top:-3px;bottom:-5px;width:2px;border-radius:1px;background:linear-gradient(#ffe7a0,#9a6a1c)}
+.hbFlag .crest{box-shadow:none;clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%)}
+.hbFlag .crest img,.hbFlag .crest svg rect[stroke]{outline:none!important;box-shadow:none!important}
+.hbFlag .crest img{object-fit:cover}
+.hbHT{display:inline-flex;flex-direction:column;align-items:flex-start;line-height:1.2;text-align:left;gap:1px}
+.hbHT small{font-size:10.5px;letter-spacing:.25em;color:#e2c27e;font-weight:400;font-family:var(--body)}
+.hbHT b{font-size:15px;max-width:8.5em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+header.hb .helpBtn.hbBig{min-width:132px;justify-content:center;gap:9px}
+@media (max-width:640px){.hbHT small{display:none}.hbHT b{font-size:13px;max-width:5.5em}}
 header.hb .helpBtn.hbBig{font-size:16px;padding:10px 30px;display:inline-flex;align-items:center;gap:6px;letter-spacing:.02em}
 .hbLinks{display:inline-flex;gap:14px;margin-left:6px}
 .hbLink{font:inherit;font-size:13px;background:none;border:0;padding:4px 0;color:#e8d8b0;cursor:pointer;text-decoration:underline;text-decoration-color:rgba(232,216,176,.35);text-underline-offset:4px;text-shadow:0 1px 3px #000}
@@ -969,7 +977,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hbTitle">
       <div><h1>운명의 <span>용사</span></h1><p class="hbSub">무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까</p></div></div>
       <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
-      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">🏰 가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">🏆 랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button></span></div>
+      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button></span></div>
     </div>
     <div class="hbSide"><div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
       <div class="hbChips"><button class="hbChip" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button><button class="hbChip" type="button" id="bgmBtn" aria-pressed="false" title="배경음 켜기">♪</button></div></div>
@@ -1344,7 +1352,7 @@ async function acctAfterLogin(){const p=await rpc('my_profile');if(!p)return;PRO
   const merged=chMerge(chron,p.chron);Object.keys(chron).forEach(k=>delete chron[k]);Object.assign(chron,merged);store.set('chron',chron);await rpc('save_chron',{p_chron:chron});acctRender();if(typeof renderAll==='function')renderAll();if(acctThen==='house'){acctThen=null;closeAcct();openHouse();}}
 function acctQueueSave(){try{if(!acctOn())return;}catch(e){return;}clearTimeout(acctSaveT);acctSaveT=setTimeout(()=>rpc('save_chron',{p_chron:chron}).then(ok=>{if(ok){store.set('chronSyncAt',Date.now());}}).catch(()=>{}),4000);}
 function nickLocked(){return acctOn()&&PROF&&PROF.nickname?PROF.nickname:null;}
-function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE?`🏰 가문<span class="hbHouse"><i>·</i>${crestHtml(HOUSE,22)}<b>${esc(HOUSE.name)}</b></span>`:'🏰 가문';const t=$('chronTitle');if(t)t.textContent=acctOn()&&HOUSE?HOUSE.name:'가문';}
+function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE?`<span class="hbFlag">${crestHtml(HOUSE,24)}</span><span class="hbHT"><small>가문</small><b>${esc(HOUSE.name)}</b></span>`:'가문';const t=$('chronTitle');if(t)t.textContent=acctOn()&&HOUSE?HOUSE.name:'가문';}
   const b=$('acctBtn');if(b){b.hidden=!RANK.on;b.innerHTML=acctOn()?`${HOUSE?crestHtml(HOUSE,18):'👤'} ${esc(PROF&&PROF.nickname?PROF.nickname:'내 계정')}`:'👤 가입 · 로그인';b.classList.toggle('on',acctOn());}
   const B=$('acctBody');if(!B||$('acctModal').hidden)return;
   if(acctOn()){const at=store.get('chronSyncAt',0);
