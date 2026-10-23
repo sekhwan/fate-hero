@@ -773,7 +773,11 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .mys{font-size:12px;padding:5px 8px;border:1px dashed #5a4a72;border-radius:4px;color:var(--muted)} .mys i{font-style:normal;display:block;font-size:10.5px;opacity:.8}
 .mys.on{border:1px solid #ffd36b;color:#ffe08a;background:#ffd36b14;box-shadow:0 0 8px #c07bff55}
 .myreq{list-style:none;margin:8px 0;padding:0;font-size:12px;color:var(--muted)} .myreq li.ok{color:#7fe0c3}
-.mybtn{width:100%;padding:8px;border:1px solid #c07bff;background:#c07bff22;color:#e0c2ff;font-weight:700;cursor:pointer} .mybtn:disabled{opacity:.45;cursor:not-allowed} .mybtn.arm{background:#ff7a6b33;border-color:#ff7a6b;color:#ffd0c8}
+.myth.ready{border-color:#ffd36b;box-shadow:0 0 0 1px #ffd36b88,0 0 22px #c07bff88;background:linear-gradient(180deg,#c07bff33,#ffd36b1f);animation:myReady 2.4s ease-in-out infinite alternate}
+@keyframes myReady{from{box-shadow:0 0 0 1px #ffd36b66,0 0 12px #c07bff66}to{box-shadow:0 0 0 1px #ffe9a8,0 0 30px #c07bffaa}}
+.mybtn:not(:disabled):not(.arm){background:linear-gradient(90deg,#ff6a6a,#ffd36a,#6aff9a,#6ac8ff,#c86aff);background-size:300% 100%;color:#1a1020;border-color:#fff;text-shadow:0 1px 0 #fff8;box-shadow:0 0 16px #ffd36baa;animation:myBtn 3s linear infinite}
+@keyframes myBtn{from{background-position:0 0}to{background-position:300% 0}}
+.mybtn{width:100%;padding:8px;border:1px solid #c07bff;background:#c07bff22;color:#e0c2ff;font-weight:700;cursor:pointer} .mybtn:disabled{opacity:.35;filter:grayscale(.6);cursor:not-allowed} .mybtn.arm{background:#ff7a6b33;border-color:#ff7a6b;color:#ffd0c8}
 .myn{font-size:11px;color:var(--muted);margin:6px 0 0}
 
 .pvpBox{margin:0 0 14px} .pvpBox h4{margin:0 0 6px}
@@ -1158,16 +1162,16 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <div class="tblWrap"><table id="helpSkills"></table></div>
     <h3>조합</h3>
     <ul>
-      <li>종족마다 <b>조합</b>이 3개씩 있다. 조건은 <b>종족 + 특정 스킬 + 특정 전설 아이템</b>이다.</li>
+      <li>종족마다 <b>조합</b>이 3개씩 있다. 조건은 <b>종족 + 특정 스킬 + 특정 전설 아이템(+5 이상 강화)</b>이다.</li>
       <li>그중 하나는 <b>전설 조합</b>이다. 타고난 <b>특성</b>까지 맞아야 하는 대신 효과가 압도적이다.</li>
-      <li>조합 아이템은 정해진 세계에서만 나온다. 한 번이라도 손에 넣으면(발견·구매·가문의 유산, 바로 팔려도) 조건을 채운 것으로 친다.</li>
+      <li>조합 아이템은 정해진 세계에서만 나온다. 그 아이템을 <b>+5 이상으로 강화</b>해야 조건을 채운 것으로 친다(한 번이라도 +5에 닿으면 인정).</li>
       <li>세 조건이 모이는 순간 <b>영구히 각성</b>한다. 아이템을 바꾸거나 다음 세계로 가도 효과가 남는다.</li>
       <li>용사 명부의 조합 칸에서 모든 조건과 지금 갖춘 조건을 볼 수 있다.</li>
     </ul>
     <h3>신화 아이템 (엔드게임)</h3>
     <ul>
       <li>공허의 옥좌까지 정복한 뒤 <b>끝없는 전장</b>에서만 합성할 수 있다.</li>
-      <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 100,000</b>. 성공 확률은 <b>70%</b>이고, 실패하면 재료가 모두 사라진다.</li>
+      <li>재료: 서로 다른 계열의 <b>+7 이상 전설 장비 4개</b>와 <b>명성 50,000</b>. 성공 확률은 <b>70%</b>이고, 실패하면 재료가 모두 사라진다.</li>
       <li><b>예비 전설</b>: 전설 장비는 착용품보다 약하거나 같은 부위가 있어도 버리지 않고 예비로 보관한다(얻은 것은 최대 12개, 상점에서 산 전설은 칸 수와 관계없이 보관). 예비 전설은 효과가 없지만 강화해서 신화 합성 재료로 쓸 수 있고, 착용품보다 강해지면 자동으로 바꿔 낀다. 합성에는 같은 부위에서 강화 수치가 가장 낮은 것이 쓰인다.</li>
       <li>성공하면 4종 중 하나가 무작위로, PvP 스탯 +10~20으로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없지만 효과가 압도적이다.</li>
       <li>영웅·전설 장비는 같은 이름이라도 능력치가 조금씩 다르다.</li>
@@ -1606,10 +1610,10 @@ function renderHero(){
   {const ri=raceInfo(h.race);$('hTags').innerHTML=`<span class="rc tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name}</span>`+h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');}
   $('hTraits').innerHTML=h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');
   {const cr=run||null;const L=COMBOS.filter(c=>c.race===h.race.name);const W=i=>STAGES[i]?STAGES[i].name:'';
-   $('hCombo').innerHTML=L.length?L.map(c=>{const st=cr?{skill:sk(cr,c.sk)>0,item:!!(cr.got&&cr.got.includes(c.item))}:{skill:false,item:false};const trOk=!c.tr||h.traits.some(t=>t.name===c.tr);const done=!!(cr&&cr.combos&&cr.combos.includes(c.id));
+   $('hCombo').innerHTML=L.length?L.map(c=>{const st=cr?{skill:sk(cr,c.sk)>0,item:!!(cr.got5&&cr.got5.includes(c.item))}:{skill:false,item:false};const trOk=!c.tr||h.traits.some(t=>t.name===c.tr);const done=!!(cr&&cr.combos&&cr.combos.includes(c.id));
      const tag=(ok,lab,v,t)=>`<span class="cc ${ok?'ok':''}"${tipAttr(lab,[t])}>${ok?'✓':'○'} ${lab} <b>${esc(v)}</b></span>`;
      return `<div class="cmb ${done?'on':''} ${c.god?'god':''} ${trOk?'':'no'}"><div class="cmh">${c.god?'<span class="gtag">전설 조합</span>':''}<span class="tipt"${tipAttr((done?'✦ ':'')+c.name,[done?'각성 완료: 효과가 영구히 적용 중':'세 조건을 모두 갖추면 영구히 각성한다',c.d])}>${done?'✦ ':''}${esc(c.name)}</span><em>${esc(c.d)}</em></div>
-       <div class="ccs">${tag(true,'종족',c.race,'용사의 종족. 이미 갖췄다.')}${c.tr?(trOk?tag(true,'특성',c.tr,'타고난 특성. 이미 갖췄다.'):`<span class="cc x"${tipAttr('특성',['타고난 특성이라 이 용사는 갖출 수 없다. 다시 태어나야 한다.'])}>✕ 특성 <b>${esc(c.tr)}</b></span>`):''}${tag(done||st.skill,'스킬',SKILL_BY[c.sk].name,'이 스킬을 1랭크 이상 익히면 채워진다.')}${tag(done||st.item,'아이템',c.item+' · '+W(c.it[2]),`${W(c.it[2])}에서만 나오는 전설 아이템. 발견·구매로 한 번이라도 손에 넣으면 채워진다.`)}</div></div>`;}).join(''):'<span style="color:var(--muted);font-size:12px">이 종족에는 조합이 없다</span>';}
+       <div class="ccs">${tag(true,'종족',c.race,'용사의 종족. 이미 갖췄다.')}${c.tr?(trOk?tag(true,'특성',c.tr,'타고난 특성. 이미 갖췄다.'):`<span class="cc x"${tipAttr('특성',['타고난 특성이라 이 용사는 갖출 수 없다. 다시 태어나야 한다.'])}>✕ 특성 <b>${esc(c.tr)}</b></span>`):''}${tag(done||st.skill,'스킬',SKILL_BY[c.sk].name,'이 스킬을 1랭크 이상 익히면 채워진다.')}${tag(done||st.item,'아이템',c.item+' +5 · '+W(c.it[2]),`${W(c.it[2])}에서만 나오는 전설 아이템. +5 이상으로 강화하면 채워진다.`)}</div></div>`;}).join(''):'<span style="color:var(--muted);font-size:12px">이 종족에는 조합이 없다</span>';}
   {const ps=run?pvpStats(run):{ass:0,rev:0,cur:0,bls:0};const IC={ass:'🗡',rev:'✚',cur:'☠',bls:'✦'};
    $('hPvp').innerHTML=PVP_KEYS.map(k=>`<span class="pv pv-${k} ${ps[k]>=5?'on':''}"${tipAttr(PVP_NAME[k]+' '+ps[k],[PVP_DESC[k],ps[k]>=5?'유효 (5 이상)':'5 미만이라 아직 효과 없음','몬스터 전투에는 영향이 없다. 승리할 때마다 0.1% 확률로 넷 중 하나 +1 (사냥으로는 총합 40까지), 신화 아이템마다 +10~20.'])}><i>${IC[k]}</i>${PVP_NAME[k]}<b>${ps[k]}</b></span>`).join('');}
   {const L=COMBOS.filter(c=>c.race===h.race.name);const done=run?L.filter(c=>run.combos&&run.combos.includes(c.id)).length:0;const godOk=L.some(c=>c.god&&h.traits.some(t=>t.name===c.tr));
@@ -1631,7 +1635,7 @@ function renderHero(){
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
     const chips=mine.map(k=>{const rk2=sk(tmp,k.id);return `<em${tipAttr(`${k.name} ${rk2}랭크 · ${k.role}`,[`현재: ${k.d(rk2)}`,rk2<SK_MAX?`다음 랭크: ${k.d(rk2+1)}`:'최고 랭크'])}>${k.name}${rk2>1?' '+rk2:''}</em>`;}).join('');
     return `<div class="role ${m?'on':''}"${tipAttr(role+' 계열 숙련',tip.split('\n'))}><span>${role}${m?`<b>★${m}</b>`:''}</span><div class="sks">${mine.length?chips:'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
-  $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmtS(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies+' / '+mercCap(tmp);$('mercTxt').textContent=`1명당 전투력 +${Math.round((0.04+SKV.command*sk(tmp,'command'))*cmb(tmp,'cmd',1)*100)}% · 지금 +${Math.round((0.04+SKV.command*sk(tmp,'command'))*cmb(tmp,'cmd',1)*tmp.allies*100)}%`;
+  $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmtS(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies+' / '+mercCap(tmp);$('mercTxt').textContent=`1명당 전투력 +${Math.round(mercPer(tmp)*100)}% · 지금 +${Math.round(mercPer(tmp)*tmp.allies*100)}%`;
   const its=run?run.items:[]; const rv=tmp.revive;
   const canSell=run&&!run.dead&&!run.over;
   {const SO=['mult','str','agi','int','con','win','flee','luk','cha'];
@@ -1702,7 +1706,7 @@ function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHT
   const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}" data-myth="${m.id}" tabindex="0"><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
   const matNames=c.mats.map(i=>itemName(run.items[i]));
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
-  box.innerHTML=`<div class="myth"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
+  box.innerHTML=`<div class="myth${c.ok?' ready':''}"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
     <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
     <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></div>`;
   box.querySelectorAll('[data-myth]').forEach(el=>{const m=MYTH_BY[el.dataset.myth];const v=own.includes(m.id)?((run.mythV||{})[m.id]||20):0;
@@ -1729,7 +1733,7 @@ function mythCardShow(slotEl,m,v){let c=$('mythCard');if(!c){c=document.createEl
   if(x+W>innerWidth-8)x=r.left-W-12;if(x<8){x=Math.max(8,(innerWidth-W)/2);y=r.bottom+8;}y=Math.max(8,Math.min(innerHeight-H-8,y));
   c.style.left=x+'px';c.style.top=y+'px';c.classList.add('on');bindTilt(c.querySelector('.m3d'),slotEl);}
 function mythCardHide(){const c=$('mythCard');if(c)c.classList.remove('on');}
-function mythShow(r,mats){let o=$('mythFx');if(!o){o=document.createElement('div');o.id='mythFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');document.body.appendChild(o);}
+function mythShow(r,mats,onDone){let o=$('mythFx');if(!o){o=document.createElement('div');o.id='mythFx';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');document.body.appendChild(o);}
   const wasPaused=typeof paused!=='undefined'&&paused;if(!wasPaused&&typeof togglePause==='function')togglePause();
   const ok=r.ok,m=r.m;let head,sub,big;
   if(!ok){head='합성 실패';sub=`${mats.map(x=>x.n).join(' · ')}<br>모두 빛과 함께 사라졌다`;}
@@ -1744,7 +1748,7 @@ function mythShow(r,mats){let o=$('mythFx');if(!o){o=document.createElement('div
   let kd2=null;const close=()=>{o.className='mf';o.innerHTML='';document.removeEventListener('keydown',kd);if(kd2)document.removeEventListener('keydown',kd2);if(!wasPaused&&typeof togglePause==='function'&&paused)togglePause();};
   const kd=e=>{if(o.classList.contains('done')&&(e.key==='Escape'||e.key==='Enter'||e.key===' ')){e.preventDefault();close();}};document.addEventListener('keydown',kd);
   const go=()=>{if(!o.classList.contains('wait'))return;o.classList.remove('wait');
-    setTimeout(()=>{o.classList.remove('charge');o.classList.add(ok?'win':'lose');setTimeout(()=>{o.classList.add('done');const b=o.querySelector('.mfOk');if(b){b.onclick=close;b.focus();}},900);},1700);};
+    setTimeout(()=>{o.classList.remove('charge');o.classList.add(ok?'win':'lose');setTimeout(()=>{o.classList.add('done');if(onDone){const f=onDone;onDone=null;setTimeout(f,300);}const b=o.querySelector('.mfOk');if(b){b.onclick=close;b.focus();}},900);},1700);};
   const gb=o.querySelector('.mfGo');gb.onclick=go;setTimeout(()=>gb.focus(),50);
   kd2=e=>{if(o.classList.contains('wait')&&(e.key==='Enter'||e.key===' ')){e.preventDefault();go();}};document.addEventListener('keydown',kd2);}
 // 명성 도박꾼: 판돈 고르기 → 컵 섞기 → 컵 고르기 → 공개. 결과는 엔진이 정하고(1/3), 컵은 그 결과를 보여 주는 무대일 뿐이다.
@@ -1770,9 +1774,9 @@ function gambleShow(preId){if(!run||run.dead||run.over)return;const c=current(ru
   const say$=t=>{const e=o.querySelector('.gbSay');if(e)e.textContent=t;};
   const cups=[...o.querySelectorAll('.cup')],ball=o.querySelector('.ball');let slot=[0,1,2],betId=null;
   const place=()=>cups.forEach((cp,k)=>cp.style.setProperty('--x',slot[k]));
-  const start=id=>{betId=id;const p=+id.slice(3);o.classList.add('cups');say$(p===100?'"올인이라… 배짱 한번 두둑하군. 잘 봐라."':'"좋아. 공은 여기 있다. 눈 떼지 마라."');
-    ball.style.setProperty('--x',1);ball.classList.add('on');cups[1].classList.add('up');
-    later(()=>{cups[1].classList.remove('up');},900);later(()=>{ball.classList.remove('on');},1250);
+  const start=id=>{betId=id;const p=+id.slice(3);o.classList.add('cups');// 공을 어느 컵에 넣었는지 보여 주지 않는다. 결과는 1/3 확률로 정해지므로, 공을 보여 주고 섞으면 눈으로 따라간 컵과 결과가 어긋난다.
+    say$(p===100?'"올인이라… 배짱 한번 두둑하군. 공은 이 중 하나에 숨겼다."':'"좋아. 공은 셋 중 하나에 숨겼다. 감을 믿어 봐라."');
+    cups.forEach(cp=>cp.classList.add('up'));later(()=>cups.forEach(cp=>cp.classList.remove('up')),700);
     let t=1350;const n=7+Math.floor(Math.random()*3);for(let i=0;i<n;i++){later(()=>{const a=Math.floor(Math.random()*3);let b=Math.floor(Math.random()*2);if(b>=a)b++;const ia=slot.indexOf(a),ib=slot.indexOf(b);slot[ia]=b;slot[ib]=a;place();},t);t+=280;}
     later(()=>{o.classList.add('pick');say$('"자, 어느 컵이지?"');cups.forEach(cp=>{cp.tabIndex=0;});cups[0].focus();},t+150);};
   const pickCup=k=>{if(!o.classList.contains('pick'))return;o.classList.remove('pick');cups.forEach(cp=>cp.tabIndex=-1);
@@ -1807,7 +1811,8 @@ function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
   const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! <b class="myName">${r.m.name}</b>이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?(r.nv>r.old?`신화 합성 성공! 이미 지닌 <b class="myName">${r.m.name}</b>(+${r.old})보다 약한 +${r.v}가 나왔지만, 그 힘이 스며들어 지닌 신화가 단련되었다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.nv})`:`신화 합성 성공! 그러나 <b class="myName">${r.m.name}</b>은(는) 이미 최고 수치(+${r.old})라 더 단련되지 않았다.`):`신화 합성 성공! <b class="myName">${r.m.name}</b> (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
   li.className=!r.ok||(r.dup&&!(r.nv>r.old))?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
-  mythShow(r,matIt); if(r.ok)chAch('myth'); chUpdate();
+  // 결과가 드러난 뒤에 업적·도감 알림을 띄운다 (먼저 뜨면 결과를 미리 알게 된다)
+  mythShow(r,matIt,()=>{if(r.ok)chAch('myth');chUpdate();});
   renderAll();}
 function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)store.set('ckpt',ck);if(!r)return;logAct(['e',idx]);chUpdate();TRACK.st.enh++;TRACK.ev(null);prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
@@ -1871,7 +1876,7 @@ function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSu
   const combo=prod((s.combos||[]).map(id=>COMBO_BY[id].e.mult||1)),myth=prod((s.mythics||[]).map(id=>MYTH_BY[id].e.mult||1)),hid=(s.hidFx&&s.hidFx.mult)||1;
   const mi=cf<1?1+(s.multItems-1)*cf:s.multItems;
   const rows=[['종족 '+s.hero.race.name,s.hero.race.mult],['특성',traitSum(s.hero,'mult',1)],['조합',combo],['신화',myth],['히든 이벤트',hid],
-    ['장비'+(cf<1?' (저주 -15%)':''),mi],['레벨 '+s.lvl,1+LVL_B*(s.lvl-1)],['용병 '+s.allies+'명',1+(0.04+SKV.command*sk(s,'command'))*cmb(s,'cmd',1)*s.allies],
+    ['장비'+(cf<1?' (저주 -15%)':''),mi],['레벨 '+s.lvl,1+LVL_B*(s.lvl-1)],['용병 '+s.allies+'명',1+mercPer(s)*s.allies],
     ['동료·배우자·펫',compMult(s)],['검술 스킬',1+SKV.blade*sk(s,'blade')],['전투 숙련',1+SKV.mPow[mastery(s,'전투')]],
     ['궁지(생명력 50% 미만)',s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1],['도망 사기 저하',Math.pow(0.9,s.fleeDebuff||0)]];
   const pct=x=>{const v=(x-1)*100;return (v>=0?'+':'')+(Math.abs(v)>=1e5?fmt(v):Math.abs(v)>=10?Math.round(v).toLocaleString('ko-KR'):v.toFixed(1))+'%';};

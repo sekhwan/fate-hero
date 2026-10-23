@@ -158,7 +158,7 @@ const QUESTS=[
 const FAME_TITLES=[[-1e9,'악명 높은 자'],[0,'무명'],[20,'마을의 이름'],[60,'지방의 영웅'],[150,'왕국의 영웅'],[400,'살아있는 전설']];
 function fameTitle(f){let t=FAME_TITLES[0][1];for(const [m,n] of FAME_TITLES) if(f>=m) t=n; return t;}
 const DEMON_W=1.12;
-let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.015; let ITEM_MULT=1/3; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
+let HUNT_START=0.3; let FINAL_X=0.8; let FINAL_TRIES=3; let LVL_B=0.015; let ITEM_MULT=1/6; const MERC_K=0.5; let FLOOR=0.12; let LATE=1; let BOSS_X=0.82;
 const EXPLORE_TXT=[
   ['이끼 낀 동굴 입구가 보인다.','무너진 성채의 지하로 내려가는 계단이 있다.','안개 낀 늪지대가 펼쳐져 있다.','버려진 광산 갱도가 입을 벌리고 있다.'],
   ['뼈로 쌓은 탑이 서 있다.','재가 내리는 폐허 도시가 보인다.','망자들의 무덤이 끝없이 이어진다.'],
@@ -272,7 +272,7 @@ function enhance(s,idx){
   s.gold-=cost; const from=it.plus||0; const rate=enhRate(s,from).rate; const roll=s.r();
   applyItem(s,it,-1);
   let res;
-  if(roll<rate){ it.plus=from+1; res={ok:true,from,to:it.plus}; }
+  if(roll<rate){ it.plus=from+1; res={ok:true,from,to:it.plus}; if(it.plus>=COMBO_PLUS&&COMBO_ITEMS.has(it.name)){noteGot(s,it);checkCombos(s,null);} }
   else if(ENH_BREAK[from] && s.r()<ENH_BREAK[from] && !(sk(s,'ward')&&s.r()<wardP(sk(s,'ward')))){ s.items.splice(idx,1); normSlots(s,applyItem); return {ok:false,destroyed:true,from,cost,name:it.name}; }
   else if(from>=3||(ENH_BREAK[from]&&sk(s,'ward'))){ it.plus=Math.max(0,from-1); res={ok:false,from,to:it.plus,warded:from<3||undefined}; }
   else res={ok:false,from,to:from};
@@ -325,21 +325,21 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.173, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.167, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
-  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.083, regions:[
+  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.068, regions:[
     ['망각의 강','뱃사공의 망령'],['비명의 숲','자살나무 정령'],['재의 평원','재의 기사'],['불타는 도시 디스','이단 심문관'],['얼음 호수','배신자들의 군주'],
     ['피의 강','켄타우로스 왕'],['역병의 늪','파리 대왕'],['거짓의 골짜기','기만의 대공'],['탐욕의 금고','금고지기'],['분노의 투기장','지옥 검투사'],
     ['교만의 첨탑','루시퍼의 그림자'],['지하 세계 왕좌','하데스의 섭정']]},
-  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.068, regions:[
+  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.045, regions:[
     ['마계 1층 · 색욕','아스모데우스'],['마계 2층 · 탐식','벨제붑'],['마계 3층 · 탐욕','맘몬'],['마계 4층 · 나태','벨페고르'],
     ['마계 5층 · 질투','레비아탄'],['마계 6층 · 분노','사탄'],['마계 7층 · 교만','루시퍼'],['마계 핵','칠대죄의 합일체']]},
-  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.15, regions:[
+  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.05, regions:[
     ['무저갱의 가장자리','이름 없는 자'],['끝없는 낙하','공허 포식자'],['시간이 멈춘 곳','종말의 시계공'],['별이 꺼진 하늘','별을 삼킨 자'],
     ['심연의 눈','바라보는 자'],['원초의 혼돈','태초의 악']]},
-  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.35, regions:[
+  {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.15, regions:[
     ['옥좌로 가는 계단','최후의 근위대장'],['거울의 방','또 하나의 나'],['공허의 옥좌','악의 근원']]},
   {name:'끝없는 전장', sub:'쓰러뜨린 악들이 끝없이 되살아나는 곳', endless:true, total:1, base:70, growth:1.115, regions:[]},
 ];
@@ -431,7 +431,7 @@ const COMBOS=[
  {id:'orion',race:'성인(星人)',name:'성운의 방랑자 오리온의 나침반',sk:'lucky',it:['luk',3,4],e:{mult:1.35,luk:30},d:'전투력 +35%, 행운 +30'},
  {id:'cassio',race:'성인(星人)',name:'별을 삼킨 자 카시오페아의 핵',tr:'별에서 온 아이',sk:'scholar',it:['mult',3,3],e:{mult:8,xp:5,all:80},d:'전투력 +700%, 경험치 +500%, 모든 능력치 +80',god:1},
  {id:'keltua',race:'오크',name:'오크왕 켈투아의 의지',tr:'타고난 검술가',sk:'blade',it:['str',3,2],e:{mult:21},d:'전투력 +2000%',god:1},
- {id:'urgak',race:'오크',name:'피의 족장 우르각의 함성',sk:'giant',it:['str',3,2],e:{mult:1.4,win:0.06},d:'전투력 +40%, 모든 전투 승률 +6%p'},
+ {id:'urgak',race:'오크',name:'피의 족장 우르각의 함성',sk:'giant',it:['str',3,1],e:{mult:1.4,win:0.06},d:'전투력 +40%, 모든 전투 승률 +6%p'},
  {id:'garmuk',race:'오크',name:'종말의 전사 가르무크의 뿔나팔',sk:'command',it:['win',3,3],e:{cmd:1.0,mult:1.3},d:'용병 1명당 전투력 2배, 전투력 +30%'},
  {id:'toby',race:'하플링',name:'꼬마 영웅 토비 말굽의 기적',sk:'lucky',it:['luk',3,0],e:{luk:12,win:0.08},d:'행운 +12, 모든 전투 승률 +8%p'},
  {id:'mirt',race:'하플링',name:'그림자 발 미르트의 동전',sk:'flee',it:['agi',3,1],e:{legend:1.5,gold:0.6},d:'전설 아이템 확률 +150%, 금화 +60%'},
@@ -449,6 +449,12 @@ const COMBOS=[
  {id:'velkar',race:'망자',name:'사령왕 벨카르의 서',tr:'불굴의 의지',sk:'scholar',it:['int',3,2],e:{mult:6,hp:20,xp:3},d:'전투력 +500%, 생명력 +2000%, 경험치 +300%',god:1},
  {id:'nocturn',race:'망자',name:'영원한 밤 녹투른의 왕관',sk:'charm',it:['cha',3,3],e:{cha:15,mult:1.4},d:'매력 +15, 전투력 +40%'},
 ];
+// 전설 조합(god)은 효과를 절반으로 (배수는 증가분의 절반)
+const COMBO_FX={mult:v=>`전투력 +${Math.round((v-1)*100)}%`,hp:v=>`생명력 +${Math.round(v*100)}%`,xp:v=>`경험치 +${Math.round(v*100)}%`,all:v=>`모든 능력치 +${v}`,win:v=>`모든 전투 승률 +${Math.round(v*100)}%p`,boss:v=>`지배자전 승률 +${Math.round(v*100)}%p`,luk:v=>`행운 +${v}`,enh:v=>`강화 확률 +${Math.round(v*100)}%p`,talk:v=>`회유 확률 +${Math.round(v*100)}%p`,legend:v=>`전설 아이템 확률 +${Math.round(v*100)}%`,gold:v=>`금화 +${Math.round(v*100)}%`,discount:v=>`상점 가격 -${Math.round(v*100)}%`};
+const GOD_K=0.5;
+COMBOS.forEach(c=>{if(!c.god)return;const e={};for(const k in c.e){const v=c.e[k];e[k]=k==='mult'?1+(v-1)*GOD_K:k==='all'||k==='luk'?Math.round(v*GOD_K):Math.round(v*GOD_K*1000)/1000;}c.e=e;c.d=Object.keys(e).map(k=>COMBO_FX[k]?COMBO_FX[k](e[k]):'').filter(Boolean).join(', ');});
+// 조합 아이템은 +5 이상으로 강화해 본 적이 있어야 조건을 채운다
+const COMBO_PLUS=5;
 const COMBO_BY={};COMBOS.forEach(c=>{c.item=itemNameOf(c.it[0],c.it[1],c.it[2]);COMBO_BY[c.id]=c;});
 const COMBO_ITEMS=new Set(COMBOS.map(c=>c.item));
 // ===== 신화 아이템: 끝없는 전장에서 +7 이상 전설 4개(서로 다른 계열)와 명성으로 합성. 성공 25%, 실패하면 재료 소멸. 종류는 무작위(중복 가능) =====
@@ -459,7 +465,7 @@ const MYTHS=[
  {id:'hecate',slot:'귀걸이',name:'석가모니의 축복',e:{boss:0.25,xp:10,mult:6},pvp:'bls',d:'지배자·수문장전 승률 +25%p, 경험치 +1000%, 전투력 +500%, PvP 축복 +10~20'},
 ];
 const MYTH_BY={};MYTHS.forEach(m=>MYTH_BY[m.id]=m);
-const MYTH_RATE=0.70, MYTH_PLUS=7, MYTH_FAME=100000;
+const MYTH_RATE=0.70, MYTH_PLUS=7, MYTH_FAME=50000;
 // ===== PvP 전용 스탯: 몬스터 전투에는 영향 없음 =====
 const PVP_KEYS=['ass','rev','bls','cur'], PVP_NAME={ass:'암살',rev:'부활',bls:'축복',cur:'저주'}, PVP_GAIN=0.001, PVP_CAP=40, PVP_MIN=5, MYTH_PVP=20;
 // 상성 고리: 암살 > 부활 > 축복 > 저주 > 암살
@@ -520,8 +526,8 @@ function mythFuse(s){const c=mythCheck(s);if(!c.ok)return null;s.fame-=MYTH_FAME
 function tsum(s,key,base){const v=traitSum(s.hero,key,base);return key==='mult'?v*cmb(s,'mult',1):v+cmb(s,key,0)+(key==='hp'?(s.hpBonus||0):0)+(COMP_KEYS[key]?compAdd(s,COMP_KEYS[key]):0);}
 const COMP_KEYS={hp:'hp',xp:'xp',enh:'enh',boss:'boss',discount:'discount',gold:'goldp'};
 function hasTrait(h,n){return h.traits.some(t=>t.name===n);}
-function comboState(s,c){return {race:s.hero.race.name===c.race,trait:!c.tr||hasTrait(s.hero,c.tr),skill:sk(s,c.sk)>0,item:!!(s.got&&s.got.includes(c.item))};}
-function noteGot(s,it){if(it&&COMBO_ITEMS.has(it.name)){s.got=s.got||[];if(!s.got.includes(it.name))s.got.push(it.name);}}
+function comboState(s,c){return {race:s.hero.race.name===c.race,trait:!c.tr||hasTrait(s.hero,c.tr),skill:sk(s,c.sk)>0,item:!!(s.got5&&s.got5.includes(c.item))};}
+function noteGot(s,it){if(it&&COMBO_ITEMS.has(it.name)){s.got=s.got||[];if(!s.got.includes(it.name))s.got.push(it.name);if((it.plus||0)>=COMBO_PLUS){s.got5=s.got5||[];if(!s.got5.includes(it.name))s.got5.push(it.name);}}}
 function checkCombos(s,out){for(const c of COMBOS){if(s.combos&&s.combos.includes(c.id))continue;const st=comboState(s,c);if(!(st.race&&st.trait&&st.skill&&st.item))continue;
   s.combos=s.combos||[];s.combos.push(c.id);const e=c.e;
   if(e.revive)for(let z=0;z<e.revive;z++)addRevive(s,out); if(e.luk)s.stats.luk+=e.luk; if(e.cha)s.stats.cha+=e.cha; if(e.all)STAT_KEYS.forEach(k=>s.stats[k]+=e.all);
@@ -609,13 +615,15 @@ function startGear(s){const gs=START_GEAR[s.hero.wealth.name];if(!gs)return;
   for(const g of gs){let it,t=0;do{it=makeItem(s.r,g,null,0);}while(t++<8&&!wouldUpgrade(s,it));it.src='가문의 유산';it.where='출정 전';noteGot(s,it);equip(s,it);}checkCombos(s,null);
   s.allies+=START_KNIGHTS[s.hero.wealth.name]||0;
   s.hp=s.maxHp;}
+// 용병 1명당 전투력 (MERC_K로 절반)
+function mercPer(s){return MERC_K*(0.04+SKV.command*sk(s,'command'))*cmb(s,'cmd',1);}
 function hpMax(s){return Math.round((40+s.stats.con*6)*(1+tsum(s,'hp',0))*(1+0.05*(s.lvl-1)));}
 function power(s){
   const t=s.stats;
   const cf=curseF(s); const ic=k=>cf<1?(1-cf)*itemStatSum(s,k):0;
   const base=(t.str-ic('str'))*1.3+(t.agi-ic('agi'))*1.05+(t.int-ic('int'))*1.15+(t.con-ic('con'))*0.95+s.hero.wealth.gear*1.6;
   const mi=cf<1?1+(s.multItems-1)*cf:s.multItems; // 저주: 장비 배수의 증가분을 정확히 15% 깎는다
-  return base*s.hero.race.mult*tsum(s,'mult',1)*mi*(1+LVL_B*(s.lvl-1))*(1+(0.04+SKV.command*sk(s,'command'))*cmb(s,'cmd',1)*s.allies)*compMult(s)*s.stageCarry*(1+SKV.blade*sk(s,'blade'))*(1+SKV.mPow[mastery(s,'전투')])*(s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1)*Math.pow(0.9,s.fleeDebuff||0)*(s.pact?PACT_POW:1);
+  return base*s.hero.race.mult*tsum(s,'mult',1)*mi*(1+LVL_B*(s.lvl-1))*(1+mercPer(s)*s.allies)*compMult(s)*s.stageCarry*(1+SKV.blade*sk(s,'blade'))*(1+SKV.mPow[mastery(s,'전투')])*(s.hp<s.maxHp*0.5?1+SKV.mGrit[mastery(s,'생존')]:1)*Math.pow(0.9,s.fleeDebuff||0)*(s.pact?PACT_POW:1);
 }
 function compMult(s){let m=1;for(const k in s.comp){const c=s.comp[k];if(c&&c.mult)m*=c.mult;}m*=s.petGrow;if(s.spouse)m*=(s.spouseC?(s.spouseC.mult||1):1.15);return m;}
 function compAdd(s,key){let v=0;for(const k in s.comp){const c=s.comp[k];if(c&&c[key])v+=c[key];}if(s.spouseC&&s.spouseC[key])v+=s.spouseC[key];return v;}
@@ -823,7 +831,7 @@ function current(s){
   if(k==='hidden'){const H=HIDDEN_EV[s.hero.wealth.name];const z=n.quiz;
     return {node:n,title:`[히든] ${H.name} · ${H.title}`,hint:`문제: ${z.q} · 맞히면 ${H.reward}. 틀리면 기회는 사라진다.`,options:z.ch.map((c,ix)=>({id:'hq_'+ix,label:c,desc:''}))};}
   if(k==='cursed'){return {node:n,title:'[저주받은 보물] 피 묻은 제단 위에 전설의 무구가 놓여 있다.',hint:`가져가면 전설 장비를 얻는다. 대신 저주가 따라붙어 다음 지배자전 승률이 ${Math.round(CURSE_BOSS*100)}%p 줄어든다.${s.bossCurse?' (이미 저주를 지고 있다. 겹친다)':''}`,options:[
-      {id:'ctake',label:'가져간다',desc:`전설 장비 획득 · 다음 지배자전 승률 -${Math.round(CURSE_BOSS*100)}%p`},
+      {id:'ctake',label:'가져간다',desc:`영웅(80%) 또는 전설(20%) 장비 획득 · 다음 지배자전 승률 -${Math.round(CURSE_BOSS*100)}%p`},
       {id:'cleave',label:'손대지 않는다',desc:'아무 일도 일어나지 않는다.'}]};}
   if(k==='oath'){return {node:n,title:'[기사의 맹세] 쓰러진 기사가 피를 흘리며 도움을 청한다.',hint:`치료하면 생명력 20%를 잃는다. 대신 기사가 맹세한다: ${OATH_AFTER}지역 뒤 지배자전에 달려와 함께 싸운다(승률 +${Math.round(OATH_BOSS*100)}%p).`,options:[
       {id:'oheal',label:'치료해 준다',desc:`생명력 -20% · ${OATH_AFTER}지역 뒤 지배자전 승률 +${Math.round(OATH_BOSS*100)}%p`},
@@ -1010,7 +1018,7 @@ function choose(s,optId){
         if(s.fame>=GAMBLE_CONT) s.queue.splice(1,0,{type:'event',kind:'gambler',again:(n.again||0)+1}); else out.push({t:'bad',x:`명성이 ${fmtG(GAMBLE_CONT)} 아래로 떨어져 도박꾼이 판을 접었다`});
         break; }
       case 'gpass': text='도박꾼을 무시하고 지나갔다.'; break;
-      case 'ctake': {s.bossCurse=(s.bossCurse||0)+CURSE_BOSS;const g=3;const it=makeItem(s.r,g,null,tierOf(s));it.src='저주받은 제단';it.where=placeName(s);noteGot(s,it);equip(s,it);checkCombos(s,out);s.fame+=2+g*4;
+      case 'ctake': {s.bossCurse=(s.bossCurse||0)+CURSE_BOSS;const g=s.r()<0.2?3:2;const it=makeItem(s.r,g,null,tierOf(s));it.src='저주받은 제단';it.where=placeName(s);noteGot(s,it);equip(s,it);checkCombos(s,out);s.fame+=2+g*4;
         out.push({t:'item g3',x:`전설 아이템: ${it.name} (${itemTxt(s,it)})`,got:{name:it.name,d:itemTxt(s,it),grade:3,src:it.src,spare:!!it.spare,kept:s.items.includes(it),slot:slotOf(it),heal:false,revive:false}});if(s.lastEquipNote)out.push({t:'good',x:s.lastEquipNote});
         out.push({t:'bad',x:`저주: 다음 지배자전 승률 -${Math.round(s.bossCurse*100)}%p`});text='무구를 집어 들자 등골이 서늘해졌다.';s.lastEvent={ok:true,head:'저주받은 보물',sub:it.name};break;}
       case 'cleave': text='불길한 제단을 그냥 지나쳤다.'; break;
@@ -1098,7 +1106,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.4';
+const ENGINE_VERSION='1.9.5';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1236,5 +1244,5 @@ function isImportant(s,c,mode){
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={itemTxt,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+globalThis.FateEngine={mercPer,COMBO_PLUS,itemTxt,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
 if(typeof module!=='undefined') module.exports={HEROINES,FRIENDS,PETS,SPOUSES,hpMax,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
