@@ -660,6 +660,19 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
 .wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
 .crest{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none;box-shadow:0 1px 3px #000a}.crest img{width:100%;height:100%;object-fit:contain;background:var(--c2,#3a1a1a);box-shadow:inset 0 0 0 2px var(--c1,#b8862b);outline:2px solid var(--c1,#b8862b);outline-offset:-2px}.crest svg{display:block}
+.rareTag2{font-size:10.5px;padding:0 5px;border:1px solid #c9a640;color:#ffe08a;background:linear-gradient(90deg,#3a2a08,#5a3f0a);border-radius:6px;white-space:nowrap;box-shadow:0 0 6px #e8c25a66}
+.compOffer.rare{border-color:#e8c25a!important;box-shadow:0 0 0 1px #e8c25a,0 0 22px #e8c25a88;background:radial-gradient(ellipse at top,#4a3610,#1c140a 70%)!important;animation:rareGlow 1.6s ease-in-out infinite alternate}
+.coRare{text-align:center;font-weight:800;letter-spacing:2px;color:#ffe08a;text-shadow:0 0 8px #e8c25a;margin-bottom:6px;font-size:13px}
+@keyframes rareGlow{from{box-shadow:0 0 0 1px #e8c25a,0 0 10px #e8c25a55}to{box-shadow:0 0 0 1px #ffe9a8,0 0 28px #e8c25aaa}}
+.compC.rare{border-color:#c9a640!important;background:linear-gradient(160deg,#3a2a0a,#17110a)!important;position:relative}
+.compC.rare b{color:#ffe08a}
+.compC .rareTag{position:absolute;top:4px;left:4px;font-style:normal;font-size:10px;font-weight:800;color:#1a1206;background:#e8c25a;border-radius:4px;padding:0 4px}
+.pc.rare{border-color:#e8c25a!important;box-shadow:0 0 8px #e8c25a88}
+#rareFx{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle,#e8c25a55,#000a 70%);animation:rareFx 2.2s ease-out forwards}
+#rareFx b{font-size:30px;color:#fff3c4;text-shadow:0 0 18px #e8c25a,0 0 40px #e8c25a;letter-spacing:4px;animation:rareFxT 2.2s ease-out forwards}
+#rareFx small{display:block;text-align:center;color:#ffe08a;font-size:15px;margin-top:8px;letter-spacing:1px}
+@keyframes rareFx{0%{opacity:0}12%{opacity:1}75%{opacity:1}100%{opacity:0}}
+@keyframes rareFxT{0%{transform:scale(.6)}20%{transform:scale(1.08)}35%{transform:scale(1)}}
 .legTag{font-size:10.5px;padding:0 5px;border:1px solid #6b5a30;color:#d8b860;border-radius:6px;white-space:nowrap}
 .legList{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:5px}.legList li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:7px 10px;border-radius:4px}
 .legList li .li{font-size:22px}.legList li>div{flex:1}.legList li small{color:var(--muted)}.legList .lx{font-size:12.5px;color:var(--muted)}.legList li em{font-style:normal;color:var(--holy);font-size:13px}.legList .btn{padding:6px 12px;font-size:13px;flex:none;width:auto;min-width:84px}
@@ -1223,7 +1236,8 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
     <h3>동료 · 용병 · 의뢰 · 혼인</h3>
     <ul>
-      <li>길 위에서 드물게 <b>히로인(7명)·친구(5명)·펫(5마리)</b>을 만난다. 저마다 효과가 다르고, 합류 여부는 표시된 확률로 정해진다. 의뢰를 완수하면 <b>배우자 후보(10명)</b> 중 한 명과 혼담이 오갈 때가 있다.</li>
+      <li>길 위에서 드물게 <b>히로인(7명)·친구(5명)·펫(5마리)</b>을 만난다. 여성 용사는 히로인 대신 <b>동반자(남성 7명)</b>를 만난다. 저마다 효과가 다르고, 합류 여부는 표시된 확률로 정해진다. 의뢰를 완수하면 <b>배우자 후보(10명)</b> 중 한 명과 혼담이 오갈 때가 있다. 배우자도 용사 성별에 따라 다른 10명이다.</li>
+      <li><b>희귀 동료</b>: 동료나 혼담이 나올 때 <b>1%</b> 확률로 희귀 동료가 대신 나온다. 종류마다 하나씩(히로인·동반자·친구·펫·배우자 둘) 있고, 효과는 일반 동료의 약 2배다.</li>
       <li><b>출신과 동료</b>: 출신이 높을수록 만날 수 있는 동료가 많고 강하다(인간·나쁜 특성 없음 기준 히로인 빈털터리 2명 → 귀족 7명, 배우자 4명 → 10명). 합류·청혼 확률도 출신 한 단계마다 +5%p(빈털터리 -5%p, 왕족 +20%p).</li>
       <li><b>나쁜 특성과 동료</b>: 겁쟁이·길치·허약 체질·저주받은 운명·술고래는 하나마다 합류·청혼 확률 -8%p. 일부는 아예 거부한다 — 겁쟁이(여기사 세라·무녀 하루·검사 카일·사냥꾼 카야·검성의 손녀 유나), 술고래(궁수 아리엔·수도사 한·성녀 마리엘), 저주받은 운명(성녀 엘리나·점성술사 시엘), 허약 체질(유나).</li>
       <li><b>출신 조건</b>: 서민 이상(여기사 세라·대장장이 브론·노엘), 중산층 이상(무희 카르멘·성녀 엘리나·현자 오르빈·영주의 딸 리아·성녀 마리엘), 부유층 이상(무녀 하루·상단주의 딸 로사·검성의 손녀 유나), 귀족 이상(용의 공주 이브(용인족은 출신 무관)·공주 이사벨). 종족 거부: 성녀·무녀(망자·마족), 마녀 릴리스(반천사), 아리엔·리아(오크·고블린), 브론(엘프), 수도사 한(망자), 이사벨(오크·드워프·고블린·망자). 펫은 누구나 만난다.</li>
@@ -1319,7 +1333,7 @@ function openChron(){$('chronModal').hidden=false;$('chronClose').focus();render
 function closeChron(){$('chronModal').hidden=true;$('chronBtn').focus();}
 function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ch===chTab));
   const allKeys=[...CH_RACES.flatMap(r=>CH_WEALTH.map(w=>r+'|'+w)),...CH_HID.map(t=>'H|'+t)];const got=allKeys.filter(k=>chron.h[k]).length;const stars=allKeys.reduce((a,k)=>a+(chron.h[k]||0),0);
-  const monNames=Object.keys(MON_IMG);const monGot=monNames.filter(n=>chron.m[n]).length;const achGot=ACH.filter(a=>chron.a[a[0]]).length;const compAll=[...HEROINES,...FRIENDS,...PETS,...SPOUSES];const compGot=compAll.filter(x=>(chron.c||{})[x.name]).length;
+  const monNames=Object.keys(MON_IMG);const monGot=monNames.filter(n=>chron.m[n]).length;const achGot=ACH.filter(a=>chron.a[a[0]]).length;const compAll=[...HEROINES,...HEROES_M,...FRIENDS,...PETS,...SPOUSES,...SPOUSES_M,...RARE_ALL];const compGot=compAll.filter(x=>(chron.c||{})[x.name]).length;
   $('chronLead').textContent=`도감 ${got}/${allKeys.length}칸 · 별 ${stars}/${allKeys.length*4} · 몬스터 ${monGot}/${monNames.length} · 동료 ${compGot}/${compAll.length} · 업적 ${achGot}/${ACH.length}. 첫 지역을 넘긴 용사만 기록된다. 도감과 업적은 전투력에 영향이 없다.`;
   const B=$('chronBody');
   if(chTab==='hero'){const cell=(k,label)=>{const v=chron.h[k]||0;return `<div class="chCell ${v?'on':''} ${v>=4?'s4':''}" title="${esc(label)}${v?' · '+CH_STAR[v]:' · 아직 없음'}"><b>${v?'★'.repeat(v)+`<s>${'★'.repeat(4-v)}</s>`:'?'}</b>${label.includes('|')?'':`<span>${esc(label)}</span>`}</div>`;};
@@ -1328,9 +1342,9 @@ function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAt
       <h3 style="margin-top:14px">히든 영웅</h3><div class="chHid">${CH_HID.map(t=>cell('H|'+t,chron.h['H|'+t]?t:'???')).join('')}</div>
       <p class="chLegend">★ 출정해서 첫 지역을 넘김 · ★★ 지상계 정복 · ★★★ 공허의 옥좌 정복 · ★★★★ 끝없는 전장 100층<br>희귀한 조합일수록 만나기 어렵다. 망자 왕족은 약 7천 명에 한 명꼴이다.</p>`;}
   else if(chTab==='mon'){B.innerHTML=`<div class="monGrid">${monNames.map(n=>{const on=chron.m[n];const bossy=+MON_IMG[n]>=40;return `<div class="monC ${on?'on':''} ${bossy?'boss':''}" title="${on?esc(n)+' · '+fmt(on)+'번 처치':'아직 쓰러뜨리지 못했다'}"><img src="mon/m${MON_IMG[n]}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'"><span>${on?esc(n):'???'}</span></div>`;}).join('')}</div><p class="chLegend">붉은 테두리는 지배자급이다. 처치하거나 회유해 굴복시키면 기록된다.</p>`;}
-  else if(chTab==='comp'){const G=[['히로인',HEROINES],['친구',FRIENDS],['펫',PETS],['배우자',SPOUSES]];const cc=chron.c||{};
+  else if(chTab==='comp'){const G=[['히로인 · 남성 용사',[RARE.heroine_m,...HEROINES]],['동반자 · 여성 용사',[RARE.heroine_f,...HEROES_M]],['친구',[RARE.friend,...FRIENDS]],['펫',[RARE.pet,...PETS]],['배우자 · 남성 용사',[RARE.spouse_m,...SPOUSES]],['배우자 · 여성 용사',[RARE.spouse_f,...SPOUSES_M]]];const cc=chron.c||{};
     B.innerHTML=G.map(([g,L])=>`<h3 style="margin-top:6px">${g} <small style="font-weight:400;color:var(--muted)">${L.filter(x=>cc[x.name]).length}/${L.length}</small></h3><div class="compGrid">${L.map(x=>{const n=cc[x.name]||0;const img=COMP_IMG[x.name];
-      return `<div class="compC ${n?'on':''}"${n?tipAttr(x.name,[x.d,`${n}번 함께했다`]):tipAttr('???',['아직 만나지 못한 동료'])}>${img?`<img src="${img}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:'<span class="ph">?</span>'}<b>${n?esc(x.name):'???'}</b><small>${n?esc(x.d):'아직 만나지 못했다'}</small>${n?`<em>${n}번 함께함</em>`:''}</div>`;}).join('')}</div>`).join('')+'<p class="chLegend">길에서 만나 함께한 동료가 기록된다. 배우자는 의뢰를 끝내고 혼담이 오가야 만날 수 있다.</p>';}
+      return `<div class="compC ${n?'on':''}${x.rare?' rare':''}"${n?tipAttr(x.name,[x.d,`${n}번 함께했다`]):tipAttr(x.rare?'희귀 동료':'???',[x.rare?'동료가 나올 때 1% 확률로 대신 나온다':'아직 만나지 못한 동료'])}>${x.rare?'<i class="rareTag">희귀</i>':''}${img?`<img src="${img}" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:`<span class="ph">${n?esc(x.name.split(' ').pop().slice(0,1)):'?'}</span>`}<b>${n?esc(x.name):'???'}</b><small>${n?esc(x.d):x.rare?'1%의 만남':'아직 만나지 못했다'}</small>${n?`<em>${n}번 함께함</em>`:''}</div>`;}).join('')}</div>`).join('')+'<p class="chLegend">길에서 만나 함께한 동료가 기록된다. 배우자는 의뢰를 끝내고 혼담이 오가야 만날 수 있다.</p>';}
   else if(chTab==='ach'){const rt=chRepTitle();B.innerHTML=`<p class="chLegend" style="margin:0 0 8px">대표 칭호는 랭킹에서 닉네임 옆에 붙는다. 얻은 칭호를 누르면 대표로 바꾼다. 지금 대표: <b style="color:var(--brass)">${rt?esc(rt):'없음'}</b></p><ul class="achList">${ACH.map(([id,ic,name,d,title])=>{const t=chron.a[id];return `<li class="${t?'on':''} ${t&&title===rt?'rep':''}" ${t?`data-rep="${id}" title="눌러서 대표 칭호로"`:''}><span class="ai">${ic}</span><div><b>${name}${t?` · 「${title}」`:''}${t&&title===rt?'<span class="repTag">대표</span>':''}</b><small>${d}</small></div><em>${t?new Date(t).toLocaleDateString():'미달성'}</em></li>`;}).join('')}</ul>`;
     const wt=chron.wbT||[];B.insertAdjacentHTML('beforeend',`<h3 style="margin-top:14px">월드 보스 칭호 <small style="font-weight:400;color:var(--muted)">닉네임 「${esc(store.get('nick','')||'없음')}」에 붙은 칭호 · 매주 월요일 0시 마감 때 받는다</small></h3>
       ${wt.length?`<ul class="achList">${wt.map(x=>`<li class="on ${x.title===rt?'rep':''}" data-rep="wb:${esc(x.title)}" title="눌러서 대표 칭호로"><span class="ai" style="filter:none">${x.title.endsWith('토벌자')?'⚔️':x.title==='최후의 일격'?'⚡':x.title==='토벌대장'?'👑':x.title==='선봉장'?'🚩':'🛡️'}</span><div><b>「${esc(x.title)}」${x.title===rt?'<span class="repTag">대표</span>':''}</b><small>${esc(x.boss_name||'')} 토벌 · ${esc(x.week_start)} 주</small></div></li>`).join('')}</ul>`
@@ -1608,9 +1622,9 @@ function renderHero(){
   $('hpTxt').textContent=`${Math.max(0,tmp.hp)} / ${tmp.maxHp}`;
   const hb=$('hpBar');hb.style.width=(Math.max(0,tmp.hp)/tmp.maxHp*100)+'%';hb.className=tmp.hp/tmp.maxHp<0.35?'low':'';
   $('fameNum').textContent=fmt(tmp.fame); $('fameTitle').textContent=fameTitle(tmp.fame);
-  const slots=[['히로인','heroine','명성 30 이상일 때만 만날 수 있다'],['친구','friend','길 위에서 우연히 만난다'],['펫','pet','길 위에서 우연히 만난다']];
-  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}${c&&COMP_IMG[c.name]?` data-ti="${COMP_IMG[c.name]}"`:''}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
-    `<span class="pc ${tmp.spouse?'on':''}"${tmp.spouse&&COMP_IMG[tmp.spouse]?` data-ti="${COMP_IMG[tmp.spouse]}"`:''}${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
+  const slots=[[hSlot(tmp.hero),'heroine','명성 30 이상일 때만 만날 수 있다'],['친구','friend','길 위에서 우연히 만난다'],['펫','pet','길 위에서 우연히 만난다']];
+  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}${c&&c.rare?' rare':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}${c&&COMP_IMG[c.name]?` data-ti="${COMP_IMG[c.name]}"`:''}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
+    `<span class="pc ${tmp.spouse?'on':''}${tmp.spouseC&&tmp.spouseC.rare?' rare':''}"${tmp.spouse&&COMP_IMG[tmp.spouse]?` data-ti="${COMP_IMG[tmp.spouse]}"`:''}${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
   $('skillBox').innerHTML=ROLES.map(role=>{const rk=roleRanks(tmp,role),m=mastery(tmp,role);const mine=SKILLS.filter(k=>k.role===role&&sk(tmp,k.id));
     const bar=Array.from({length:SKV.mT2},(_,i)=>`<i class="${i<rk?'f':''}"></i>`).join('');
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
@@ -1917,15 +1931,19 @@ function sceneOf(n){if(!n)return null;const sc=x=>`art/scene/${x}.webp`;
   if((n.kind==='quest'||n.kind==='qreward'||n.kind==='qpick'||n.kind==='proposal')&&n.q&&GIVER_IMG[n.q.giver]&&n.kind!=='proposal')return sc(GIVER_IMG[n.q.giver]);
   return null;}
 function compImgOf(n){if(!n||n.type!=='event')return null;if(n.kind==='knight'||n.kind==='oath')return COMP_IMG['쓰러진 기사'];
-  if(n.kind==='proposal'){const sp=SPOUSES[n.sp||0];return sp&&COMP_IMG[sp.name];}
+  if(n.kind==='proposal'){const sp=spOf(run,n);return sp&&COMP_IMG[sp.name];}
   if(['heroine','friend','pet'].includes(n.kind)&&n.c)return COMP_IMG[n.c.name];return null;}
 function sceneHtml(n,small){const sc=sceneOf(n);if(sc)return `<div class="sceneImg${small?' sm':''}" style="background-image:url('${sc}')"></div>`;return '';}
 function applyWorldBg(){const z=document.querySelector('.zone.zb');if(!z)return;const ix=run?worldBgIx(run):Math.min(6,(STAGES[stage]&&STAGES[stage].endless?6:worldOf(stage)+1));z.style.setProperty('--wbg',`url('art/bg_world${ix}.webp')`);}
 let verdictHtml='';
 // 동료가 될 수 있는 만남: 얻게 될 효과를 크게 보여 준다
-function compOfferHtml(n){const K={heroine:['💗','히로인'],friend:['🤝','친구'],pet:['🐾','펫'],proposal:['💍','배우자']}[n.kind];if(!K)return '';
-  const c=n.kind==='proposal'?SPOUSES[n.sp||0]:n.c;if(!c||!c.d)return '';const slot={heroine:'heroine',friend:'friend',pet:'pet'}[n.kind];const cur=slot&&run&&run.comp[slot];
-  return `<div class="compOffer"><div class="coHead"><span class="coIc">${K[0]}</span><span>${K[1]}로 합류하면</span><b>${esc(c.name)}</b></div><div class="coFx">${c.d.split(/,\s*/).map(x=>`<span>${esc(x)}</span>`).join('')}</div>${cur?`<div class="coNote">지금 ${K[1]}: ${esc(cur.name)} (바뀌지 않는다)</div>`:''}</div>`;}
+const RARE_SEEN=new WeakSet();
+function rareFx(c){const o=document.getElementById('rareFx');if(o)o.remove();const d=document.createElement('div');d.id='rareFx';d.innerHTML=`<div><b>✦ 희귀 동료 ✦</b><small>${esc(c.name)}</small></div>`;document.body.appendChild(d);setTimeout(()=>d.remove(),2300);}
+function hSlot(h){return h&&h.gender==='f'?'동반자':'히로인';}
+function compOfferHtml(n){const K={heroine:['💗',hSlot(run&&run.hero)],friend:['🤝','친구'],pet:['🐾','펫'],proposal:['💍','배우자']}[n.kind];if(!K)return '';
+  const c=n.kind==='proposal'?spOf(run,n):n.c;if(!c||!c.d)return '';const slot={heroine:'heroine',friend:'friend',pet:'pet'}[n.kind];const cur=slot&&run&&run.comp[slot];
+  if(c.rare&&!RARE_SEEN.has(n)){RARE_SEEN.add(n);setTimeout(()=>rareFx(c),60);}
+  return `<div class="compOffer${c.rare?' rare':''}">${c.rare?'<div class="coRare">✦ 희귀 동료 · 1%의 만남 ✦</div>':''}<div class="coHead"><span class="coIc">${K[0]}</span><span>${K[1]}로 합류하면</span><b>${esc(c.name)}</b></div><div class="coFx">${c.d.split(/,\s*/).map(x=>`<span>${esc(x)}</span>`).join('')}</div>${cur?`<div class="coNote">지금 ${K[1]}: ${esc(cur.name)} (바뀌지 않는다)</div>`:''}</div>`;}
 function breakdown(n){const w=n.parts;if(!w)return '';const P=power(run)/run.stageCarry*10,E=n.E/run.stageCarry*10;const f=v=>(v>=0?'+':'')+(v*100).toFixed(1);
   const parts=[`기본 ${Math.round(w.base*100)}%`];if(Math.abs(w.luck)>=0.001)parts.push(`행운 ${f(w.luck)}`);if(w.under)parts.push(`펫 ${f(w.under)}`);if(w.fame>=0.001)parts.push(`명성 ${f(w.fame)}`);if(w.item)parts.push(`아이템 ${f(w.item)}`);if(w.pw<0.999&&(w.fame||w.item||w.luck>0))parts.push(`전투력 열세로 보너스 ${Math.round(w.pw*100)}%만 적용`);
   if(n.boss){const bp=[`${n.final?'최종 지배자':'지배자'} 기본 ${Math.round(n.pRaw*100)}%`];if(n.final&&n.unp)bp.push(`미평정 ${n.unp}곳 반영`);if(n.bonus)bp.push(`결전 준비 ${f(n.bonus)}`);if(n.deal)bp.push(`${n.deal>0?'맹세한 기사':'보물의 저주'} ${f(n.deal)}`);const tb=teamBonus(run);if(tb)bp.push(`동료 합동 ${f(tb)}`);parts.length=0;parts.push(...bp);}
@@ -2119,13 +2137,13 @@ async function loadRank(){
     body.innerHTML=rows.map((x,i)=>{
       return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${titleTag(x.title)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td class="n">${fmt(x.floor||0)}층</td></tr>`;}).join('');
   }catch(e){body.innerHTML='<tr><td colspan="5">월드랭킹을 불러오지 못했다.</td></tr>';}return;}
-  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,title,hero,race,kills,power,reach,updated_at,user_id,legacy_lv&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
+  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,title,hero,race,kills,power,reach,updated_at,user_id,legacy_lv,rare_comp&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
     if(!rows.length){body.innerHTML='<tr><td colspan="6">아직 등록된 용사가 없다. 첫 기록의 주인공이 되어 보자.</td></tr>';return;}
     const hl=k=>rankSort===k?' style="color:var(--fg);font-weight:700"':'';
     const uids=[...new Set(rows.map(x=>x.user_id).filter(Boolean))];let HS={};if(uids.length){try{const hr=await fetch(`${RANK.url}/rest/v1/houses?owner=in.(${uids.join(',')})&select=owner,name,crest,crest_url,crest_hidden,color1,color2`,{headers:rankHeaders()});const hh=hr.ok?await hr.json():[];hh.forEach(h=>HS[h.owner]=h);}catch(e){}}
     const hcell=x=>{const h=x.user_id&&HS[x.user_id];return h?`<span class="rkHouse" title="${esc(h.name)}">${crestHtml(h,20)}</span>`:'';};
-    body.innerHTML=rows.map((x,i)=>`<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${hcell(x)}${esc(x.nickname)}${titleTag(x.title)}${x.legacy_lv?` <small class="legTag" title="가문 유산 ${x.legacy_lv}단계로 출정한 기록">유산 ${x.legacy_lv}</small>`:''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n"${hl('reach_score')}>${esc(x.reach)}</td><td class="n"${hl('power')}>${fmt(x.power)}</td><td class="n"${hl('kills')}>${fmt(x.kills)}마리</td></tr>`).join('');
+    body.innerHTML=rows.map((x,i)=>`<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${hcell(x)}${esc(x.nickname)}${titleTag(x.title)}${x.legacy_lv?` <small class="legTag" title="가문 유산 ${x.legacy_lv}단계로 출정한 기록">유산 ${x.legacy_lv}</small>`:''}${x.rare_comp?` <small class="rareTag2" title="희귀 동료: ${esc(x.rare_comp)}">✦ 희귀 ${x.rare_comp.split(',').length}</small>`:''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n"${hl('reach_score')}>${esc(x.reach)}</td><td class="n"${hl('power')}>${fmt(x.power)}</td><td class="n"${hl('kills')}>${fmt(x.kills)}마리</td></tr>`).join('');
   }catch(e){body.innerHTML='<tr><td colspan="6">랭킹을 불러오지 못했다.</td></tr>';}
 }
 // ===== 월드 보스 (1단계: 화면 미리보기. 수치는 가짜이고 서버와 연결되지 않는다) =====
