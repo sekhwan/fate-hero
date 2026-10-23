@@ -288,7 +288,7 @@ function applyItem(s,it,sign){ if(it.spare) return; // 예비 전설은 효과 �
 // 같은 부위(능력치·전투력·승률·도망)는 하나만 착용한다. 더 좋은 것이 들어오면 기존 것은 자동으로 판다.
 function wouldUpgrade(s,it){const slot=slotOf(it);if(!slot)return true;it.boost=1+SKV.mItem[mastery(s,'재물')];const old=s.items.find(x=>slotOf(x)===slot&&!x.spare);return !old||itemVal(it)>itemVal(old);}
 // 전설은 착용품보다 약하거나 같은 부위가 있어도 예비로 보관한다 (신화 합성 재료로 모을 수 있게)
-const SPARE_MAX=12;function spareCount(s){return s.items.filter(x=>x.spare).length;}
+const SPARE_MAX=40;function spareCount(s){return s.items.filter(x=>x.spare).length;}
 function canKeepSpare(s,it){return (it.grade||0)===3&&!!slotOf(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce||!!s.buyKeep);}
 // 상점의 전설 장비는 보유품과 예비 칸 수에 관계없이 언제나 살 수 있다(사면 예비로 보관된다)
 function shopLegend(it){return (it.grade||0)===3&&!!slotOf(it);}
@@ -301,11 +301,16 @@ function equip(s,it){
   if((it.heal&&s.items.some(x=>x.heal))||(it.revive&&revives(s)>=REVIVE_MAX)){const g=sellPrice(s,it);s.gold+=g;s.lastEquipNote=`${it.name}은(는) 더 지닐 수 없어 금화 ${g}에 팔았다`;return false;} const slot=slotOf(it); if(slot) it.boost=1+SKV.mItem[mastery(s,'재물')];
   if(slot){ const idx=s.items.findIndex(x=>slotOf(x)===slot&&!x.spare);
     if(idx>=0){ const old=s.items[idx];
-      if(itemVal(it)<=itemVal(old)){ if(canKeepSpare(s,it)){it.spare=true;s.items.push(it);s.lastEquipNote=`${it.name}은(는) 착용품보다 약해 예비 전설로 보관했다 (신화 합성 재료)`;return true;} const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=`이미 더 좋은 ${old.name}을(를) 착용 중이라 금화 ${g}에 팔았다`; return false; }
+      if(itemVal(it)<=itemVal(old)){ if(canKeepSpare(s,it)){it.spare=true;s.items.push(it);s.lastEquipNote=`${it.name}은(는) 착용품보다 약해 예비 전설로 보관했다 (신화 합성 재료)`;return true;}
+        if((it.grade||0)===3&&slotOf(it)){const sw=spareSwap(s,it);if(sw)return true;const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=`예비 전설 칸 ${SPARE_MAX}개가 가득 찼고 ${it.name}이(가) 그중 가장 약해 금화 ${g}에 팔았다`; return false;}
+        const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=`이미 더 좋은 ${old.name}을(를) 착용 중이라 금화 ${g}에 팔았다`; return false; }
       if(canKeepSpare(s,old)){ applyItem(s,old,-1); old.spare=true; s.lastEquipNote=`${old.name}을(를) 예비 전설로 돌리고 새 장비를 착용했다`; }
       else { applyItem(s,old,-1); s.items.splice(idx,1); const g=sellPrice(s,old); s.gold+=g; s.lastEquipNote=`${old.name}을(를) 교체하고 금화 ${g}에 팔았다`; } } }
   applyItem(s,it,1); s.items.push(it); return true;
 }
+// 예비 전설 칸이 가득 찼을 때: 새 전설이 가장 약한 예비보다 좋으면(강화 수치 우선) 그 예비를 팔고 새 전설을 보관한다
+function spareSwap(s,it){const sp=s.items.filter(x=>x.spare);if(!sp.length)return false;const key=x=>(x.plus||0)*1e6+itemVal(x);let w=sp[0];for(const x of sp)if(key(x)<key(w))w=x;if(key(it)<=key(w))return false;
+  s.items.splice(s.items.indexOf(w),1);const g=sellPrice(s,w);s.gold+=g;it.spare=true;s.items.push(it);s.lastEquipNote=`예비 전설 칸이 가득 차 가장 약한 ${w.name}(+${w.plus||0})을(를) 금화 ${g}에 팔고 ${it.name}을(를) 예비로 보관했다`;return true;}
 function holdFull(s,it){return !!((it.heal&&s.items.some(x=>x.heal))||(it.revive&&revives(s)>=REVIVE_MAX));}
 function sellPrice(s,it){const sc=econ(s,1.3);return Math.max(5,Math.round((it.heal?110:GRADES[it.grade||0].gold)*sc*0.4*(1+0.6*(it.plus||0))*GOLD_IN));}
 function sell(s,idx){
@@ -1112,7 +1117,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.10.0';
+const ENGINE_VERSION='1.10.1';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
