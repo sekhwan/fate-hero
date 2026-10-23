@@ -151,7 +151,8 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .m3d.sm .m3dParts,.m3d.sm .m3dRing::after{display:none}
 #mythCard{position:fixed;z-index:95;width:300px;padding:16px 14px 14px;border:1px solid #ffd36b;background:radial-gradient(ellipse at 50% 30%,#2a1f3a,#120d18 75%);box-shadow:0 0 0 1px #000,0 18px 40px #000c,0 0 30px #c07bff44;border-radius:8px;text-align:center;opacity:0;pointer-events:none;transform:translateY(6px) scale(.97);transition:opacity .18s,transform .18s}
 #mythCard.on{opacity:1;transform:none}
-#mythCard.none .m3d{filter:saturate(.8) brightness(.78)}
+#mythCard.none .m3d{filter:saturate(.55) brightness(.5)}
+#mythCard:not(.none) .m3d{filter:brightness(1.2) saturate(1.3) drop-shadow(0 0 16px var(--mc))}
 #mythCard .mcName{font-family:var(--display);font-size:22px;color:#ffe08a;margin-top:6px;background:linear-gradient(90deg,#ff9a9a,#ffe08a,#9affc8,#9ad6ff,#d59aff);-webkit-background-clip:text;background-clip:text;color:transparent}
 #mythCard .mcSlot{font-size:12px;color:var(--muted);margin-top:2px}#mythCard .mcD{font-size:13px;margin-top:8px;line-height:1.5}#mythCard .mcNo{font-size:12px;color:var(--muted);margin-top:8px}
 .mys[data-myth]{cursor:pointer}
