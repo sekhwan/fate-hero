@@ -642,6 +642,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
 .wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
 .crest{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none}.crest img{width:100%;height:100%;object-fit:contain;border-radius:4px;box-shadow:0 0 0 2px var(--c1,#b8862b)}.crest svg{display:block}
+.hrName{font:inherit;background:none;border:0;color:inherit;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:6px;text-align:left}.hrName:hover b{text-decoration:underline}
 .rkHouse{margin-right:5px;display:inline-flex;vertical-align:-4px}
 .houseM .hsWrap{display:flex;gap:18px;flex-wrap:wrap}.hsPrev{flex:none;width:150px;text-align:center}.hsName{font-family:var(--display);font-size:20px;margin-top:6px;word-break:break-all}
 .hsForm{flex:1;min-width:240px;display:flex;flex-direction:column;gap:6px}.hsForm label{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:4px}
@@ -963,7 +964,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hbTitle">
       <div><h1>운명의 <span>용사</span></h1><p class="hbSub">무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까</p></div></div>
       <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
-      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">🏰 가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">🏆 랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button><button class="hbLink" type="button" id="obBtn" aria-pressed="false">모든 정보 보기</button></span></div>
+      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">🏰 가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">🏆 랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button></span></div>
     </div>
     <div class="hbSide"><div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
       <div class="hbChips"><button class="hbChip" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button><button class="hbChip" type="button" id="bgmBtn" aria-pressed="false" title="배경음 켜기">♪</button></div></div>
@@ -1065,6 +1066,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <div class="rankTabs" role="tablist">
       <button class="mode" type="button" data-rk="hero" aria-pressed="true">용사 랭킹</button>
       <button class="mode" type="button" data-rk="world" aria-pressed="false">월드랭킹 (PvP)</button>
+      <button class="mode" type="button" data-rk="house" aria-pressed="false">가문 랭킹</button>
       <button class="mode" type="button" data-rk="boss" aria-pressed="false">월드 보스</button>
     </div>
     <div id="bossBox" hidden></div>
@@ -1087,6 +1089,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   <div class="modal">
     <button class="x" type="button" id="helpClose" aria-label="닫기">×</button>
     <h2 id="helpTitle">게임 방법</h2>
+    <p style="margin:-6px 0 10px"><button class="hbLink" type="button" id="obRestart" style="color:var(--muted);text-shadow:none">처음 안내 다시 보기</button></p>
     <p class="lead">무작위로 태어난 용사가 다섯 세계의 악마를 토벌한다. 태어남은 고를 수 없고, 고를 수 있는 건 길 위의 결정뿐이다.</p>
 
     <h3>목표</h3>
@@ -1968,7 +1971,7 @@ function addLog(n,opt,res,auto){
   lg.prepend(li);
 }
 function finish(n){
-  clearTimeout(autoT); chEnd();if(run&&run.dead)setTimeout(houseAfterDeath,0);
+  clearTimeout(autoT); chEnd();if(run&&run.dead&&!OB.full){OB.full=true;obSave();}if(run&&run.dead)setTimeout(houseAfterDeath,0);
   const s=STAGES[stage];
   if(s.endless){const f=floorOf(run);const prevBest=best[stage]||0;if(f>prevBest){best[stage]=f;store.set('best',best);}
     const party=['heroine','friend','pet'].map(k=>run.comp[k]&&run.comp[k].name).filter(Boolean);
@@ -2049,7 +2052,7 @@ async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w'
   }catch(e){msg.className='msg err';msg.textContent='서버에 연결하지 못했다. 잠시 후 다시 시도해 주세요.';btn.disabled=false;}
 }
 let rankCol='hero',rankSort='reach_score';
-async function openRank(col){TRACK.st.rank++;TRACK.ev('rank');rankCol=col==='world'||col==='boss'?col:col?'hero':rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
+async function openRank(col){TRACK.st.rank++;TRACK.ev('rank');rankCol=col==='world'||col==='boss'||col==='house'?col:col?'hero':rankCol;$('rankModal').hidden=false;$('rankClose').focus();loadRank();}
 const FAKE_FOES=['검은 늑대 카르','은빛 성녀 라엘','망치왕 도르간','그림자 유','붉은 마녀 베라','철벽 바론','폭풍의 아샤','저주꾼 모르','불사의 렌','축복받은 이나'];
 function openDuel(){TRACK.st.duel++;TRACK.ev('duel');if(!run)return;$('duelModal').hidden=false;$('worldBox').innerHTML=worldBoxHtml();bindWorldBox();runDuels();$('duelClose').focus();}
 function runDuels(){$('pvpRule').textContent=PVP_RULE;const me=pvpCard(run);me.name='나';const R=Math.random;const mults=[0.5,1,2,4,8];
@@ -2062,7 +2065,7 @@ function closeDuel(){$('duelModal').hidden=true;$('pvpBtn').focus();}
 function closeRank(){$('rankModal').hidden=true;$('rankBtn').focus();}
 async function loadRank(){
   document.querySelectorAll('[data-rk]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rk===rankCol));
-  $('bossBox').hidden=rankCol!=='boss';$('rankTblWrap').hidden=rankCol==='boss';if(rankCol==='boss'){renderBossBox();return;}
+  $('bossBox').hidden=rankCol!=='boss'&&rankCol!=='house';$('rankTblWrap').hidden=rankCol==='boss'||rankCol==='house';if(rankCol==='boss'){renderBossBox();return;}if(rankCol==='house'){renderHouseRank();return;}
   const SC=[['reach_score','도달'],['power','전투력'],['kills','처치']];
   $('rankHead').innerHTML=rankCol==='world'?'<tr><th>순위</th><th>닉네임</th><th>용사</th><th style="text-align:right">전투력 · 생명력</th><th style="text-align:right">도달 층</th></tr>'
     :`<tr><th>순위</th><th>닉네임</th><th>용사</th>${SC.map(([k,l])=>`<th style="text-align:right"><button type="button" class="rkSort" data-sort="${k}" aria-pressed="${rankSort===k}" title="${l} 순으로 정렬">${l}${rankSort===k?' ▼':''}</button></th>`).join('')}</tr>`;
@@ -2192,6 +2195,20 @@ async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p c
    <table><tr><th>공격 보상</th><td>살아 있는 용사가 공격할 때마다 · 용사 한 명당 하루 3번<br>피해 10,000마다 아이템 1개 (최소 1, 최대 3) · 하나마다 영웅 99% · +7 전설 1% · 신화 0.01%</td></tr><tr><th>참여</th><td>피해 1 이상 · 칭호 「토벌대원」</td></tr><tr><th>처치</th><td>보스를 잡은 주의 참여자 전원 · 칭호 「${esc(cur.boss.name)} 토벌자」</td></tr><tr><th>선봉</th><td>기여 상위 10% · 칭호 「선봉장」</td></tr><tr><th>마지막 일격</th><td>생명력을 0으로 만든 등록 · 칭호 「최후의 일격」</td></tr><tr><th>주간 1위</th><td>칭호 「토벌대장」</td></tr></table>`;
   const sb=$('bSubmit');if(sb)sb.onclick=()=>submitRun('b');}
 renderWbBar();setInterval(()=>renderWbBar(),WB_FAKE?60000:300000);if(RANK.on)setTimeout(()=>wbTitlesLoad(true).catch(()=>{}),2500);
+// 가문 랭킹: 가문 점수가 생기기 전까지는 가장 멀리 간 조상 · 족보 인원으로 줄 세운다
+let houseSort='best_score';
+async function renderHouseRank(){const box=$('bossBox');if(!RANK.on){box.innerHTML='<p class="msg">서버에 연결된 공개 페이지에서 볼 수 있다.</p>';return;}
+  box.innerHTML='<p class="msg">불러오는 중…</p>';let rows=[];
+  try{const r=await fetch(`${RANK.url}/rest/v1/house_rank?select=*&order=${houseSort}.desc,members.desc&limit=100`,{headers:rankHeaders()});rows=r.ok?await r.json():[];}catch(e){}
+  if(rankCol!=='house')return;
+  const S=[['best_score','가장 멀리 간 조상'],['members','족보 인원']];
+  box.innerHTML=`<p class="msg" style="color:var(--muted);margin:0 0 8px">가입하고 가문을 세운 사람들의 순위. 가문 이름을 누르면 족보를 본다. (가문 점수는 다음 업데이트에서 생긴다)</p>
+   <div class="tblWrap"><table class="rankTbl"><thead><tr><th>순위</th><th>가문</th>${S.map(([k,l])=>`<th style="text-align:right"><button type="button" class="rkSort" data-hs="${k}" aria-pressed="${houseSort===k}">${l}${houseSort===k?' ▼':''}</button></th>`).join('')}</tr></thead>
+   <tbody>${rows.length?rows.map((x,i)=>`<tr class="${HOUSE&&HOUSE.id===x.id?'me':''}"><td class="n">${i+1}</td><td><button type="button" class="hrName" data-hid="${x.id}">${crestHtml(x,24)} <b style="color:${esc(x.color1)}">${esc(x.name)}</b></button></td><td class="n">${x.best_hero?`${esc(x.best_hero)} <small style="color:var(--muted)">${esc(x.best_reach)}</small>`:'-'}</td><td class="n">${fmt(x.members)}대${x.unnamed?` <small style="color:var(--muted)">+${fmt(x.unnamed)}</small>`:''}</td></tr>`).join(''):'<tr><td colspan="4">아직 세워진 가문이 없다. 첫 가문의 주인이 되어 보자.</td></tr>'}</tbody></table></div><div id="hrView"></div>`;
+  box.querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{houseSort=b.dataset.hs;renderHouseRank();});
+  box.querySelectorAll('[data-hid]').forEach(b=>b.onclick=async()=>{const x=rows.find(r=>String(r.id)===b.dataset.hid);const v=$('hrView');v.innerHTML='<p class="msg">족보를 불러오는 중…</p>';
+    const r=await fetch(`${RANK.url}/rest/v1/house_members?house_id=eq.${x.id}&select=gen,seed,hero,race,reach,reach_score,kills,power,created_at&order=gen.desc&limit=200`,{headers:rankHeaders()});const ms=r.ok?await r.json():[];
+    v.innerHTML=`<div class="famHouse" style="margin-top:14px"><div class="fhHead">${crestHtml(x,56)}<div><div class="fhName" style="color:${esc(x.color1)}">${esc(x.name)}</div><small>족보 ${ms.length}대 · 이름 없이 쓰러진 자 ${fmt(x.unnamed||0)}명</small></div></div>${ms.length?`<ul class="famList">${ms.map(m=>memberHtml(m)).join('')}</ul>`:'<p class="chLegend">아직 족보에 오른 용사가 없다.</p>'}</div>`;v.scrollIntoView({behavior:'smooth',block:'start'});});}
 function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name,at:Date.now()});logAct(['S']);}
 function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}
 function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
@@ -2413,7 +2430,7 @@ document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(do
 newHero(true);
 if(!store.get('seenHelp',0)&&OB.full) openHelp();
 if(!OB.full&&!OB.tips.intro){OB.tips.intro=1;obSave();setTimeout(()=>obShow('🎲','운명의 용사','용사는 무작위로 태어난다. 마음에 들면 「이 운명으로 출정」, 아니면 「랜덤 영웅 뽑기」. 자세한 규칙은 위의 「게임 방법 보기」에 있다.'),700);}
-$('obBtn').onclick=()=>{OB.full=!OB.full;obSave();renderAll();};
+$('obRestart').onclick=()=>{OB={full:false,u:{},tips:{}};obSave();closeHelp();renderAll();showToast('처음 안내','다음 판부터 화면을 하나씩 열며 안내한다','ok',2200);};
 </script>
 
 </body>
