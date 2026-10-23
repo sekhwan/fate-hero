@@ -234,7 +234,7 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .myName{font-weight:800;background:linear-gradient(90deg,#ff5f6d,#ffc371,#fff36b,#6bff95,#5fd7ff,#8c7bff,#ff6bd6,#ff5f6d);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:myFlow 3s linear infinite;filter:drop-shadow(0 0 4px rgba(255,255,255,.25))}
 @keyframes myFlow{0%{background-position:0% 50%}100%{background-position:200% 50%}}
 @media (prefers-reduced-motion:reduce){.myName{animation:none}}
-.hrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .hrow .hname{margin-right:auto} .dGroup{display:inline-flex;align-items:center;gap:10px;margin-left:auto}
+.hrow{display:flex;align-items:center;gap:10px;flex-wrap:nowrap}.hrow .hname{min-width:0} .hrow .hname{margin-right:auto} .dGroup{display:inline-flex;align-items:center;gap:10px;margin-left:auto}
 .dBtn{display:inline-flex;align-items:center;gap:6px;font:inherit;font-size:13.5px;font-weight:700;padding:8px 14px;border:0;border-radius:6px;cursor:pointer;white-space:nowrap;color:#2a1a00;
   background:linear-gradient(180deg,#ffe27a,#f4b42c 55%,#e0901a);box-shadow:0 0 0 1px #ffd45a inset,0 3px 0 #9c5d0a,0 0 18px rgba(255,196,60,.45);animation:dGlow 2.4s ease-in-out infinite}
 .dBtn:hover{filter:brightness(1.08)} .dBtn:active{transform:translateY(2px);box-shadow:0 0 0 1px #ffd45a inset,0 1px 0 #9c5d0a,0 0 12px rgba(255,196,60,.4)}
@@ -269,7 +269,8 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 .portrait.t4{background:radial-gradient(circle at 50% 30%,rgba(232,184,74,.35),#14121a 72%)} .portrait.t1{border-style:solid;border-color:#5a4632;filter:saturate(.8)}
 .portrait.hid{--pc:#d2a64e;border-width:3px;box-shadow:0 0 0 1px #1a140a,0 0 22px rgba(210,166,78,.6)}
 @media (max-width:840px){.portrait{width:112px;height:112px}}
-.hname{font-family:var(--display);font-size:32px;line-height:1.1;margin:4px 0 2px}
+.hname{font-family:var(--display);font-size:32px;line-height:1.1;margin:4px 0 2px;white-space:nowrap}
+.hname.n4{font-size:26px}.hname.n5{font-size:21px}.hrow .dGroup{gap:8px}.hrow .bigDie .dc,.hrow .bigDie svg{width:30px;height:30px}.hrow .dBtn{padding:8px 11px}.hrow .hname{overflow:hidden;text-overflow:ellipsis}
 .hsub{color:var(--muted);font-size:13px}
 .roster .facts{margin-top:14px}
 .facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 0;font-size:14px}
@@ -988,7 +989,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 
   <div class="grid">
     <section class="roster" aria-label="용사 정보">
-      <div class="hrow"><div class="hname" id="hName"></div><span class="dGroup"><span class="bigDie" id="bigDie" aria-hidden="true"></span><button class="dBtn" id="rollBtn2" type="button">랜덤 영웅 뽑기</button></span></div>
+      <div class="hrow"><div class="hname" id="hName"></div><span class="dGroup"><span class="bigDie" id="bigDie" aria-hidden="true"></span><button class="dBtn" id="rollBtn2" type="button" title="랜덤 영웅 뽑기">다시 뽑기</button></span></div>
       <div class="hhead"><div class="hinfo">
       <div class="hsub" id="hSub"></div>
       <div class="htags" id="hTags"></div>
@@ -1570,7 +1571,7 @@ function renderStages(){
 async function newHero(first){store.set('rolls',store.get('rolls',0)+1);if(typeof chron!=='undefined'){chron.st.rolls=(chron.st.rolls||0)+1;chSave();}TRACK.st.heroes++;setTimeout(()=>TRACK.ev('hero',{race:hero&&hero.race.name,traits:hero&&hero.traits.map(t=>t.name).join(',')}),1200);clearTimeout(autoT);stage=0;store.set('stage',0);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('rollBtn2').disabled=true;$('goBtn').disabled=true;const [g]=await Promise.all([issueSeed(),first===true?null:rollDieAnim()]);heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();showDice(hero,first!==true);}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
-  document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name; $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
+  document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name;{const L=[...h.name].length;$('hName').classList.toggle('n4',L===4);$('hName').classList.toggle('n5',L>=5);} $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
   {const ri=raceInfo(h.race);$('hRace').innerHTML=`<span class="tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name} <i class="qi">?</i></span><em>${h.race.note}</em>`;}
   $('hWealth').innerHTML=`<span class="tipt"${tipAttr(h.wealth.name+' · 출신 효과',[h.wealth.desc,...wealthInfo(h.wealth)])}>${h.wealth.name} <i class="qi">?</i></span><em>${h.wealth.desc}</em>`;
   {const ri=raceInfo(h.race);$('hTags').innerHTML=`<span class="rc tipt"${tipAttr(h.race.name+' · 종족 효과',[h.race.note,...ri.perks,ri.stats.length?'능력치: '+ri.stats.join(', '):''])}>${h.race.name}</span>`+h.traits.map(t=>`<span class="chip ${t.good==='hidden'?'hidden':t.good===true?'good':t.good===false?'bad':''}"${tipAttr(t.name+' · 특성',traitInfo(t))}>${t.name}</span>`).join('');}
