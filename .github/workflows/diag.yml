@@ -25,10 +25,12 @@ jobs:
           mkdir -p out
           curl -fsS "https://$PROJECT_REF.supabase.co/rest/v1/run_failures?select=*&order=id.desc&limit=10" -H "apikey: $SERVICE" -H "$AUTH" > out/failures.json
           wc -c out/failures.json
+          curl -fsS "https://$PROJECT_REF.supabase.co/rest/v1/pvp_cards?select=id,nickname,hero,race,power,hp,ass,rev,bls,cur,floor,fights_done,ladder,is_bot,updated_at&order=ladder.desc&limit=30" -H "apikey: $SERVICE" -H "$AUTH" > out/pvp_cards.json || echo '[]' > out/pvp_cards.json
+          curl -fsS "https://$PROJECT_REF.supabase.co/rest/v1/pvp_matches?select=attacker,defender,milestone,win,p,created_at&order=created_at.desc&limit=300" -H "apikey: $SERVICE" -H "$AUTH" > out/pvp_matches.json || echo '[]' > out/pvp_matches.json
       - name: push to diag-out
         run: |
           git config user.name "diag-bot"; git config user.email "diag-bot@users.noreply.github.com"
           git checkout --orphan diag-out
-          git rm -rfq . ; cp out/failures.json failures.json
-          git add failures.json; git commit -qm "diag dump $(date -u +%FT%TZ)"
+          git rm -rfq . ; cp out/*.json .
+          git add *.json; git commit -qm "diag dump $(date -u +%FT%TZ)"
           git push -f origin diag-out
