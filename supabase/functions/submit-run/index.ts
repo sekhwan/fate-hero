@@ -75,6 +75,21 @@ Deno.serve(async (req) => {
       body: JSON.stringify({ p_owner: userId, p_seed: r.seed, p_hero: r.hero, p_race: r.race, p_reach: r.reach, p_score: r.reach_score, p_kills: r.kills, p_power: r.power, p_alive: false }) });
     return res.ok ? await res.json() : null;
   };
+  // 가문 유산: 기록에 적힌 유산 단계가 그 계정이 산 단계를 넘으면 안 된다
+  {
+    const m = /^v([0-3])a([0-2])b([0-2])t([0-2])n([01])$/.exec(verified.legacy || '');
+    const want = m ? { vault: +m[1], arms: +m[2], bless: +m[3], train: +m[4], name: +m[5] } : null;
+    const sum = want ? Object.values(want).reduce((a, b) => a + b, 0) : 0;
+    if (verified.legacy && !want) return json({ error: '유산 기록 형식이 맞지 않는다' }, 400);
+    if (sum > 0) {
+      if (!userId) return json({ error: '유산은 로그인한 가문만 쓸 수 있다' }, 400);
+      const hr = await fetch(restUrl(`houses?owner=eq.${userId}&select=legacy`), { headers: adminHeaders() });
+      const own = hr.ok ? ((await hr.json())[0]?.legacy ?? {}) : {};
+      for (const [k, v] of Object.entries(want!)) if (v > (Number(own[k]) || 0)) return json({ error: '가문이 가진 유산보다 높은 유산 기록이다' }, 400);
+    }
+    (verified.row as Record<string, unknown>).legacy_lv = sum;
+  }
+
   // 족보 보고만 하는 요청 (랭킹·월드 보스에는 올리지 않는다)
   if ((body as Record<string, unknown>)?.report_only === true) {
     if (!userId) return json({ error: '로그인이 필요하다' }, 401);
@@ -135,7 +150,7 @@ Deno.serve(async (req) => {
       const wb = await fetch(restUrl('rpc/wb_apply'), {
         method: 'POST',
         headers: adminHeaders(),
-        body: JSON.stringify({ p_seed: row.seed, p_nick: row.nickname, p_title: row.title, p_kills: row.kills, p_stage: Math.min(5, Math.floor((row.reach_score || 0) / 1000)), p_attack: (body as Record<string, unknown>)?.attack === true, p_alive: !!verified.alive }),
+        body: JSON.stringify({ p_seed: row.seed, p_nick: row.nickname, p_title: row.title, p_kills: row.kills, p_stage: Math.min(5, Math.floor((row.reach_score || 0) / 1000)), p_attack: (body as Record<string, unknown>)?.attack === true, p_alive: !!verified.alive, p_user: userId }),
       });
       if (wb.ok) boss = await wb.json(); else console.error('world boss', wb.status, await wb.text());
     } catch (e) { console.error('world boss', e); }

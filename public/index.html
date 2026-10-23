@@ -642,6 +642,9 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .wbMine input{font:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--line);padding:8px 10px;border-radius:2px;min-width:0;flex:1 1 140px}
 .wbMine .msg{font-size:13px;margin-top:6px} .wbMine .msg.ok{color:var(--holy)} .wbMine .msg.err{color:var(--ember)}
 .crest{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;flex:none}.crest img{width:100%;height:100%;object-fit:contain;border-radius:4px;box-shadow:0 0 0 2px var(--c1,#b8862b)}.crest svg{display:block}
+.legTag{font-size:10.5px;padding:0 5px;border:1px solid #6b5a30;color:#d8b860;border-radius:6px;white-space:nowrap}
+.legList{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:5px}.legList li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:7px 10px;border-radius:4px}
+.legList li .li{font-size:22px}.legList li>div{flex:1}.legList li small{color:var(--muted)}.legList .lx{font-size:12.5px;color:var(--muted)}.legList li em{font-style:normal;color:var(--holy);font-size:13px}.legList .btn{padding:6px 12px;font-size:13px;flex:none;width:auto;min-width:84px}
 .hrName{font:inherit;background:none;border:0;color:inherit;cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:6px;text-align:left}.hrName:hover b{text-decoration:underline}
 .rkHouse{margin-right:5px;display:inline-flex;vertical-align:-4px}
 .houseM .hsWrap{display:flex;gap:18px;flex-wrap:wrap}.hsPrev{flex:none;width:150px;text-align:center}.hsName{font-family:var(--display);font-size:20px;margin-top:6px;word-break:break-all}
@@ -1295,7 +1298,7 @@ function closeChron(){$('chronModal').hidden=true;$('chronBtn').focus();}
 function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ch===chTab));
   const allKeys=[...CH_RACES.flatMap(r=>CH_WEALTH.map(w=>r+'|'+w)),...CH_HID.map(t=>'H|'+t)];const got=allKeys.filter(k=>chron.h[k]).length;const stars=allKeys.reduce((a,k)=>a+(chron.h[k]||0),0);
   const monNames=Object.keys(MON_IMG);const monGot=monNames.filter(n=>chron.m[n]).length;const achGot=ACH.filter(a=>chron.a[a[0]]).length;
-  $('chronLead').textContent=`도감 ${got}/${allKeys.length}칸 · 별 ${stars}/${allKeys.length*4} · 몬스터 ${monGot}/${monNames.length} · 업적 ${achGot}/${ACH.length}. 첫 지역을 넘긴 용사만 기록된다. 전투력에는 영향이 없다.`;
+  $('chronLead').textContent=`도감 ${got}/${allKeys.length}칸 · 별 ${stars}/${allKeys.length*4} · 몬스터 ${monGot}/${monNames.length} · 업적 ${achGot}/${ACH.length}. 첫 지역을 넘긴 용사만 기록된다. 도감과 업적은 전투력에 영향이 없다.`;
   const B=$('chronBody');
   if(chTab==='hero'){const cell=(k,label)=>{const v=chron.h[k]||0;return `<div class="chCell ${v?'on':''} ${v>=4?'s4':''}" title="${esc(label)}${v?' · '+CH_STAR[v]:' · 아직 없음'}"><b>${v?'★'.repeat(v)+`<s>${'★'.repeat(4-v)}</s>`:'?'}</b>${label.includes('|')?'':`<span>${esc(label)}</span>`}</div>`;};
     B.innerHTML=`<div class="chBar"><i style="width:${(stars/(allKeys.length*4)*100).toFixed(1)}%"></i></div><div class="tblWrap"><div class="chGrid"><div></div>${CH_WEALTH.map(w=>`<div class="hd">${w}</div>`).join('')}
@@ -1311,8 +1314,9 @@ function renderChron(){document.querySelectorAll('[data-ch]').forEach(b=>b.setAt
     if(RANK.on&&Date.now()-(renderChron._at||0)>60000){renderChron._at=Date.now();wbTitlesLoad().then(()=>{if(chTab==='ach'&&!$('chronModal').hidden)renderChron();}).catch(()=>{});}}
   else {const st=chron.st;const rows=[['출정한 용사',fmt(st.runs)+'명'],['쓰러진 용사',fmt(st.deaths)+'명'],['처치·굴복시킨 악마',fmt(st.kills)+'번'],['끝없는 전장 최고 기록',st.best?`${st.best}층`:'-'],['그 주인공',st.bestName||'-'],['가장 허무한 최후',st.quick?`${st.quick.n} · ${st.quick.d}번째 결정에서`:'-'],['랜덤 영웅 뽑기',fmt(st.rolls||0)+'번']];
     B.innerHTML=famHouseHtml()+`<h3>이 기기의 기록</h3><table class="famTbl">${rows.map(([a,b])=>`<tr><td>${a}</td><td>${esc(String(b))}</td></tr>`).join('')}</table><p class="chLegend">${acctOn()?'가입한 계정에 함께 저장된다.':'이 브라우저에만 저장된다. 가입하면 다른 기기에서도 이어진다.'}</p>`;
+    B.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{b.disabled=true;buyLegacy(b.dataset.buy);});
     const fm=$('famMake');if(fm)fm.onclick=()=>{closeChron();openHouse();};const fe=$('famEdit');if(fe)fe.onclick=()=>{closeChron();openHouse();};
-    if(acctOn()&&HOUSE&&!houseMembers)houseMembersLoad().then(()=>{if(chTab==='fam'&&!$('chronModal').hidden)renderChron();}).catch(()=>{});}}
+    if(acctOn()&&HOUSE&&!houseMembers)Promise.all([houseMembersLoad(),houseLoad()]).then(()=>{if(chTab==='fam'&&!$('chronModal').hidden)renderChron();}).catch(()=>{});}}
 // ===== 랭킹 연동 (config.js의 FATE_CONFIG가 있을 때만 켜진다) =====
 const RANK=(()=>{const c=window.FATE_CONFIG||{};const url=(c.supabaseUrl||'').replace(/\/$/,'');return {on:!!(url&&c.anonKey),url,key:c.anonKey||''};})();
 // ===== 계정 (이메일·비밀번호 4자리 가입). 가입하지 않으면 지금처럼 손님으로 플레이한다 =====
@@ -1382,11 +1386,11 @@ function crestSvg(h,size){const sh=(h.crest&&h.crest.shape)|0,sy=CREST_SYMS[((h.
   return `<svg class="crestSvg" viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><g fill="${c2}" stroke="${c1}" stroke-width="6">${path}</g><text x="50" y="${sh===2?47:56}" text-anchor="middle" dominant-baseline="middle" font-size="40">${sy}</text></svg>`;}
 function crestHtml(h,size){if(!h)return '';size=size||32;if(h.crest_url&&!h.crest_hidden)return `<span class="crest" style="--c1:${h.color1};width:${size}px;height:${size}px"><img src="${esc(h.crest_url)}" alt="" onerror="this.style.visibility='hidden'"></span>`;return `<span class="crest" style="width:${size}px;height:${size}px">${crestSvg(h,size)}</span>`;}
 async function houseLoad(){if(!acctOn())return null;const uid=jwtSub();if(!uid)return null;
-  const r=await fetch(`${RANK.url}/rest/v1/houses?owner=eq.${uid}&select=id,name,crest,crest_url,crest_hidden,color1,color2,unnamed,score`,{headers:rankHeaders()});const rows=r.ok?await r.json():[];HOUSE=rows[0]||null;store.set('house',HOUSE);return HOUSE;}
+  const r=await fetch(`${RANK.url}/rest/v1/houses?owner=eq.${uid}&select=id,name,crest,crest_url,crest_hidden,color1,color2,unnamed,score,spent,legacy`,{headers:rankHeaders()});const rows=r.ok?await r.json():[];HOUSE=rows[0]||null;store.set('house',HOUSE);return HOUSE;}
 // 판이 끝났을 때: 가문이 있으면 족보에 조용히 올리고, 없으면 가문을 세우자고 권한다
 function houseRunPayload(){if(!runToken||!runLog||!runLog[0]||runLog[0][2]!==0)return null;return {version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:(PROF&&PROF.nickname)||'가문',log:runLog,...(runToken.batch?{batch:runToken.batch}:{}),report_only:true};}
 async function houseReport(pl){if(!pl||!acctOn()||!HOUSE)return null;try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:await userHeaders(),body:JSON.stringify(pl)});const j=await r.json().catch(()=>({}));houseMembers=null;
-  if(j&&j.house&&j.house.gen)showToast(`족보 ${j.house.gen}대`,`${hero?hero.name:''}의 이름이 ${HOUSE.name} 족보에 올랐다`,'ok',2600);return j;}catch(e){return null;}}
+  if(j&&j.house&&j.house.gen)showToast(`족보 ${j.house.gen}대`,`${hero?hero.name:''}의 이름이 ${HOUSE.name} 족보에 올랐다${j.house.points?` · 가문 점수 +${j.house.points}`:''}`,'ok',2800);houseLoad().catch(()=>{});return j;}catch(e){return null;}}
 function houseAfterDeath(){if(!RANK.on||!run||!run.dead)return;const pl=houseRunPayload();
   if(acctOn()&&HOUSE){houseReport(pl);return;}
   try{if(sessionStorage.getItem('houseLater'))return;}catch(e){}housePending=pl;const nm=hero?hero.name:'용사';
@@ -1426,14 +1430,25 @@ async function houseSave(){const d=houseDraft,m=$('hsMsg');m.className='msg';m.t
     showToast(first?'가문을 세웠다':'가문을 고쳤다',`${HOUSE.name}`,'ok',2400);
     if(first&&housePending){const pl=housePending;housePending=null;await houseReport(pl);}
   }catch(e){m.className='msg err';m.textContent=e.message||'서버 오류';$('hsGo').disabled=false;}}
+// 유산 상점: 가문 점수(누적 − 쓴 점수)로 산다. 효과는 출정할 때만 붙는다.
+const LEG_INFO={vault:['💰','가문의 금고',['시작 금화 +10','시작 금화 +20','시작 금화 +30'],[30,60,120]],arms:['🗡️','물려받은 무구',['처음 장비 +1 강화','처음 장비 +2 강화'],[60,150]],
+  bless:['🙏','조상의 가호',['지상계 지배자전 승률 +0.5%p','지상계 지배자전 승률 +1%p'],[80,200]],train:['📖','가문 수련',['시작 경험치 +5','시작 경험치 +10'],[50,120]],name:['📜','가문의 이름',['시작 명성 +30'],[40]]};
+function legacyTxt(code){const L=legacyParse(code);if(!L)return '';return LEG_KEYS.filter(k=>L[k]).map(k=>LEG_INFO[k][2][L[k]-1]).join(' · ');}
+function legacyShopHtml(){if(!HOUSE)return '';const lg=HOUSE.legacy||{};const have=(HOUSE.score||0)-(HOUSE.spent||0);const tot=LEG_KEYS.reduce((a,k)=>a+(lg[k]|0),0);
+  return `<h3>유산 상점 <small style="font-weight:400;color:var(--muted)">가진 가문 점수 <b style="color:var(--brass)">${fmt(have)}</b> · 누적 ${fmt(HOUSE.score||0)} · 유산 ${tot}/10단계</small></h3>
+   <ul class="legList">${LEG_KEYS.map(k=>{const [ic,nm,fx,cost]=LEG_INFO[k];const lv=lg[k]|0,max=cost.length;const next=lv<max?cost[lv]:null;
+     return `<li><span class="li">${ic}</span><div><b>${nm}</b> <small>${lv}/${max}단계</small><div class="lx">${lv?`지금: ${fx[lv-1]}`:'아직 없음'}${next!=null?` → 다음: ${fx[lv]}`:''}</div></div>${next!=null?`<button class="btn${have>=next?'':' ghost'}" type="button" data-buy="${k}" ${have>=next?'':'disabled'}>${fmt(next)}점</button>`:'<em>완성</em>'}</li>`;}).join('')}</ul>
+   <p class="chLegend">가문 점수는 족보에 오른 용사가 간 거리만큼 쌓인다 (세계를 정복할수록, 끝없는 전장에서 오래 버틸수록 많이). 유산은 출정할 때 한 번 붙고, 다 모아도 판을 크게 바꾸지 않게 작게 잡았다.</p>`;}
+async function buyLegacy(k){const r=await rpc('buy_legacy',{p_key:k});if(r&&r.ok){HOUSE.legacy=r.legacy;HOUSE.score=r.score;HOUSE.spent=r.spent;store.set('house',HOUSE);showToast('유산을 샀다',LEG_INFO[k][1]+' · '+LEG_INFO[k][2][(r.legacy[k]|0)-1],'ok',2200);}else showToast('유산',(r&&r.error)||'서버 오류','warn',2200);if(!$('chronModal').hidden)renderChron();}
 // 족보 (연대기 '가문 기록' 탭)
-async function houseMembersLoad(){if(!HOUSE)return [];const r=await fetch(`${RANK.url}/rest/v1/house_members?house_id=eq.${HOUSE.id}&select=gen,seed,hero,race,reach,reach_score,kills,power,created_at&order=gen.desc&limit=300`,{headers:rankHeaders()});houseMembers=r.ok?await r.json():[];return houseMembers;}
+async function houseMembersLoad(){if(!HOUSE)return [];const r=await fetch(`${RANK.url}/rest/v1/house_members?house_id=eq.${HOUSE.id}&select=gen,seed,hero,race,reach,reach_score,kills,power,points,created_at&order=gen.desc&limit=300`,{headers:rankHeaders()});houseMembers=r.ok?await r.json():[];return houseMembers;}
 function memberHtml(x,big){let h=null;try{h=makeHero(x.seed>>>0);}catch(e){}const k=h&&portraitKey(h);
-  return `<li class="${big?'big':''}"><span class="gen">${x.gen}대</span>${k?`<img class="pt" src="hero/${k}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:'<span class="pt"></span>'}<div><b>${esc(x.hero)}</b> <small>${esc(x.race)}${h?' '+esc(h.job):''}</small><div class="rc">${esc(x.reach)} · 처치 ${fmt(x.kills)} · 전투력 ${fmt(x.power)}</div></div><em>${new Date(x.created_at).toLocaleDateString()}</em></li>`;}
+  return `<li class="${big?'big':''}"><span class="gen">${x.gen}대</span>${k?`<img class="pt" src="hero/${k}.webp" alt="" loading="lazy" onerror="this.style.visibility='hidden'">`:'<span class="pt"></span>'}<div><b>${esc(x.hero)}</b> <small>${esc(x.race)}${h?' '+esc(h.job):''}</small><div class="rc">${esc(x.reach)} · 처치 ${fmt(x.kills)} · 전투력 ${fmt(x.power)}${x.points?` · <b style="color:var(--brass)">+${fmt(x.points)}점</b>`:''}</div></div><em>${new Date(x.created_at).toLocaleDateString()}</em></li>`;}
 function famHouseHtml(){if(!RANK.on)return '';
   if(!acctOn()||!HOUSE)return `<div class="famHouse none"><p>가문을 세우면 지금부터 태어나는 용사들이 족보에 쌓인다.</p><button class="btn" type="button" id="famMake">가문 세우기</button></div>`;
   const ms=houseMembers;const top=ms?[...ms].sort((a,b)=>b.reach_score-a.reach_score).slice(0,3):[];
   return `<div class="famHouse"><div class="fhHead">${crestHtml(HOUSE,64)}<div><div class="fhName" style="color:${HOUSE.color1}">${esc(HOUSE.name)}</div><small>족보 ${ms?ms.length:'…'}대 · 이름 없이 쓰러진 자 ${fmt(HOUSE.unnamed||0)}명</small></div><button class="btn ghost" type="button" id="famEdit">가문 고치기</button></div>
+    ${legacyShopHtml()}
     ${!ms?'<p class="chLegend">족보를 불러오는 중…</p>':!ms.length?'<p class="chLegend">아직 족보에 오른 용사가 없다. 첫 지역을 넘기고 쓰러진 용사부터 이름이 오른다.</p>':`<h3>위대한 조상</h3><ul class="famList">${top.map(x=>memberHtml(x,true)).join('')}</ul><h3>족보</h3><ul class="famList">${ms.map(x=>memberHtml(x)).join('')}</ul>`}</div>`;}
 function openAcct(){$('acctModal').hidden=false;acctRender();$('acctClose').focus();}
 function closeAcct(){$('acctModal').hidden=true;acctPending=null;$('acctBtn').focus();}
@@ -2077,13 +2092,13 @@ async function loadRank(){
     body.innerHTML=rows.map((x,i)=>{
       return `<tr class="${x.seed!=null&&x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${esc(x.nickname)}${titleTag(x.title)}${x.is_bot?'<span class="botTag">봇</span>':''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n">${fmt(x.power)} · ${fmt(x.hp)}</td><td class="n">${fmt(x.floor||0)}층</td></tr>`;}).join('');
   }catch(e){body.innerHTML='<tr><td colspan="5">월드랭킹을 불러오지 못했다.</td></tr>';}return;}
-  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,title,hero,race,kills,power,reach,updated_at,user_id&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
+  try{const r=await fetch(`${RANK.url}/rest/v1/runs?select=seed,nickname,title,hero,race,kills,power,reach,updated_at,user_id,legacy_lv&order=${rankSort}.desc,updated_at.asc&limit=50`,{headers:rankHeaders()});
     const rows=await r.json();if(!r.ok||!Array.isArray(rows))throw 0;
     if(!rows.length){body.innerHTML='<tr><td colspan="6">아직 등록된 용사가 없다. 첫 기록의 주인공이 되어 보자.</td></tr>';return;}
     const hl=k=>rankSort===k?' style="color:var(--fg);font-weight:700"':'';
     const uids=[...new Set(rows.map(x=>x.user_id).filter(Boolean))];let HS={};if(uids.length){try{const hr=await fetch(`${RANK.url}/rest/v1/houses?owner=in.(${uids.join(',')})&select=owner,name,crest,crest_url,crest_hidden,color1,color2`,{headers:rankHeaders()});const hh=hr.ok?await hr.json():[];hh.forEach(h=>HS[h.owner]=h);}catch(e){}}
     const hcell=x=>{const h=x.user_id&&HS[x.user_id];return h?`<span class="rkHouse" title="${esc(h.name)}">${crestHtml(h,20)}</span>`:'';};
-    body.innerHTML=rows.map((x,i)=>`<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${hcell(x)}${esc(x.nickname)}${titleTag(x.title)}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n"${hl('reach_score')}>${esc(x.reach)}</td><td class="n"${hl('power')}>${fmt(x.power)}</td><td class="n"${hl('kills')}>${fmt(x.kills)}마리</td></tr>`).join('');
+    body.innerHTML=rows.map((x,i)=>`<tr class="${x.seed==lastSubmitted?'me':''}"><td class="n">${i+1}</td><td>${hcell(x)}${esc(x.nickname)}${titleTag(x.title)}${x.legacy_lv?` <small class="legTag" title="가문 유산 ${x.legacy_lv}단계로 출정한 기록">유산 ${x.legacy_lv}</small>`:''}</td><td>${esc(x.hero)} <small style="color:var(--muted)">${esc(x.race)}</small></td><td class="n"${hl('reach_score')}>${esc(x.reach)}</td><td class="n"${hl('power')}>${fmt(x.power)}</td><td class="n"${hl('kills')}>${fmt(x.kills)}마리</td></tr>`).join('');
   }catch(e){body.innerHTML='<tr><td colspan="6">랭킹을 불러오지 못했다.</td></tr>';}
 }
 // ===== 월드 보스 (1단계: 화면 미리보기. 수치는 가짜이고 서버와 연결되지 않는다) =====
@@ -2196,15 +2211,15 @@ async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p c
   const sb=$('bSubmit');if(sb)sb.onclick=()=>submitRun('b');}
 renderWbBar();setInterval(()=>renderWbBar(),WB_FAKE?60000:300000);if(RANK.on)setTimeout(()=>wbTitlesLoad(true).catch(()=>{}),2500);
 // 가문 랭킹: 가문 점수가 생기기 전까지는 가장 멀리 간 조상 · 족보 인원으로 줄 세운다
-let houseSort='best_score';
+let houseSort='score';
 async function renderHouseRank(){const box=$('bossBox');if(!RANK.on){box.innerHTML='<p class="msg">서버에 연결된 공개 페이지에서 볼 수 있다.</p>';return;}
   box.innerHTML='<p class="msg">불러오는 중…</p>';let rows=[];
   try{const r=await fetch(`${RANK.url}/rest/v1/house_rank?select=*&order=${houseSort}.desc,members.desc&limit=100`,{headers:rankHeaders()});rows=r.ok?await r.json():[];}catch(e){}
   if(rankCol!=='house')return;
-  const S=[['best_score','가장 멀리 간 조상'],['members','족보 인원']];
-  box.innerHTML=`<p class="msg" style="color:var(--muted);margin:0 0 8px">가입하고 가문을 세운 사람들의 순위. 가문 이름을 누르면 족보를 본다. (가문 점수는 다음 업데이트에서 생긴다)</p>
+  const S=[['score','가문 점수'],['best_score','가장 멀리 간 조상'],['members','족보 인원']];
+  box.innerHTML=`<p class="msg" style="color:var(--muted);margin:0 0 8px">가입하고 가문을 세운 사람들의 순위. 가문 이름을 누르면 족보를 본다. (유산 n = 산 유산 단계, 최대 10)</p>
    <div class="tblWrap"><table class="rankTbl"><thead><tr><th>순위</th><th>가문</th>${S.map(([k,l])=>`<th style="text-align:right"><button type="button" class="rkSort" data-hs="${k}" aria-pressed="${houseSort===k}">${l}${houseSort===k?' ▼':''}</button></th>`).join('')}</tr></thead>
-   <tbody>${rows.length?rows.map((x,i)=>`<tr class="${HOUSE&&HOUSE.id===x.id?'me':''}"><td class="n">${i+1}</td><td><button type="button" class="hrName" data-hid="${x.id}">${crestHtml(x,24)} <b style="color:${esc(x.color1)}">${esc(x.name)}</b></button></td><td class="n">${x.best_hero?`${esc(x.best_hero)} <small style="color:var(--muted)">${esc(x.best_reach)}</small>`:'-'}</td><td class="n">${fmt(x.members)}대${x.unnamed?` <small style="color:var(--muted)">+${fmt(x.unnamed)}</small>`:''}</td></tr>`).join(''):'<tr><td colspan="4">아직 세워진 가문이 없다. 첫 가문의 주인이 되어 보자.</td></tr>'}</tbody></table></div><div id="hrView"></div>`;
+   <tbody>${rows.length?rows.map((x,i)=>`<tr class="${HOUSE&&HOUSE.id===x.id?'me':''}"><td class="n">${i+1}</td><td><button type="button" class="hrName" data-hid="${x.id}">${crestHtml(x,24)} <b style="color:${esc(x.color1)}">${esc(x.name)}</b></button></td><td class="n">${fmt(x.score||0)}${x.legacy_lv?` <small class="legTag">유산 ${x.legacy_lv}</small>`:''}</td><td class="n">${x.best_hero?`${esc(x.best_hero)} <small style="color:var(--muted)">${esc(x.best_reach)}</small>`:'-'}</td><td class="n">${fmt(x.members)}대${x.unnamed?` <small style="color:var(--muted)">+${fmt(x.unnamed)}</small>`:''}</td></tr>`).join(''):'<tr><td colspan="5">아직 세워진 가문이 없다. 첫 가문의 주인이 되어 보자.</td></tr>'}</tbody></table></div><div id="hrView"></div>`;
   box.querySelectorAll('[data-hs]').forEach(b=>b.onclick=()=>{houseSort=b.dataset.hs;renderHouseRank();});
   box.querySelectorAll('[data-hid]').forEach(b=>b.onclick=async()=>{const x=rows.find(r=>String(r.id)===b.dataset.hid);const v=$('hrView');v.innerHTML='<p class="msg">족보를 불러오는 중…</p>';
     const r=await fetch(`${RANK.url}/rest/v1/house_members?house_id=eq.${x.id}&select=gen,seed,hero,race,reach,reach_score,kills,power,created_at&order=gen.desc&limit=200`,{headers:rankHeaders()});const ms=r.ok?await r.json():[];
@@ -2264,7 +2279,8 @@ function renderAll(){
 }
 $('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
   {const ck=ckptInfo();try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!(ck&&k==='fh2_'+logKey(ck.seed)))localStorage.removeItem(k);}}catch(e){}}
-  chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();lastOut=null;verdictHtml='';$('log').innerHTML='';renderAll();};
+  chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();
+  {const code=acctOn()&&HOUSE&&stage===0?legacyCode(HOUSE.legacy):'';if(code&&legacySum(code)>0&&applyLegacy(run,code)){logAct(['G',code]);setTimeout(()=>showToast('가문 유산',legacyTxt(code),'ok',2600),300);}}lastOut=null;verdictHtml='';$('log').innerHTML='';renderAll();};
 setDiceFaces(1+Math.floor(Math.random()*6));$('rollBtn').onclick=()=>newHero();$('rollBtn2').onclick=()=>newHero();
 // ===== 배경음: 외부 파일 없이 Web Audio로 합성하는 오리지널 모험 테마 =====
 // 오래 틀어 둬도 피곤하지 않게: 100BPM 안팎의 셔플 그루브, 부드러운 음색, 귀에 남는 4마디 훅.

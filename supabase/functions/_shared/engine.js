@@ -708,7 +708,7 @@ function current(s){
   if(n.type==='battle'){
     const unp=n.final?unpacified(s):0; n.unp=unp;
     const fw=winParts(s,n.E); const pRaw=n.final?clamp((STAGES[s.stage].fx||FINAL_X)*clamp(fw.base+fw.luck+fw.under+(fw.fame+fw.item)*0.5,0.12,0.95)-UNP_PEN*unp,0.02,0.6):n.boss?clamp(winProb(s,n.E)*BOSS_X,0.2,0.85):winProb(s,n.E);
-    const adj=n.boss?((n.bonus||0)+teamBonus(s))*clamp(pRaw/0.35,0.2,1):0; n.skAdj=((pRaw<0.6?SKV.giant*sk(s,'giant'):0)+(n.boss?SKV.boss*sk(s,'boss')*fw.pw+tsum(s,'boss',0):0))*fw.pw; n.deal=n.boss?dealAdj(s):0; const p=clamp(pRaw+adj+n.skAdj+n.deal,0.03,0.92); n.adj=adj; n.pRaw=pRaw; const pf=fleeProb(s,n.boss), pt=talkProb(s,n);
+    const adj=n.boss?((n.bonus||0)+teamBonus(s))*clamp(pRaw/0.35,0.2,1)+(s.stage===0?(s.legBoss||0):0):0; n.skAdj=((pRaw<0.6?SKV.giant*sk(s,'giant'):0)+(n.boss?SKV.boss*sk(s,'boss')*fw.pw+tsum(s,'boss',0):0))*fw.pw; n.deal=n.boss?dealAdj(s):0; const p=clamp(pRaw+adj+n.skAdj+n.deal,0.03,0.92); n.adj=adj; n.pRaw=pRaw; const pf=fleeProb(s,n.boss), pt=talkProb(s,n);
     const count=n.count;
     {const rr=power(s)/n.E; n.rr=rr; n.lp=luckProc(s,n)*clamp(rr,BONUS_MIN,1); n.cp=charmProc(s,n)*clamp(rr,BONUS_MIN,1);} n.pBase=p; n.ptBase=pt;
     n.p=clamp(p+(1-p)*n.lp,0.03,0.97); n.pf=pf; n.pt=clamp(pt+(1-pt)*n.cp,0.005,0.9); n.parts=winParts(s,n.E);
@@ -1041,7 +1041,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.6.0';
+const ENGINE_VERSION='1.7.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1071,6 +1071,18 @@ function wbRewardSync(s,arg,snap){const r=wbReward(s,arg);if(!r||!snap)return r;
   for(const g of r.got){if(g.it&&g.kept){const c=JSON.parse(JSON.stringify(g.it));c.spare=true;(snap.items=snap.items||[]).push(c);}}
   normSlots(snap,snapApply);snap.items=snap.items.filter(x=>!(x.spare&&(x.grade||0)<3));
   snap.mythics=(s.mythics||[]).slice();snap.mythV=Object.assign({},s.mythV||{});snap.uidN=s.uidN;snap.wbGot=(s.wbGot||[]).slice();return r;}
+// 가문 유산: 출정할 때 한 번만 받는다 (기록 두 번째 줄 ['G','v3a2b2t2n1']). 서버는 그 계정이 산 유산 단계를 넘지 않는지 확인한다.
+const LEG_KEYS=['vault','arms','bless','train','name'];
+const LEGACY={vault:{max:3,gold:[0,10,20,30]},arms:{max:2,plus:[0,1,2]},bless:{max:2,v:[0,0.005,0.01]},train:{max:2,xp:[0,5,10]},name:{max:1,fame:[0,30]}};
+function legacyParse(code){const m=/^v([0-3])a([0-2])b([0-2])t([0-2])n([01])$/.exec(String(code||''));if(!m)return null;const o={};LEG_KEYS.forEach((k,i)=>o[k]=+m[i+1]);return o;}
+function legacyCode(o){o=o||{};return `v${o.vault|0}a${o.arms|0}b${o.bless|0}t${o.train|0}n${o.name|0}`;}
+function legacySum(code){const L=legacyParse(code);return L?LEG_KEYS.reduce((a,k)=>a+L[k],0):0;}
+function applyLegacy(s,code){const L=legacyParse(code);if(!L||s.legacy)return false;s.legacy=code;const out=[];
+  s.gold+=LEGACY.vault.gold[L.vault];s.fame+=LEGACY.name.fame[L.name];s.legBoss=LEGACY.bless.v[L.bless];
+  if(L.train)gainXp(s,LEGACY.train.xp[L.train],out);
+  // 물려받은 무구: 처음 가진 장비를 +1 / +2 강화된 채로 시작한다
+  if(L.arms)for(const it of s.items){if(it.spare||it.heal||it.revive||!canEnhance(it))continue;applyItem(s,it,-1);it.plus=(it.plus||0)+LEGACY.arms.plus[L.arms];applyItem(s,it,1);}
+  return true;}
 function snapshotRun(s){const o={};for(const k in s){if(k==='r'||k==='queue'||k==='shop'||k==='transit'||k==='hero')continue;o[k]=s[k];}return JSON.parse(JSON.stringify(o));}
 function restoreRun(snap,hero,seed,fromStart){const run=JSON.parse(JSON.stringify(snap));run.hero=hero;run.r=rng(seed);
   const keepFloor=STAGES[run.stage]&&STAGES[run.stage].endless&&STAGES[run.stage].hunt==null&&snap.region>0&&!fromStart; // 끝없는 전장 5층 저장: 그 층에서 다시 시작 (fromStart면 1층부터)
@@ -1091,6 +1103,7 @@ function replayLog(log){
   let hero=null,s=null,snap=null,loads=0,seed=0;
   for(let i=0;i<log.length;i++){const a=log[i];const op=a[0];
     if(op==='start'){ if(i!==0) throw new Error('start가 두 번 나왔다'); seed=a[1]>>>0; hero=makeHero(seed); s=newRun(hero,a[2]|0,mixSeed(seed,1)); continue; }
+    if(op==='G'){ if(i!==1||!applyLegacy(s,a[1])) throw new Error(`${i}번째 행동: 유산은 출정 직후에 한 번만 받는다`); continue; }
     if(op==='S'){ snap=snapshotRun(s); continue; }
     if(op==='L'){ if(!snap) throw new Error('저장 없이 불러오기'); loads++; s=restoreRun(snap,hero,mixSeed(seed,100+loads),a[1]===1); continue; }
     if(s.dead) throw new Error(`${i}번째 행동: 이미 끝난 판`);
@@ -1166,5 +1179,5 @@ function isImportant(s,c,mode){
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+globalThis.FateEngine={GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+if(typeof module!=='undefined') module.exports={COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
