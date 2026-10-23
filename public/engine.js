@@ -179,7 +179,7 @@ const GRADES=[
   {id:0,name:'일반',cls:'g0',stat:2,mult:1.04,gold:40,fame:0},
   {id:1,name:'희귀',cls:'g1',stat:5,mult:1.10,gold:130,fame:25},
   {id:2,name:'영웅',cls:'g2',stat:11,mult:1.25,gold:420,fame:70},
-  {id:3,name:'전설',cls:'g3',stat:20,mult:1.45,gold:1400,fame:180}, // 기본은 영웅의 약 1.8배, +7부터 급격히 강해진다
+  {id:3,name:'전설',cls:'g3',stat:30,mult:1.75,gold:1400,fame:180}, // 기본은 영웅의 약 2.7~3배, +7에서 크게 뛴다
 ];
 const ITEM_NAMES={
   str:['녹슨 장검','기사의 장검','불꽃의 대검','용살검 그람'],
@@ -234,7 +234,7 @@ function slotOf(it){return it.stat||(it.mult?'mult':it.win?'win':it.flee?'flee':
 // 강화: +10이면 기본 수치의 3배
 const ENH_BONUS=[0,0.15,0.35,1.5,3,5,8,12,18,26,40];
 // 전설 전용 강화 곡선: +6까지는 완만(같은 강화의 영웅보다 약 1.5배), +7부터 급격히 뛴다
-const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,16,22,30,45];
+const ENH_BONUS_LEG=[0,0.15,0.35,0.9,1.8,3,4.5,20,26,34,50];
 const ENH_RATE=[0.9,0.8,0.7,0.6,0.5,0.4,0.33,0.26,0.2,0.15];
 const ENH_BREAK={1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1};
 const GRADE_ENH=[0.15,0.35,0.7,1.0]; // 등급별 강화 효율: 일반 15%, 희귀 35%, 영웅 70%, 전설 100%
@@ -323,11 +323,11 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.185, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.187, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
-  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.11, regions:[
+  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.115, regions:[
     ['망각의 강','뱃사공의 망령'],['비명의 숲','자살나무 정령'],['재의 평원','재의 기사'],['불타는 도시 디스','이단 심문관'],['얼음 호수','배신자들의 군주'],
     ['피의 강','켄타우로스 왕'],['역병의 늪','파리 대왕'],['거짓의 골짜기','기만의 대공'],['탐욕의 금고','금고지기'],['분노의 투기장','지옥 검투사'],
     ['교만의 첨탑','루시퍼의 그림자'],['지하 세계 왕좌','하데스의 섭정']]},
@@ -1093,7 +1093,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.9.1';
+const ENGINE_VERSION='1.9.2';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
