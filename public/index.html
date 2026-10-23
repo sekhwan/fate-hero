@@ -675,6 +675,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 #rareFx small{display:block;text-align:center;color:#ffe08a;font-size:15px;margin-top:8px;letter-spacing:1px}
 @keyframes rareFx{0%{opacity:0}12%{opacity:1}75%{opacity:1}100%{opacity:0}}
 @keyframes rareFxT{0%{transform:scale(.6)}20%{transform:scale(1.08)}35%{transform:scale(1)}}
+.hsPick.sym .symB{padding:4px 6px;line-height:0}.hsPick.sym .symB img{display:block;filter:drop-shadow(0 1px 1px #000a)}.hsPick.sym .symB[aria-pressed="true"] img{filter:sepia(1) saturate(4) hue-rotate(-10deg) brightness(1.05) drop-shadow(0 0 4px #e8a93a)}
 .legTag{font-size:10.5px;padding:0 5px;border:1px solid #6b5a30;color:#d8b860;border-radius:6px;white-space:nowrap}
 .legList{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:5px}.legList li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:7px 10px;border-radius:4px}
 .legList li .li{font-size:22px}.legList li>div{flex:1}.legList li small{color:var(--muted)}.legList .lx{font-size:12.5px;color:var(--muted)}.legList li em{font-style:normal;color:var(--holy);font-size:13px}.legList .btn{padding:6px 12px;font-size:13px;flex:none;width:auto;min-width:84px}
@@ -1426,6 +1427,8 @@ function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE
   $('acGo').onclick=go;$('acPw').onkeydown=e=>{if(e.key==='Enter')go();};}
 // ===== 가문: 이름·문장·색, 족보. 가입한 계정에 하나 =====
 const CREST_SHAPES=['단색','가로띠','세로띠','대각선'],CREST_SYMS=['🦁','🐉','💀','⭐','🌙','🔥','⚔️','👑','🦅','🌲','❄️','⚒️','🐺','🌹','👁️','⚡'];
+// 문장 그림 (흰 실루엣을 가문 색으로 칠한다). 순서는 CREST_SYMS와 같다.
+const CREST_ART=['lion','dragon','skull','star','moon','flame','swords','crown','eagle','tree','snow','hammer','wolf','rose','eye','bolt'].map(n=>`art/emblem/emblem_${n}.webp`);let CREST_N=0;
 const HOUSE_COLORS=['#b8862b','#e8c860','#c0392b','#7f1d1d','#d35400','#27ae60','#14532d','#2e86c1','#1e3a8a','#8e44ad','#ecf0f1','#2c3e50','#3a1a1a','#111111'];
 let HOUSE=store.get('house',null),houseDraft=null,housePending=null,houseMembers=null,acctThen=null;
 function jwtSub(){try{const seg=AUTH.access_token.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(seg.padEnd(Math.ceil(seg.length/4)*4,'='))))).sub;}catch(e){return null;}}
@@ -1433,7 +1436,8 @@ function jwtSub(){try{const seg=AUTH.access_token.split('.')[1].replace(/-/g,'+'
 function crestSvg(h,size){const sh=(h.crest&&h.crest.shape)|0,sy=CREST_SYMS[((h.crest&&h.crest.sym)|0)%CREST_SYMS.length],c1=h.color1||'#b8862b',c2=h.color2||'#3a1a1a';const W=Math.round(size*1.5);
   const pat=sh===1?`<rect x="0" y="66" width="150" height="34" fill="${c1}"/>`:sh===2?`<rect x="0" y="0" width="44" height="100" fill="${c1}"/>`:sh===3?`<path d="M0 100L150 0V24L36 100Z" fill="${c1}"/>`:'';
   const cx=sh===2?97:75,cy=sh===1?36:52;
-  return `<svg class="crestSvg" viewBox="0 0 150 100" width="${W}" height="${size}" aria-hidden="true"><rect x="0" y="0" width="150" height="100" fill="${c2}"/>${pat}<rect x="1.5" y="1.5" width="147" height="97" fill="none" stroke="${c1}" stroke-width="3"/><text x="${cx}" y="${cy}" text-anchor="middle" dominant-baseline="middle" font-size="${sh===1?40:46}">${sy}</text></svg>`;}
+  const si=((h.crest&&h.crest.sym)|0)%CREST_ART.length,id='cm'+(++CREST_N),z=sh===1?50:60,x=cx-z/2,y=cy-z/2,fg=sh===3?'#f3e6c6':c1;
+  return `<svg class="crestSvg" viewBox="0 0 150 100" width="${W}" height="${size}" aria-hidden="true"><defs><mask id="${id}" maskUnits="userSpaceOnUse" x="0" y="0" width="150" height="100"><image href="${CREST_ART[si]}" x="${x}" y="${y}" width="${z}" height="${z}"/></mask></defs><rect x="0" y="0" width="150" height="100" fill="${c2}"/>${pat}<rect x="1.5" y="1.5" width="147" height="97" fill="none" stroke="${c1}" stroke-width="3"/><rect x="0" y="0" width="150" height="100" fill="${fg}" mask="url(#${id})" style="filter:drop-shadow(0 0 1.5px ${c2}) drop-shadow(0 1px 1px #0008)"/></svg>`;}
 function crestHtml(h,size){if(!h)return '';size=size||32;const W=Math.round(size*1.5);if(h.crest_url&&!h.crest_hidden)return `<span class="crest" style="--c1:${h.color1};--c2:${h.color2||'#3a1a1a'};width:${W}px;height:${size}px"><img src="${esc(h.crest_url)}" alt="" onerror="this.style.visibility='hidden'"></span>`;return `<span class="crest" style="width:${W}px;height:${size}px">${crestSvg(h,size)}</span>`;}
 async function houseLoad(){if(!acctOn())return null;const uid=jwtSub();if(!uid)return null;
   const r=await fetch(`${RANK.url}/rest/v1/houses?owner=eq.${uid}&select=id,name,crest,crest_url,crest_hidden,color1,color2,unnamed,score,spent,legacy`,{headers:rankHeaders()});const rows=r.ok?await r.json():[];HOUSE=rows[0]||null;store.set('house',HOUSE);return HOUSE;}
@@ -1457,7 +1461,7 @@ function renderHouse(){const B=$('houseBody');if(!B)return;$('houseTitle').textC
    <div class="hsForm"><label>가문 이름 <input id="hsName" maxlength="12" placeholder="2~12자" value="${esc(d.name)}"></label>
     <div class="hsL">깃발 그림 올리기 <small>(가로 3 : 세로 2 · 384×256으로 줄여 저장 · 남는 곳은 바탕색)</small></div><div class="row"><input type="file" id="hsFile" accept="image/*">${prev.crest_url?'<button class="btn ghost" type="button" id="hsNoImg">그림 빼기</button>':''}</div>
     <div class="hsL">또는 깃발 만들기 (무늬 · 상징)</div><div class="hsPick">${CREST_SHAPES.map((n,i)=>`<button type="button" class="mode" data-sh="${i}" aria-pressed="${d.crest.shape===i}">${n}</button>`).join('')}</div>
-    <div class="hsPick sym">${CREST_SYMS.map((y,i)=>`<button type="button" class="mode" data-sy="${i}" aria-pressed="${d.crest.sym===i}">${y}</button>`).join('')}</div>
+    <div class="hsPick sym">${CREST_ART.map((y,i)=>`<button type="button" class="mode symB" data-sy="${i}" aria-pressed="${d.crest.sym===i}"><img src="${y}" alt="" width="26" height="26"></button>`).join('')}</div>
     <div class="hsL">가문 색 (테두리 · 바탕)</div><div class="hsPick col">${HOUSE_COLORS.map(c=>`<button type="button" class="sw" data-c1="${c}" style="background:${c}" aria-pressed="${d.color1===c}" title="테두리"></button>`).join('')}</div>
     <div class="hsPick col">${HOUSE_COLORS.map(c=>`<button type="button" class="sw" data-c2="${c}" style="background:${c}" aria-pressed="${d.color2===c}" title="바탕"></button>`).join('')}</div>
     <button class="btn" type="button" id="hsGo">${HOUSE?'가문 고치기':'가문 세우기'}</button><div class="msg" id="hsMsg"></div></div></div>`;
