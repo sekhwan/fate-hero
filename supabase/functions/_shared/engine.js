@@ -333,7 +333,7 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.167, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.18, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
@@ -752,7 +752,7 @@ function winParts(s,E){const ratio=power(s)/E;const tt=Math.tanh(Math.log(ratio)
   return {ratio,base,pw,luck:luck>0?luck*pw:luck,under:under*pw,fame:Math.min(FAME_CAP+SKV.famecap*sk(s,'fame'),fameBonus(s))*pw,item:Math.min(ITEM_CAP,itemSum(s,'win')*curseF(s))*pw};}
 function winProb(s,E,floor){const w=winParts(s,E);return clamp(w.base+w.luck+w.under+w.fame+w.item+cmb(s,'win',0)+compAdd(s,'win'),floor==null?FLOOR:floor,0.95);}
 function unpacified(s){let k=0;for(let j=0;j<s.region;j++) if(!(s.pacified&&s.pacified[j])) k++;return k;}
-let UNP_PEN=0.04; let CARRY_ADJ=1.0; let BONUS_MIN=0.15; let CARRY_STEP=[1,6.45,2.85,2.5,2.6,0.6]; let CARRY_REF=[0,350,750,1300,2300,4400]; let CARRY_ALPHA=0.5; let FRESH=[1,1.6,1.6,1.65,1.8,1]; let FAME_CAP=0.1, ITEM_CAP=0.2;
+let UNP_PEN=0.04; let CARRY_ADJ=1.0; let BONUS_MIN=0.15; let CARRY_STEP=[1,7.4,2.95,2.5,2.6,0.6]; let CARRY_REF=[0,350,750,1300,2300,4400]; let CARRY_ALPHA=0.5; let FRESH=[1,1.6,1.6,1.65,1.8,1]; let FAME_CAP=0.1, ITEM_CAP=0.2;
 const PROC_PTS=[[8,0],[10,0.015],[20,0.08],[30,0.18],[35,0.30],[40,0.50]];
 function procCurve(v){if(v<=PROC_PTS[0][0])return 0;for(let i=1;i<PROC_PTS.length;i++){const [x1,y1]=PROC_PTS[i-1],[x2,y2]=PROC_PTS[i];if(v<=x2)return y1+(y2-y1)*(v-x1)/(x2-x1);}return 0.5;}
 const RESIST=[0,6,12,18,24,30];
@@ -779,6 +779,28 @@ function talkProbRaw(s,node){
 }
 
 // Current choice with options
+// ===== 전투 선택지: 스킬 공격 · 약점 공략 =====
+const WK=['dull','glass','mana','vital'];
+const WK_NAME={dull:'둔함',glass:'유리몸',mana:'마력 취약',vital:'급소 노출'}, WK_STAT={dull:'agi',glass:'str',mana:'int',vital:'luk'}, WK_ICON={dull:'🐢',glass:'🥚',mana:'🔮',vital:'🎯'};
+const WK_HOW={dull:'빠르게 파고든다(민첩)',glass:'힘으로 부순다(힘)',mana:'주문으로 꿰뚫는다(지능)',vital:'운에 맡겨 급소를 찌른다(행운)'};
+// 지배자 단서 (간접적). 각 약점마다 여러 문구
+const WK_CLUE={dull:['놈이 지나간 자리마다 바닥이 깊게 패어 있다','놈은 돌아설 때마다 한 박자 늦는다','놈의 그림자가 몸보다 늦게 따라온다','부서진 기둥 사이로 놈이 비집고 들어오지 못한다'],
+  glass:['쓰러진 기사의 검끝에 놈의 비늘 조각이 걸려 있다','놈의 몸 곳곳에 아물지 않은 상처가 벌어져 있다','놈이 벽에 부딪히자 몸에서 무언가 바스러지는 소리가 났다','놈은 맨몸으로 받아낸 화살에도 움찔한다'],
+  mana:['놈이 다가오자 횃불이 꺼졌다 켜지기를 반복한다','놈의 발밑 마법진이 금이 간 채 희미하게 깜빡인다','놈은 성수 냄새에 코를 찡그린다','놈이 지나간 자리의 룬 문자가 일그러져 있다'],
+  vital:['놈은 싸우는 내내 왼쪽 옆구리를 감싼다','놈의 숨결이 일정하지 않다. 무언가를 숨기고 있다','놈의 갑옷에서 한 군데만 빛이 반사되지 않는다','놈은 등 뒤로 다가오는 것을 유난히 경계한다']};
+const SK_USES=2;
+function hashRng(s,k){return rng(mixSeed((s.hero.seed>>>0)||1,k>>>0));}
+// 일반 몬스터의 약점은 이름으로 정해진다 (모든 판에서 같다)
+function monWeak(name){let h=0;const x=String(name).replace(/ \(\d+회차\)$/,'').replace(/^되살아난 /,'').replace(/(의 망령)+$/,'');for(let i=0;i<x.length;i++)h=(h*31+x.charCodeAt(i))>>>0;return WK[h%4];}
+// 지배자의 기만: 그 시점 용사들의 보통 지능 정도. 단서 신뢰도 = 40% + 30% × (지능/기만 − 1), 25~70%
+function deceit(s){const st=STAGES[s.stage];if(st.endless&&st.hunt==null)return Math.round(100+(s.region+1));if(st.hunt!=null)return [20,40,60,90,120][st.hunt]||60;return [15,30,45,70,100][s.stage]||60;}
+function clueAcc(s){return clamp(0.4+0.3*(s.stats.int/Math.max(1,deceit(s))-1),0.25,0.7);}
+function bossWeak(s,n){if(n.wk&&n.wkKey===s.stage*1e4+s.region*10+(n.tries||0))return;const key=s.stage*1e4+s.region*10+(n.tries||0);const r=hashRng(s,0x57000000+key);
+  n.wkKey=key;n.wk=WK[Math.floor(r()*4)];const acc=clueAcc(s);n.clues=[0,1].map(()=>{const real=r()<acc;let w=n.wk;if(!real){const o=WK.filter(x=>x!==n.wk);w=o[Math.floor(r()*3)];}const L=WK_CLUE[w];return L[Math.floor(r()*L.length)];});n.acc=acc;}
+// 스킬 공격: 익힌 전투 스킬로 승률을 올린다 (지능이 효과를 키운다). 지역(층)마다 2번
+function skillAtk(s,n){const b=(0.08*sk(s,'blade')+0.05*sk(s,'giant')+(n.boss?0.06*sk(s,'boss'):0)+0.03*sk(s,'command'))*skAmp(s);return Math.min(0.25,b);}
+// 일반 몬스터 약점 공략: 그 능력치가 기만보다 높을수록 이득, 낮으면 손해. 모르는 약점이면 효과 절반
+function weakAdj(s,n){const w=monWeak(n.name);const v=s.stats[WK_STAT[w]]||0;const b=clamp(0.2*(v/Math.max(1,deceit(s))-1),-0.15,0.2);return (s.mk&&s.mk[n.name]>=3)?b:b*0.5;}
 function current(s){
   if(s.dead||s.over) return null;
   if(!s.queue.length){ nextRegion(s); if(s.over) return null; }
@@ -792,14 +814,24 @@ function current(s){
     n.p=clamp(p+(1-p)*n.lp,0.03,0.97); n.pf=pf; n.pt=clamp(pt+(1-pt)*n.cp,0.005,0.9); n.parts=winParts(s,n.E);
     const title=n.boss?(n.tries?`${n.name}에게 다시 도전한다. (${n.tries}번째 도전, 최대 ${n.final?finalTries(s):BOSS_TRIES}번)`:`${n.place}의 지배자, ${n.name}이(가) 앞을 막았다.`):`${n.name} ${fmtK(count)}마리의 무리를 마주했다.`;
     const hint=n.p>=0.8?'충분히 이길 만하다.':n.p>=0.68?'해볼 만한 싸움이다.':n.p>=0.55?'만만치 않은 상대다.':'이길 가능성은 떨어진다.';
-    if(n.boss&&STAGES[s.stage].endless) return {node:n,title:`${n.place}의 수문장, ${n.name}이(가) 길을 막았다.`+(n.tries?` (${n.tries}번째 도전)`:''),hint:hint+' 수문장을 쓰러뜨려야만 다음 층으로 오를 수 있다.',options:[
-      {id:'fight',label:'싸운다',prob:n.p,desc:'이기면 다음 층으로 오른다. 두 번 지면 여정이 끝난다.'}]};
-    if(n.final) return {node:n,title,hint:hint+' 마지막 지배자 앞에서는 물러설 곳도, 말로 넘어갈 길도 없다.',options:[
-      {id:'fight',label:'싸운다',prob:n.p,desc:`이기면 이 세계를 정복한다. 지면 재정비 후 다시 도전할 수 있다(최대 ${finalTries(s)}번).`}]};
-    return {node:n,title,hint,options:[
-      {id:'fight',label:'싸운다',prob:n.p,desc:`승리 시 무리를 섬멸한다. 패배하면 큰 부상을 입는다.${n.lp>=0.005?` 행운의 일격 ${(n.lp*100).toFixed(1)}% 포함.`:''}`},
+    // 스킬 공격·약점 공략
+    const skB=skillAtk(s,n),skLeft=SK_USES-((s.skUse&&s.skUse.r===s.stage*1e4+s.region)?s.skUse.n:0);n.pSk=clamp(n.p+skB,0.03,0.95);
+    const skOpt={id:'skill',label:'스킬 공격',prob:n.pSk,disabled:skB<=0||skLeft<=0,desc:skB<=0?'검술·거인 사냥·지배자 사냥·지휘 중 하나라도 익혀야 쓸 수 있다.':`익힌 전투 스킬로 몰아친다. 승률 +${Math.round(skB*100)}%p${skAmp(s)>1.0001?` (지능 증폭 +${Math.round((skAmp(s)-1)*100)}% 포함)`:''}. 이 지역에서 ${skLeft}번 남음.`};
+    let wkOpts;
+    if(n.boss){bossWeak(s,n);n.pWkHit=clamp(n.p*3,0.03,0.95);n.pWkMiss=clamp(n.p*0.5,0.01,0.95);
+      n.wkInfo=`단서 1: "${n.clues[0]}" · 단서 2: "${n.clues[1]}" · 눈썰미: 놈의 기만 ${deceit(s)} / 내 지능 ${s.stats.int} → 단서 하나가 진짜일 확률 약 ${Math.round(n.acc*100)}%`;
+      wkOpts=WK.map(w=>({id:'wk:'+w,label:`${WK_ICON[w]} ${WK_NAME[w]} 공략`,prob:null,wk:1,desc:`${WK_HOW[w]}. 맞히면 승률 ${Math.round(n.pWkHit*100)}%, 틀리면 ${Math.round(n.pWkMiss*100)}%.`}));}
+    else {const adjW=weakAdj(s,n);n.pWk=clamp(n.p+adjW,0.03,0.95);const w=monWeak(n.name);const known=s.mk&&s.mk[n.name]>=3;
+      wkOpts=[{id:'wk',label:known?`${WK_ICON[w]} ${WK_NAME[w]} 공략`:'❔ 약점 공략',prob:n.pWk,desc:known?`${WK_HOW[w]}. 그 능력치가 놈보다 높을수록 유리하고, 낮으면 오히려 불리하다.`:'아직 약점을 모른다. 효과가 절반이고, 이득일지 손해일지는 해 봐야 안다.'}];}
+    if(n.boss&&STAGES[s.stage].endless) return {node:n,title:`${n.place}의 수문장, ${n.name}이(가) 길을 막았다.`+(n.tries?` (${n.tries}번째 도전)`:''),hint:hint+' 수문장을 쓰러뜨려야만 다음 층으로 오를 수 있다.',wkInfo:n.wkInfo,options:[
+      {id:'fight',label:'기본 공격',prob:n.p,desc:'이기면 다음 층으로 오른다. 두 번 지면 여정이 끝난다.'},skOpt,...wkOpts]};
+    if(n.final) return {node:n,title,hint:hint+' 마지막 지배자 앞에서는 물러설 곳도, 말로 넘어갈 길도 없다.',wkInfo:n.wkInfo,options:[
+      {id:'fight',label:'기본 공격',prob:n.p,desc:`이기면 이 세계를 정복한다. 지면 재정비 후 다시 도전할 수 있다(최대 ${finalTries(s)}번).`},skOpt,...wkOpts]};
+    return {node:n,title,hint,wkInfo:n.wkInfo,options:[
+      {id:'fight',label:'기본 공격',prob:n.p,desc:`승리 시 무리를 섬멸한다. 패배하면 큰 부상을 입는다.${n.lp>=0.005?` 행운의 일격 ${(n.lp*100).toFixed(1)}% 포함.`:''}`},skOpt,
       {id:'flee',label:'도망간다',prob:pf,disabled:!!n.noFlee,desc:n.noFlee?'망령이 길을 막아 도망칠 수 없다.':(n.boss?'성공하면 이 지역을 포기하고 다음 지역으로 간다.':'성공하면 무리를 피해 지나간다.')+` 도망치면 사기 저하로 전투력 -10%(지배자를 쓰러뜨릴 때까지 누적${s.fleeDebuff?`, 지금 ${s.fleeDebuff}회`:''}). 실패 시 부상.`},
       {id:'talk',label:'회유한다',prob:n.pt,desc:`성공하면 싸움 없이 굴복시키고 용병으로 삼는다. 실패하면 분노한 적과 불리하게 싸운다.${n.cp>=0.005?` 매혹 ${(n.cp*100).toFixed(1)}% 포함.`:''}`},
+      ...wkOpts,
     ]};
   }
   if(n.type==='skill'){return {node:n,title:n.sure?'의뢰인이 비전을 전수한다.':'새로운 기술을 익힐 때가 왔다.',hint:n.sure?'셋 중 하나를 고른다. 이번 습득은 반드시 성공한다.':`셋 중 하나를 고른다. 기본 확률은 기술마다 55~85%로 다르다. 여기에 행운 5당 +2%p(지금 +${Math.round(skillRate(s).luck*100)}%p)${s.insight?`, 깨달음 ${s.insight}개 +${s.insight*5}%p`:''}가 더해진다(최대 95%). 실패하면 기회는 사라지고 깨달음이 쌓인다. 같은 기술은 ${SK_MAX}랭크까지, 한 계열에서는 서로 다른 기술 ${ROLE_MAX}종까지 익힐 수 있다.${WORLD_TRAITS[worldOf(s.stage)]?` 이 세계의 특성: ${WORLD_TRAITS[worldOf(s.stage)].name} (${WORLD_TRAITS[worldOf(s.stage)].d}).`:''}`,
@@ -980,9 +1012,16 @@ function choose(s,optId){
     if(s.r()<sr){ s.insight=0; learnSkill(s,id,out); checkCombos(s,out); text=`${SKILL_BY[id].name}을(를) 익혔다.`; s.lastEvent={ok:true,head:'스킬 습득',sub:`${SKILL_BY[id].name} ${sk(s,id)}랭크`}; }
     else { s.pendingPicks--; s.insight=(s.insight||0)+1; text=`${SKILL_BY[id].name}을(를) 익히려 했지만 실패했다. 깨달음이 쌓였다.`; out.push({t:'bad',x:`스킬 습득 실패: ${SKILL_BY[id].name} (깨달음 ${s.insight}, 다음 습득 +${s.insight*5}%p)`}); s.lastEvent={ok:false,head:'스킬 습득 실패',sub:`${SKILL_BY[id].name} · 깨달음 +1 (다음 +${s.insight*5}%p)`}; } }
   else if(n.type==='battle'){
+    if(optId==='skill'||optId==='wk'||String(optId).startsWith('wk:')){
+      if(optId==='skill'){const key=s.stage*1e4+s.region;if(!s.skUse||s.skUse.r!==key)s.skUse={r:key,n:0};s.skUse.n++;n.p=n.pSk;out.push({t:'good',x:`스킬 공격 (승률 ${Math.round(n.pSk*100)}%)`});}
+      else if(optId==='wk'){n.p=n.pWk;const w=monWeak(n.name);out.push({t:n.pWk>=n.pBase?'good':'bad',x:`약점 공략: ${WK_NAME[w]} (승률 ${Math.round(n.pWk*100)}%)`});}
+      else {const g=String(optId).slice(3);const hit=g===n.wk;n.p=hit?n.pWkHit:n.pWkMiss;s.wkTry=(s.wkTry||0)+1;if(hit)s.wkHit=(s.wkHit||0)+1;
+        out.push(hit?{t:'item g3',x:`약점을 꿰뚫었다! ${WK_ICON[g]} ${WK_NAME[g]} → 승률 ${Math.round(n.p*100)}%`}:{t:'bad',x:`빗나갔다… 약점은 ${WK_ICON[n.wk]} ${WK_NAME[n.wk]}였다 → 승률 ${Math.round(n.p*100)}%`});s.lastWk={hit,guess:g,real:n.wk};}
+      optId='fight';n.lp=0;
+    }
     if(optId==='fight'){
       if(roll<n.p){ s.lastOutcome='win'; const lucky=roll<n.lp; text=lucky?`행운의 일격! 빗나갈 칼날이 ${n.name}의 급소에 꽂혔다.`:n.pBase<0.55?`힘겨운 싸움 끝에 ${n.name}을(를) 쓰러뜨렸다.`:`${n.name}을(를) 무찔렀다.`; if(lucky) out.push({t:'item g2',x:'행운의 일격'});
-        winRewards(s,n,n.p,out); hurt(s,(0.06+0.3*(1-n.p))*(0.6+r()*0.8),out); out.unshift({t:'kill',x:`+${n.share.toFixed(2)}%`}); }
+        winRewards(s,n,n.p,out); hurt(s,(0.06+0.3*(1-n.p))*(0.6+r()*0.8),out); out.unshift({t:'kill',x:`+${n.share.toFixed(2)}%`}); if(!n.boss){s.mk=s.mk||{};s.mk[n.name]=(s.mk[n.name]||0)+1;if(s.mk[n.name]===3)out.push({t:'good',x:`${n.name}의 약점을 알아냈다: ${WK_ICON[monWeak(n.name)]} ${WK_NAME[monWeak(n.name)]}`,weakFound:n.name});} }
       else { s.lastOutcome='lose'; text=`${n.name}에게 패해 물러났다.`; {const fl=n.boss?2:1; s.fame-=fl; out.push({t:'bad',x:`명성 -${fl}`});} hurt(s,n.final?Math.min(0.5,(0.2+0.4*(1-n.p))*(0.8+r()*0.4)):(0.22+0.8*(1-n.p))*(0.7+r()*0.6)*(n.boss?1.25:1),out); loseAllies(s,out,1+Math.floor(r()*(n.boss?3:2))); bossRetry(s,n,out); questFail(s,n,out); }
     } else if(optId==='flee'){
       const fl=sk(s,'flee')?0:n.boss?3:1; s.fame-=fl;
@@ -1122,7 +1161,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.11.1';
+const ENGINE_VERSION='1.12.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1206,6 +1245,11 @@ function floorOf(s){return STAGES[s.stage].endless?Math.max(1,s.region+1):0;}
 function autoChoice(s,c){
   const n=c.node;
   if(n.type==='battle'){
+    const opts=c.options;const skOk=opts.some(o=>o.id==='skill'&&!o.disabled);
+    // 지배자: 승률이 30% 미만이면 단서를 따라 약점 공략 (두 단서가 같으면 그것, 다르면 첫 단서)
+    if(n.boss&&n.wk&&n.p<0.30){const pick=w=>WK.find(x=>WK_CLUE[x].includes(w));return 'wk:'+(pick(n.clues[0])||'dull');}
+    if(skOk&&n.p<0.75&&(n.boss||n.p<0.6)) return 'skill';
+    if(!n.boss&&n.pWk!=null&&s.mk&&s.mk[n.name]>=3&&n.pWk>n.p+0.03) return 'wk';
     if(n.final||(n.boss&&STAGES[s.stage].endless)) return 'fight';
     const hpf=s.hp/s.maxHp;
     const evFight=n.p, evTalk=n.pt+(1-n.pt)*n.p*0.7*0.6;
@@ -1261,5 +1305,5 @@ function isImportant(s,c,mode){
   return n.boss || n.p<0.6 || (s.hp/s.maxHp<0.35 && n.p<0.8);
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
-globalThis.FateEngine={ENDLESS_MON,HBUFF,applyHouseBuff,intXp,skAmp,mercPer,COMBO_PLUS,itemTxt,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={ENDLESS_MON,HBUFF,applyHouseBuff,HEROINES,FRIENDS,PETS,SPOUSES,hpMax,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},setBaseK:v=>{BASE_K=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+globalThis.FateEngine={WK,WK_NAME,WK_STAT,WK_ICON,monWeak,deceit,clueAcc,ENDLESS_MON,HBUFF,applyHouseBuff,intXp,skAmp,mercPer,COMBO_PLUS,itemTxt,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
+if(typeof module!=='undefined') module.exports={WK,WK_NAME,monWeak,deceit,clueAcc,ENDLESS_MON,HBUFF,applyHouseBuff,HEROINES,FRIENDS,PETS,SPOUSES,hpMax,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},setBaseK:v=>{BASE_K=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
