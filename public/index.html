@@ -1427,7 +1427,7 @@ function acctRender(){{const cb=$('chronBtn');if(cb)cb.innerHTML=acctOn()&&HOUSE
   const B=$('acctBody');if(!B||$('acctModal').hidden)return;
   if(acctOn()){const at=store.get('chronSyncAt',0);
     B.innerHTML=`<p class="lead">${esc(AUTH.email)} 으로 로그인했다. 연대기(도감·업적·칭호)가 서버에 저장되어 다른 기기에서도 이어진다.</p>
-      <div class="rankBox"><b>닉네임</b>${PROF&&PROF.nickname?`<div class="msg">「<b style="color:var(--brass)">${esc(PROF.nickname)}</b>」 · 이 닉네임은 내 것이다. 다른 사람은 이 닉네임으로 랭킹에 등록할 수 없다.</div>`
+      <div class="rankBox"><b>닉네임</b>${PROF&&PROF.nickname?`<div class="msg">「<b style="color:var(--brass)">${esc(PROF.nickname)}</b>」 · 이 닉네임은 내 것이다. 다른 사람은 이 닉네임으로 랭킹에 등록할 수 없다.</div><div class="row"><input id="acNick" maxlength="12" placeholder="새 닉네임 (최대 12자)" value=""><button class="btn ghost" type="button" id="acNickGo">닉네임 바꾸기</button></div><div class="msg" id="acNickMsg">바꾸면 예전 닉네임은 놓아준다. 이미 올라간 랭킹 기록의 이름은 그대로 남는다.</div>`
         :`<div class="msg">랭킹에 쓸 닉네임을 정하면 내 것이 된다.</div><div class="row"><input id="acNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(store.get('nick',''))}"><button class="btn" type="button" id="acNickGo">이 닉네임으로 정하기</button></div><div class="msg" id="acNickMsg"></div>`}</div>
       <div class="rankBox"><b>가문</b>${HOUSE?`<div class="row">${crestHtml(HOUSE,40)}<b style="color:${HOUSE.color1}">${esc(HOUSE.name)}</b><button class="btn ghost" type="button" id="acHouse">가문 고치기</button></div>`:`<div class="msg">아직 가문이 없다.</div><button class="btn" type="button" id="acHouse">가문 세우기</button>`}</div>
       <p class="msg" style="color:var(--muted);font-size:13px">연대기 마지막 저장: ${at?new Date(at).toLocaleString():'아직 없음'}</p>
@@ -2118,7 +2118,7 @@ function rankBoxHtml(){
   if(runLog[0][2]!==0) return `<div class="rankBox"><div class="msg">랭킹에는 지상계에서 태어나 시작한 용사만 오른다.</div></div>`;
   const nick=store.get('nick','');
   return `<div class="rankBox"><b>랭킹에 등록</b><div class="msg">서버가 이 용사의 모든 행동을 처음부터 다시 재생해 결과를 검증한다. 같은 용사는 마지막 등록 기록으로 갱신된다.</div>
-    <div class="row"><input id="rankNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="rankSubmit">등록</button><button class="btn ghost" type="button" id="rankOpen2">랭킹 보기</button></div>
+    <div class="row"><input id="rankNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' title="가입한 계정의 닉네임. 바꿔서 등록하면 계정 닉네임도 함께 바뀐다"':''}><button class="btn" type="button" id="rankSubmit">등록</button><button class="btn ghost" type="button" id="rankOpen2">랭킹 보기</button></div>
     ${wbEstHtml()}<div class="msg" id="rankMsg"></div><div class="wRes" id="rankWorld"></div></div>`;
 }
 function inEndless(){return !!(run&&!run.dead&&(run.stage===5||run.huntFrom===5));}
@@ -2128,7 +2128,7 @@ function worldBoxHtml(){
   if(!runToken||!runLog||runLog[0][2]!==0) return '<div class="rankBox"><div class="msg">서버가 발급한, 지상계에서 시작한 용사만 월드랭킹에 오른다.</div></div>';
   const fl=run.maxFloorE||0,ms=Math.floor(fl/5);const nick=store.get('nick','');
   return `<div class="rankBox"><b>월드랭킹 등록 · 대전</b><div class="msg">지금까지 최고 ${fl}층 → 대전 ${ms}회 분량. 서버가 기록을 처음부터 다시 재생해 검증한 뒤, 아직 치르지 않은 5층 단위 대전을 한꺼번에 치른다. 등록한 시점의 카드가 다른 용사들의 상대가 된다.</div>
-    <div class="row"><input id="wNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="wSubmit">등록하고 대전</button><button class="btn ghost" type="button" id="wOpen">월드랭킹 보기</button></div>
+    <div class="row"><input id="wNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||nick)}" autocomplete="nickname"${nickLocked()?' title="가입한 계정의 닉네임. 바꿔서 등록하면 계정 닉네임도 함께 바뀐다"':''}><button class="btn" type="button" id="wSubmit">등록하고 대전</button><button class="btn ghost" type="button" id="wOpen">월드랭킹 보기</button></div>
     <div class="msg" id="wMsg"></div><div class="wRes" id="wRes"></div></div>`;
 }
 function bindWorldBox(){const b=$('wSubmit');if(b)b.onclick=()=>submitRun('w');const o=$('wOpen');if(o)o.onclick=()=>{closeDuel();openRank('world');};}
@@ -2147,6 +2147,9 @@ let lastSubmitted=null;
 async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w':BS?'b':'rank';
   const nick=($(P+'Nick').value||'').trim().slice(0,12);const msg=$(P+'Msg');
   if(!nick){msg.className='msg err';msg.textContent='닉네임을 입력해 주세요.';return;}
+  // 가입한 사람이 닉네임을 바꿔 적었으면 계정 닉네임부터 바꾼다 (다른 사람이 쓰는 이름이면 거절)
+  if(acctOn()&&PROF&&PROF.nickname&&nick!==PROF.nickname){msg.className='msg';msg.textContent='닉네임을 바꾸는 중…';const c=await rpc('claim_nickname',{p_nick:nick});
+    if(!(c&&c.ok)){msg.className='msg err';msg.textContent=(c&&c.error)||'닉네임을 바꾸지 못했다';return;}PROF={...PROF,nickname:c.nickname};store.set('prof',PROF);acctRender();}
   store.set('nick',nick);const btn=$(P+'Submit');btn.disabled=true;const pct0=WB?wbPct(WB):null;msg.className='msg';msg.textContent='서버에서 기록을 검증하는 중…';
   try{const r=await fetch(RANK.url+'/functions/v1/submit-run',{method:'POST',headers:await userHeaders(),body:JSON.stringify({version:ENGINE_VERSION,seed:heroSeed,token:runToken.token,ts:runToken.ts,nickname:nick,title:chRepTitle(),log:runLog,attack:BS,...(runToken.batch?{batch:runToken.batch}:{})})});
     const j=await r.json().catch(()=>({}));
@@ -2307,7 +2310,7 @@ async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p c
      ${wbHpHtml(pct,cur.killed,true)}
      <div class="wbNums">${cur.started?`<span>생명력 <b>${fmt(cur.left)}</b> / ${fmt(cur.hpMax)}</span><span>참여 <b>${cur.players}</b>명</span><span>${cur.killed?`토벌 완료 · 마지막 일격 <b>${esc(cur.lastHit||'')}</b>`:`${pct.toFixed(1)}% 남음`}</span>`:'<span>아직 아무도 공격하지 않았다. 생명력은 첫 등록 때 정해진다.</span>'}</div></div></div>
    <div class="wbMine"><b class="wbAtkH">⚔ 공격하기</b> ${e?`지금 용사를 등록하면 약 <b>${fmt(e.dmg)}</b> 피해 · 처치 ${fmt(e.kills)}${e.W>1?` · ${esc(cur.boss.world)}에 닿아 ×1.5`:` · ${esc(cur.boss.world)}에 닿으면 ×1.5`}`:'용사를 출정시킨 뒤 여기서 등록하면 이 보스에게 피해를 준다.'}
-     ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||store.get('nick',''))}" autocomplete="nickname"${nickLocked()?' readonly title="가입한 계정의 닉네임"':''}><button class="btn" type="button" id="bSubmit" ${wbNextAt()?'disabled':''}>${wbNextAt()?`⏳ ${wbWaitTxt()} 뒤 공격 가능`:run.dead?'마지막 공격 (랭킹 등록)':'이 용사로 공격 (랭킹 등록)'}</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
+     ${wbCanAttack()?`<div class="row" style="margin-top:8px"><input id="bNick" maxlength="12" placeholder="닉네임 (최대 12자)" value="${esc(nickLocked()||store.get('nick',''))}" autocomplete="nickname"${nickLocked()?' title="가입한 계정의 닉네임. 바꿔서 등록하면 계정 닉네임도 함께 바뀐다"':''}><button class="btn" type="button" id="bSubmit" ${wbNextAt()?'disabled':''}>${wbNextAt()?`⏳ ${wbWaitTxt()} 뒤 공격 가능`:run.dead?'마지막 공격 (랭킹 등록)':'이 용사로 공격 (랭킹 등록)'}</button></div><div class="msg ok" id="bMsg">${esc(WB_MSG)}</div>`
        :`<div class="msg" style="margin-top:6px;color:var(--muted)">${cur.fake?'서버에 연결된 공개 페이지에서 공격할 수 있다.':!run?'먼저 「이 운명으로 출정」을 눌러 용사를 내보내자.':'이 용사는 지상계에서 서버 연결로 시작한 용사가 아니라 공격할 수 없다.'}</div>`}
      <small style="color:var(--muted)">살아 있는 용사는 1시간에 한 번 공격할 수 있고, 그사이 늘어난 처치만큼 피해가 들어간다. 쓰러진 용사의 마지막 등록은 언제든 피해가 들어간다(보상 없음). 등록하면 용사 랭킹에도 올라간다.</small><br><small style="color:var(--muted)">피해 = 100 × √(이번 주 같은 닉네임으로 등록한 처치 수 합계), 한 주 최대 ${fmt(WB_CAP)}. 같은 용사를 다시 등록하면 늘어난 만큼만 더해진다.</small></div>
    ${wbPreviewHtml(e)}
