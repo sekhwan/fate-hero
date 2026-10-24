@@ -81,11 +81,18 @@ Deno.serve(async (req) => {
     const want = m ? { vault: +m[1], arms: +m[2], bless: +m[3], train: +m[4], name: +m[5] } : null;
     const sum = want ? Object.values(want).reduce((a, b) => a + b, 0) : 0;
     if (verified.legacy && !want) return json({ error: '유산 기록 형식이 맞지 않는다' }, 400);
-    if (sum > 0) {
-      if (!userId) return json({ error: '유산은 로그인한 가문만 쓸 수 있다' }, 400);
-      const hr = await fetch(restUrl(`houses?owner=eq.${userId}&select=legacy`), { headers: adminHeaders() });
-      const own = hr.ok ? ((await hr.json())[0]?.legacy ?? {}) : {};
-      for (const [k, v] of Object.entries(want!)) if (v > (Number(own[k]) || 0)) return json({ error: '가문이 가진 유산보다 높은 유산 기록이다' }, 400);
+    // 가문 순위 효과: 판을 시작한 시각(토큰 발급 시각) 기준으로 그 사람의 가문이 받는 효과와 같아야 한다
+    const hb = /^h([1-4])$/.exec(verified.hbuff || '');
+    if (verified.hbuff && !hb) return json({ error: '가문 순위 효과 기록 형식이 맞지 않는다' }, 400);
+    if (sum > 0 || hb) {
+      if (!userId) return json({ error: '유산과 가문 효과는 로그인한 가문원만 쓸 수 있다' }, 400);
+      const at = new Date(Number((body as Record<string, unknown>)?.ts) || Date.now()).toISOString();
+      const ir = await fetch(restUrl('rpc/user_house_info'), { method: 'POST', headers: adminHeaders(), body: JSON.stringify({ p_user: userId, p_at: at }) });
+      const info = ir.ok ? await ir.json() : null;
+      if (!info) return json({ error: '가문에 속해 있지 않다' }, 400);
+      const own = info.legacy ?? {};
+      for (const [k, v] of Object.entries(want ?? {})) if (v > (Number(own[k]) || 0)) return json({ error: '가문이 가진 유산보다 높은 유산 기록이다' }, 400);
+      if (hb && (!info.eligible || Number(hb[1]) !== Number(info.tier))) return json({ error: '이 판을 시작할 때 가문이 받던 순위 효과와 다르다' }, 400);
     }
     (verified.row as Record<string, unknown>).legacy_lv = sum;
   }
