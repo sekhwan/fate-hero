@@ -99,7 +99,11 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 #wbFx.on{display:flex;animation:gbIn .3s ease-out}
 #wbFx .wbFxIn{width:min(760px,94vw);text-align:center;padding:16px}
 #wbFx .wbFxBoss{position:relative;width:clamp(170px,34vmin,300px);height:clamp(170px,34vmin,300px);margin:0 auto}
-#wbFx .wbFxBoss img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 24px #ff4a2a)}
+#wbFx .wbFxBoss>img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 24px #ff4a2a)}
+#wbFx{background:radial-gradient(ellipse at 50% 35%,rgba(74,18,16,.55) 0,rgba(26,6,6,.8) 55%,rgba(5,2,2,.95) 100%),url('art/wb/wb_bg.webp') center/cover!important}
+#wbFx .wbFxBoss .wb3d{--sz:100%;-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%)}
+#wbFx .wbFxBoss{width:clamp(200px,44vmin,380px)!important;height:clamp(200px,44vmin,380px)!important}
+#wbFx.hit .wbFxBoss .wb3d{animation:wbBossHit .5s}
 #wbFx.hit .wbFxBoss img{animation:wbBossHit .5s}
 @keyframes wbBossHit{0%{transform:none;filter:drop-shadow(0 0 24px #ff4a2a)}15%{transform:translate(-10px,4px) rotate(-3deg);filter:brightness(3) drop-shadow(0 0 30px #fff)}35%{transform:translate(9px,-3px) rotate(2deg)}60%{transform:translate(-5px,2px)}100%{transform:none}}
 #wbFx .sl{position:absolute;left:-10%;top:50%;width:120%;height:6px;background:linear-gradient(90deg,transparent,#fff 40%,#ffd0a0 60%,transparent);box-shadow:0 0 18px #ff8a4a;opacity:0;transform-origin:center}
@@ -473,6 +477,18 @@ h2{font-family:var(--display);font-weight:400;font-size:22px;margin:40px 0 10px}
 .wbArt{width:150px;height:150px;flex:none;background:radial-gradient(circle at 50% 60%,#4a1a14,#14121a 70%);border:1px solid #6b2a22;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .wbArt img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 12px #d8533b88)}
 .wbArt.dead img{filter:grayscale(1) brightness(.5)}
+.wbArt.big3d{width:220px;height:220px;background:linear-gradient(rgba(20,8,8,.35),rgba(10,4,4,.6)),url('art/wb/wb_bg.webp') center/cover;overflow:hidden}
+.wb3d{--sz:100%;--px:0;--py:0;position:relative;width:var(--sz);height:var(--sz);perspective:700px}
+.wb3d .wl{position:absolute;inset:0;transform-style:preserve-3d;transform:rotateY(calc(var(--px)*7deg)) rotateX(calc(var(--py)*-6deg));transition:transform .3s ease-out}
+.wb3d img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:transform .3s ease-out}
+.wb3d .wbk{transform:translate3d(calc(var(--px)*-5px),calc(var(--py)*-4px),-30px) scale(1.06);animation:wbDrift 9s ease-in-out infinite alternate;filter:brightness(.85)}
+.wb3d .wbb{transform:translate3d(calc(var(--px)*3px),calc(var(--py)*2px),0);animation:wbBreath 3.6s ease-in-out infinite}
+.wb3d .wbf{transform:translate3d(calc(var(--px)*9px),calc(var(--py)*7px),35px);animation:wbSway 5s ease-in-out infinite alternate;filter:drop-shadow(0 8px 10px #000a)}
+@keyframes wbBreath{0%,100%{scale:1}50%{scale:1.025}}
+@keyframes wbDrift{from{translate:-1.5% 0}to{translate:1.5% -1%}}
+@keyframes wbSway{from{translate:0 0;rotate:-.6deg}to{translate:0 -1.2%;rotate:.6deg}}
+.wbArt.dead .wb3d img{animation:none;filter:grayscale(1) brightness(.45)}
+@media (prefers-reduced-motion:reduce){.wb3d img{animation:none!important}}
 .wbInfo{flex:1;min-width:0}
 .wbInfo h3{margin:0 0 2px!important;font-size:22px!important;color:#ffb08a!important}
 .wbInfo .wbSub{color:var(--muted);font-size:13px}
@@ -2180,6 +2196,15 @@ async function loadRank(){
 // ===== 월드 보스 (1단계: 화면 미리보기. 수치는 가짜이고 서버와 연결되지 않는다) =====
 // 매주 월요일 0시(한국 시간)에 다섯 세계의 마지막 지배자가 차례로 나온다. 피해 = 100 × √(닉네임별 이번 주 Σ 처치 수 × W), W는 보스의 출신 세계에 닿았으면 1.5
 const WB_BOSSES=[['케르베로스','지상계'],['하데스의 섭정','지하 세계'],['칠대죄의 합일체','마계'],['태초의 악','심연'],['악의 근원','공허의 옥좌']];
+// 월드 보스 3겹 그림 (뒤·몸통·앞). 마우스·손가락을 따라 겹마다 다르게 움직여 입체감을 낸다.
+const WB_ART={'케르베로스':'kerberos','하데스의 섭정':'hades','칠대죄의 합일체':'sins','태초의 악':'primal','악의 근원':'origin'};
+function wbArtHtml(name,cls){const k=WB_ART[name];if(!k){const m=MON_IMG[name];return m?`<img src="mon/m${m}.webp" alt="">`:'';}
+  return `<div class="wb3d ${cls||''}" data-wbt="1"><div class="wl"><img class="wbk" src="art/wb/wb_${k}_back.webp" alt=""><img class="wbb" src="art/wb/wb_${k}_body.webp" alt="${esc(name)}"><img class="wbf" src="art/wb/wb_${k}_front.webp" alt=""></div></div>`;}
+// 화면에 있는 월드 보스 그림 모두: 포인터가 그 그림을 담은 영역 안에 있으면 따라 기울이고, 벗어나면 제자리로
+{const mv=e=>{const p=e.touches?e.touches[0]:e;if(!p)return;document.querySelectorAll('[data-wbt]').forEach(el=>{const A=el.closest('.wbTop,.wbFxIn')||el;const a=A.getBoundingClientRect();
+  if(p.clientX<a.left||p.clientX>a.right||p.clientY<a.top||p.clientY>a.bottom){el.style.setProperty('--px',0);el.style.setProperty('--py',0);return;}
+  const r=el.getBoundingClientRect();const x=Math.max(-1,Math.min(1,((p.clientX-r.left)/r.width-0.5)*2)),y=Math.max(-1,Math.min(1,((p.clientY-r.top)/r.height-0.5)*2));el.style.setProperty('--px',x.toFixed(3));el.style.setProperty('--py',y.toFixed(3));});};
+  document.addEventListener('mousemove',mv,{passive:true});document.addEventListener('touchmove',mv,{passive:true});}
 const WB_DAY=864e5,WB_KST=9*3600e3,WB_CAP=200000;
 function wbWeek(t){const k=(t||Date.now())+WB_KST;const day=Math.floor(k/WB_DAY);const dow=(day+3)%7;const s=(day-dow)*WB_DAY;const idx=Math.floor(s/(7*WB_DAY));return {idx,start:s-WB_KST,end:s-WB_KST+7*WB_DAY};}
 function wbBoss(idx){const [name,world]=WB_BOSSES[((idx%5)+5)%5];return {name,world,wi:((idx%5)+5)%5};}
@@ -2235,7 +2260,7 @@ function wbAttackFx(pct0,B,rw){const p1=B.hp_max?Math.max(0,B.hp_left)/B.hp_max*
   const cards=rw?rw.got.map((g,i)=>g.myth?`<div class="wbCard myth" style="--i:${i}"><div class="ic">${mythArtHtml(MYTH_BY[g.myth],'sm')}</div><b>신화</b><span>${esc(g.name)}</span><em>PvP +${g.v}</em></div>`
      :`<div class="wbCard g${g.it.grade}" style="--i:${i}"><div class="ic">${itemIcon(g.it)}</div><b>${g.it.grade>=3?'전설 +7':'영웅'}</b><span>${esc(itemName(g.it))}</span><em>${esc(itemDesc(g.it))}${g.kept?(g.spare?' · 예비로 보관':' · 착용'):' · 더 좋은 장비가 있어 판매'}</em></div>`).join(''):'';
   const note=rw?`오늘 남은 보상 ${rw.left}번`:B.reward_reason==='daily_limit'?'오늘 받을 수 있는 보상 3번을 모두 받았다 (피해는 들어갔다)':'';
-  o.className='on';o.innerHTML=`<div class="wbFxIn"><div class="wbFxBoss">${k?`<img src="mon/m${k}.webp" alt="">`:''}<i class="sl s1"></i><i class="sl s2"></i><i class="sl s3"></i></div>
+  o.className='on';o.innerHTML=`<div class="wbFxIn"><div class="wbFxBoss">${wbArtHtml(B.boss,'fx')}<i class="sl s1"></i><i class="sl s2"></i><i class="sl s3"></i></div>
     <div class="wbFxDmg">-<b>0</b></div><div class="wbFxTxt">${esc(B.boss)}의 생명력 <b>${fmt(B.delta)}</b>을 깎았다!</div>
     <div class="wbFxBar"><span class="wbHp wbBig"><b style="width:${pct0==null?p1:pct0}%"></b><i style="width:${pct0==null?p1:pct0}%"></i><em></em></span><small>남은 생명력 ${fmt(B.hp_left)} / ${fmt(B.hp_max)} · 이번 주 내 피해 ${fmt(B.damage)} · ${B.rank}위</small></div>
     ${B.killed_now?'<div class="wbFxKill">⚡ 최후의 일격! ⚡</div>':''}
@@ -2271,7 +2296,7 @@ async function renderWbBar(force){const b=$('wbBar');if(!b)return;const cur=awai
 async function renderBossBox(){const box=$('bossBox');if(!WB)box.innerHTML='<p class="msg">불러오는 중…</p>';const cur=await wbLoad(true);if(rankCol!=='boss')return;const pct=wbPct(cur);const e=wbMyEst(cur);const k=MON_IMG[cur.boss.name];
   const hist=cur.hist.length?cur.hist.map(h=>`<span class="${h.killed?'ok':'no'}" title="${h.killed?'토벌 성공 · 마지막 일격 '+esc(h.lastHit||''):'보스 도주'}">${esc(h.name)} ${h.killed?'✓':'✕'}</span>`).join(''):'<span>아직 지난 토벌이 없다</span>';
   box.innerHTML=`<p class="msg" style="color:var(--muted);margin:0 0 8px">${cur.fake?'⚠ 화면 미리보기다. 아래 숫자와 순위는 모두 가짜다 (서버에 연결된 공개 페이지에서는 실제 기록이 나온다).':'시범 운영 중이다. 정식 출시 때 월드 보스 기록과 칭호는 초기화된다.'}</p>
-   <div class="wbTop"><div class="wbArt ${cur.killed?'dead':''}">${k?`<img src="mon/m${k}.webp" alt="${esc(cur.boss.name)}">`:''}</div>
+   <div class="wbTop"><div class="wbArt big3d ${cur.killed?'dead':''}">${wbArtHtml(cur.boss.name)}</div>
     <div class="wbInfo"><h3>세계를 삼키는 ${esc(cur.boss.name)}</h3><div class="wbSub">${esc(cur.boss.world)}의 마지막 지배자 · 매주 월요일 0시 교대 · ${wbLeft(cur.end-Date.now())}</div>
      ${wbHpHtml(pct,cur.killed,true)}
      <div class="wbNums">${cur.started?`<span>생명력 <b>${fmt(cur.left)}</b> / ${fmt(cur.hpMax)}</span><span>참여 <b>${cur.players}</b>명</span><span>${cur.killed?`토벌 완료 · 마지막 일격 <b>${esc(cur.lastHit||'')}</b>`:`${pct.toFixed(1)}% 남음`}</span>`:'<span>아직 아무도 공격하지 않았다. 생명력은 첫 등록 때 정해진다.</span>'}</div></div></div>
