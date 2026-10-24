@@ -102,7 +102,13 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 #wbFx .wbFxBoss>img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 24px #ff4a2a)}
 #wbFx{background:radial-gradient(ellipse at 50% 35%,rgba(74,18,16,.55) 0,rgba(26,6,6,.8) 55%,rgba(5,2,2,.95) 100%),url('art/wb/wb_bg.webp') center/cover!important}
 #wbFx .wbFxBoss .wb3d{--sz:100%;-webkit-mask-image:radial-gradient(closest-side,#000 70%,transparent 100%);mask-image:radial-gradient(closest-side,#000 70%,transparent 100%)}
-#wbFx .wbFxBoss{width:clamp(200px,44vmin,380px)!important;height:clamp(200px,44vmin,380px)!important}
+/* 보스가 화면의 2/3 이상을 채운다: 글자 뒤에 크게 깔고, 숫자·보상은 그 위에 겹친다 */
+#wbFx{--bs:max(min(94vw,86vh),min(64vh,170vw))}
+#wbFx .wbFxBoss{position:fixed!important;left:50%;top:max(0px,calc(50% - var(--bs)*0.62));transform:translateX(-50%);width:var(--bs)!important;height:var(--bs)!important;margin:0!important;z-index:0;pointer-events:none}
+#wbFx .wbFxIn{position:relative;z-index:1;padding-top:max(16px,calc(var(--bs)*0.5))}
+#wbFx .wbFxIn>*:not(.wbFxBoss){position:relative;z-index:1}
+#wbFx .wbFxIn>*:not(.wbFxBoss):not(.wbCards){text-shadow:0 2px 6px #000,0 0 18px #000}
+#wbFx .wbFxBoss .wb3d{-webkit-mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)!important;mask-image:radial-gradient(closest-side,#000 62%,transparent 100%)!important}
 #wbFx.hit .wbFxBoss .wb3d{animation:wbBossHit .5s}
 #wbFx.hit .wbFxBoss img{animation:wbBossHit .5s}
 @keyframes wbBossHit{0%{transform:none;filter:drop-shadow(0 0 24px #ff4a2a)}15%{transform:translate(-10px,4px) rotate(-3deg);filter:brightness(3) drop-shadow(0 0 30px #fff)}35%{transform:translate(9px,-3px) rotate(2deg)}60%{transform:translate(-5px,2px)}100%{transform:none}}
@@ -132,7 +138,7 @@ button:focus-visible,input:focus-visible+span{outline:2px solid var(--brass);out
 #wbFx .wbFxOk{margin-top:16px;font:inherit;font-size:17px;font-weight:700;padding:11px 46px;border-radius:8px;border:0;cursor:pointer;color:#2a1a00;background:linear-gradient(180deg,#ffe27a,#f0b232);box-shadow:0 3px 0 #8a5a12;opacity:0;pointer-events:none}
 #wbFx.done .wbFxOk{opacity:1;pointer-events:auto}
 .wbAtk.cd{animation:none;background:#3a2a2a;border-color:#6b4a40;color:#d8c0b0}
-@media (max-width:640px){#wbFx .wbFxBoss{width:130px;height:130px}#wbFx .wbCards{gap:6px;flex-wrap:nowrap}#wbFx .wbCard{width:calc(33% - 4px);padding:8px 4px}#wbFx .wbCard .ic img{width:40px;height:40px}#wbFx .wbCard span{font-size:12px}#wbFx .wbCard em{font-size:11px}}
+@media (max-width:640px){#wbFx .wbCards{gap:6px;flex-wrap:nowrap}#wbFx .wbCard{width:calc(33% - 4px);padding:8px 4px}#wbFx .wbCard .ic img{width:40px;height:40px}#wbFx .wbCard span{font-size:12px}#wbFx .wbCard em{font-size:11px}}
 @media (prefers-reduced-motion:reduce){#wbFx *{animation-duration:.01s!important;transition-duration:.01s!important}}
 /* 신화 아이템 입체 그림 */
 .m3d{--sz:220px;width:var(--sz);height:var(--sz);perspective:700px;position:relative;margin:0 auto}
