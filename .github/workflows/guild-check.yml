@@ -1,0 +1,55 @@
+# 가문 가입 제도 점검: 시험 계정 두 개로 가문 세우기 → 가입 신청 → 승인 → 명단 → 떠나기를 실제 서버에서 돌리고 지운다. 결과는 guild-check-out 브랜치에.
+name: guild-check
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: check
+        run: |
+          set +e
+          mkdir -p out
+          KEYS=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json)
+          ANON=$(echo "$KEYS" | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
+          SERVICE=$(echo "$KEYS" | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          B="https://$PROJECT_REF.supabase.co"
+          AH=(-H "apikey: $SERVICE"); case "$SERVICE" in eyJ*) AH+=(-H "Authorization: Bearer $SERVICE");; esac
+          su() { curl -sS -X POST "$B/auth/v1/signup" -H "apikey: $ANON" -H "Content-Type: application/json" -d "{\"email\":\"$1\",\"password\":\"1234~fate-hero\"}"; }
+          rpc() { curl -sS -X POST "$B/rest/v1/rpc/$2" -H "apikey: $ANON" -H "Authorization: Bearer $1" -H "Content-Type: application/json" -d "$3"; }
+          S=$(date +%s)
+          RA=$(su "guildA+$S@example.com"); TA=$(echo "$RA" | jq -r .access_token); UA=$(echo "$RA" | jq -r '.user.id // .id')
+          RB=$(su "guildB+$S@example.com"); TB=$(echo "$RB" | jq -r .access_token); UB=$(echo "$RB" | jq -r '.user.id // .id')
+          {
+          echo "claimA $(rpc $TA claim_nickname '{"p_nick":"ga'$((S%100000))'"}')"
+          echo "claimB $(rpc $TB claim_nickname '{"p_nick":"gb'$((S%100000))'"}')"
+          C=$(rpc $TA save_house '{"p_name":"시험'$((S%10000))'","p_crest":{"shape":1,"sym":2},"p_crest_url":null,"p_color1":"#c9a040","p_color2":"#3a1a1a"}'); echo "create $C"
+          HID=$(echo "$C" | jq -r .id)
+          echo "join $(rpc $TB house_join '{"p_house":'$HID'}')"
+          echo "apps $(rpc $TA my_house '{}' | jq -c '.apps|map(.nickname)')"
+          echo "decide $(rpc $TA house_decide '{"p_user":"'$UB'","p_ok":true}')"
+          echo "roster $(curl -sS -X POST "$B/rest/v1/rpc/house_roster" -H "apikey: $ANON" -H "Content-Type: application/json" -d '{"p_house":'$HID'}' | jq -c 'map({nickname,role})')"
+          echo "b my_house $(rpc $TB my_house '{}' | jq -c '{role,people,tier,eligible}')"
+          echo "b buy (member) $(rpc $TB buy_legacy '{"p_key":"vault"}')"
+          echo "elder $(rpc $TA house_set_role '{"p_user":"'$UB'","p_role":"elder"}')"
+          echo "rank $(curl -sS "$B/rest/v1/house_rank?id=eq.$HID&select=name,people,week_points,tier" -H "apikey: $ANON" | jq -c .)"
+          echo "b leave $(rpc $TB house_leave '{}')"
+          echo "b rejoin $(rpc $TB house_join '{"p_house":'$HID'}' | jq -c '{ok,error}')"
+          echo "a disband $(rpc $TA house_leave '{}')"
+          } > out/result.txt 2>&1
+          for U in $UA $UB; do curl -sS -X DELETE "$B/auth/v1/admin/users/$U" "${AH[@]}" -o /dev/null -w "del %{http_code}\n" >> out/result.txt; done
+          curl -sS -X DELETE "$B/rest/v1/house_left?user_id=in.($UA,$UB)" "${AH[@]}" -o /dev/null
+          cat out/result.txt
+          git config user.name check-bot; git config user.email check-bot@users.noreply.github.com
+          git checkout --orphan guild-check-out; git rm -rfq --cached . ; git add -f out; git commit -qm "guild check"; git push -f origin guild-check-out
