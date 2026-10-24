@@ -709,6 +709,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .hRoster li .role{font-size:11px;padding:1px 6px;border-radius:6px;border:1px solid var(--line);white-space:nowrap;flex:none}.hRoster li .role.r-leader{border-color:#e8a93a;color:#ffd77a}.hRoster li .role.r-elder{border-color:#8aa8d8;color:#c8d8f0}
 .hRoster li .acts{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
 .mini{display:inline-block;width:auto;flex:none;white-space:nowrap;font-size:11px;padding:2px 7px;border:1px solid var(--line);background:transparent;color:var(--fg);border-radius:4px;cursor:pointer}.mini:hover{border-color:var(--brass)}.mini.warn{border-color:#a04030;color:#ffb0a0}
+.ckSlots{margin-top:12px;display:grid;gap:6px}.ckH{font-size:12.5px;color:var(--brass)}.ckH small{color:var(--muted);margin-left:6px}.ckRow{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.ckRow .btn{flex:1;min-width:0;text-align:left}
 .legTag{font-size:10.5px;padding:0 5px;border:1px solid #6b5a30;color:#d8b860;border-radius:6px;white-space:nowrap}
 .legList{list-style:none;padding:0;margin:0 0 6px;display:grid;gap:5px}.legList li{display:flex;gap:10px;align-items:center;border:1px solid var(--line);padding:7px 10px;border-radius:4px}
 .legList li .li{font-size:22px}.legList li>div{flex:1}.legList li small{color:var(--muted)}.legList .lx{font-size:12.5px;color:var(--muted)}.legList li em{font-style:normal;color:var(--holy);font-size:13px}.legList .btn{padding:6px 12px;font-size:13px;flex:none;width:auto;min-width:84px}
@@ -1877,14 +1878,14 @@ function gambleShow(preId){if(!run||run.dead||run.over)return;const c=current(ru
 function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
   const b=$('mythBtn');if(b&&!b.dataset.arm){b.dataset.arm='1';b.textContent=`정말 바칠까? 실패하면 ${c.mats.map(i=>itemName(run.items[i])).join(', ')} 모두 사라진다 · 한 번 더 누르기`;b.classList.add('arm');setTimeout(()=>{if(b.isConnected&&b.dataset.arm){delete b.dataset.arm;b.textContent='신화 합성 시도';b.classList.remove('arm');}},4000);return;}
   const matIt=c.mats.map(i=>run.items[i]).map(it=>({ic:itemIcon(it),n:itemName(it)}));
-  const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=mythFuseSync(run,ckOk?ck.snap:null);if(!r)return;if(ckOk)store.set('ckpt',ck);logAct(['M']);TRACK.st.myth++;TRACK.ev('myth');prevStats=null;
+  const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=mythFuseSync(run,ckOk?ck.snap:null);if(!r)return;if(ckOk)ckPut(ck);logAct(['M']);TRACK.st.myth++;TRACK.ev('myth');prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
   const txt=!r.ok?`신화 합성 실패. ${r.names.join(', ')}이(가) 빛과 함께 사라졌다.`:r.upgrade?`신화 합성 성공! <b class="myName">${r.m.name}</b>이(가) 더 강하게 다시 태어났다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.v})`:r.dup?(r.nv>r.old?`신화 합성 성공! 이미 지닌 <b class="myName">${r.m.name}</b>(+${r.old})보다 약한 +${r.v}가 나왔지만, 그 힘이 스며들어 지닌 신화가 단련되었다 (PvP ${PVP_NAME[r.m.pvp]} +${r.old} → +${r.nv})`:`신화 합성 성공! 그러나 <b class="myName">${r.m.name}</b>은(는) 이미 최고 수치(+${r.old})라 더 단련되지 않았다.`):`신화 합성 성공! <b class="myName">${r.m.name}</b> (PvP ${PVP_NAME[r.m.pvp]} +${r.v})`;
   li.className=!r.ok||(r.dup&&!(r.nv>r.old))?'bad':'item g3';li.innerHTML=`<span class="t">${progTxt()}</span><div><b>${txt}</b></div>`;lg.prepend(li);
   // 결과가 드러난 뒤에 업적·도감 알림을 띄운다 (먼저 뜨면 결과를 미리 알게 된다)
   mythShow(r,matIt,()=>{if(r.ok)chAch('myth');chUpdate();});
   renderAll();}
-function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)store.set('ckpt',ck);if(!r)return;logAct(['e',idx]);chUpdate();TRACK.st.enh++;TRACK.ev(null);prevStats=null;
+function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)ckPut(ck);if(!r)return;logAct(['e',idx]);chUpdate();TRACK.st.enh++;TRACK.ev(null);prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
   let txt,cls;
   if(r.destroyed){const pw1=shownPower();txt=`+${r.from} ${r.name}이(가) 강화에 실패해 산산조각 났다.${pw1!==pw0?` 전투력 ${fmt(pw0)} → ${fmt(pw1)}`:''}`;cls='bad';}
@@ -1974,8 +1975,8 @@ function probCls(p){return p>=0.6?'hi':p>=0.25?'mid':'lo';}
 function pctTxt(p){return p<0.1?(p*100).toFixed(1):Math.round(p*100);}
 function renderStage(){
   const box=$('stage');
-  if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{const cb=$('ckptBtn');if(cb)cb.onclick=()=>loadCheckpoint();const cb1=$('ckptBtn1');if(cb1)cb1.onclick=()=>loadCheckpoint(true);}return;}
-  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;const cb=$('ckptBtn');if(cb)cb.onclick=()=>loadCheckpoint();const cb1=$('ckptBtn1');if(cb1)cb1.onclick=()=>loadCheckpoint(true);return;}
+  if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{bindCk();}return;}
+  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
   if(n.type==='battle')obTip('battle','⚔️','첫 전투','승리확률이 낮은 싸움일수록 이기면 좋은 아이템이 나온다. 불리하면 도망치거나 회유할 수도 있다.');
   if(!isImportant(run,c,mode)){
@@ -2035,6 +2036,8 @@ function breakdown(n){const w=n.parts;if(!w)return '';const P=power(run)/run.sta
 const ART_PAL=[['#7a9a4a','#4d6630','#f4e05c'],['#9c8a7a','#5e4e44','#ff6a3a'],['#a05ac8','#5e2f7c','#ffd36a'],['#3a5fa8','#1f3466','#9ff2ff'],['#2a2430','#14101a','#ffcf5a'],['#b03a2e','#5e1a14','#ffe38a']];
 function hashStr(t){let h=2166136261;for(const ch of t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 const MON_IMG={"임프": "001", "고블린": "002", "해골 병사": "003", "구울": "004", "하피": "005", "늑대인간": "006", "가고일": "007", "오우거": "008", "저주받은 기사": "009", "서큐버스": "010", "망령": "011", "재의 병사": "012", "지옥견": "013", "켄타우로스 학살자": "014", "역병 파리떼": "015", "뼈 거인": "016", "불꽃 악귀": "017", "고문관": "018", "색욕의 사도": "019", "탐식의 괴물": "020", "황금 골렘": "021", "나태의 망령": "022", "질투의 뱀": "023", "분노의 투사": "024", "교만의 천사": "025", "공허 포식자": "026", "이름 없는 것": "027", "시간의 망령": "028", "별을 삼킨 짐승": "029", "심연의 눈알": "030", "최후의 근위병": "031", "거울 속의 나": "032", "원초의 그림자": "033", "되살아난 임프 군단": "034", "망령 기사단": "035", "죄악의 화신": "036", "공허 포식자 무리": "037", "지옥견 떼": "038", "타락한 성기사단": "039", "임프 대장": "040", "타락한 촌장": "041", "바다 마귀": "042", "구미호": "043", "정글의 락샤사": "044", "라바나의 후예": "045", "이프리트": "046", "모래 골렘왕": "047", "흡혈 백작": "048", "타락한 성기사장": "049", "서리 거인": "050", "설원의 마왕": "051", "웬디고": "052", "고대 악마": "053", "케르베로스": "054", "뱃사공의 망령": "055", "자살나무 정령": "056", "재의 기사": "057", "이단 심문관": "058", "배신자들의 군주": "059", "켄타우로스 왕": "060", "파리 대왕": "061", "기만의 대공": "062", "금고지기": "063", "지옥 검투사": "064", "루시퍼의 그림자": "065", "하데스의 섭정": "066", "아스모데우스": "067", "벨제붑": "068", "맘몬": "069", "벨페고르": "070", "레비아탄": "071", "사탄": "072", "루시퍼": "073", "칠대죄의 합일체": "074", "이름 없는 자": "075", "종말의 시계공": "076", "별을 삼킨 자": "077", "바라보는 자": "078", "태초의 악": "079", "최후의 근위대장": "080", "또 하나의 나": "081", "악의 근원": "082", "영지를 습격하는 오우거 군단": "008", "금서를 훔친 리치": "066", "왕도를 위협하는 마룡": "071", "대성당 지하의 고위 악마": "053"};
+// 끝없는 전장 새 몬스터 15종 (20층마다): m083~m097
+ENDLESS_MON.forEach((n,i)=>{MON_IMG[n]=String(83+i).padStart(3,'0');});
 function monsterArt(name,st,boss){let k=MON_IMG[name],ghost=false,revived=false;
   // 사냥터의 "되살아난 ○○ (2회차)", 끝없는 전장의 "○○의 망령(의 망령)"도 원래 몬스터 그림을 쓴다
   if(!k){let x=String(name).replace(/ \(\d+회차\)$/,'');if(MON_IMG[x])k=MON_IMG[x];else{if(/^되살아난 /.test(x)){x=x.replace(/^되살아난 /,'');revived=true;}while(!MON_IMG[x]&&/의 망령$/.test(x)){x=x.replace(/의 망령$/,'');ghost=true;}k=MON_IMG[x];if(!k){ghost=false;revived=false;}}}
@@ -2289,7 +2292,7 @@ function wbNextAt(){const v=store.get('wbNext',null);return v&&v.seed===heroSeed
 function wbWaitTxt(){const ms=wbNextAt()-Date.now();if(ms<=0)return '지금';const m=Math.ceil(ms/60000);return m>=60?`${Math.floor(m/60)}시간 ${m%60}분`:`${m}분`;}
 // 서버가 정한 보상 등급(h·l·m)을 지금 용사에게 준다. 기록(W)에 남겨 다음 등록 때 서버가 지급 내역과 맞춰 본다.
 function wbApplyReward(R){if(!run||run.dead)return null;const arg=`${R.n}:${R.codes}`;const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;
-  const r=wbRewardSync(run,arg,ckOk?ck.snap:null);if(!r)return null;logAct(['W',arg]);if(ckOk)store.set('ckpt',ck);chUpdate();prevStats=null;flushCombos();renderAll();
+  const r=wbRewardSync(run,arg,ckOk?ck.snap:null);if(!r)return null;logAct(['W',arg]);if(ckOk)ckPut(ck);chUpdate();prevStats=null;flushCombos();renderAll();
   const lg=$('log');if(lg){const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');li.className='legend';
     li.innerHTML=`<span class="t">${progTxt()}</span><div><b>월드 보스 보상</b> · ${r.got.map(g=>g.myth?`<span class="item g3">신화 ${esc(g.name)}</span>`:`<span class="item g${g.it.grade}">${esc(itemName(g.it))}</span>${g.kept?'':' (판매)'}`).join(', ')}</div>`;lg.prepend(li);}
   r.left=R.left;store.set('wbRw',{seed:heroSeed,day:new Date(Date.now()+WB_KST).toISOString().slice(0,10),left:R.left});return r;}
@@ -2366,9 +2369,15 @@ async function renderHouseRank(){const box=$('bossBox');if(!RANK.on){box.innerHT
   box.querySelectorAll('[data-hid]').forEach(b=>b.onclick=async()=>{const x=rows.find(r=>String(r.id)===b.dataset.hid);const v=$('hrView');v.innerHTML='<p class="msg">족보를 불러오는 중…</p>';
     const r=await fetch(`${RANK.url}/rest/v1/house_members?house_id=eq.${x.id}&select=gen,seed,hero,race,reach,reach_score,kills,power,created_at,nickname&order=gen.desc&limit=200`,{headers:rankHeaders()});const ms=r.ok?await r.json():[];
     v.innerHTML=`<div class="famHouse" style="margin-top:14px"><div class="fhHead">${crestHtml(x,56)}<div><div class="fhName" style="color:${esc(x.color1)}">${esc(x.name)}</div><small>족보 ${ms.length}대 · 이름 없이 쓰러진 자 ${fmt(x.unnamed||0)}명</small></div></div>${ms.length?`<ul class="famList">${ms.map(m=>memberHtml(m)).join('')}</ul>`:'<p class="chLegend">아직 족보에 오른 용사가 없다.</p>'}</div>`;v.scrollIntoView({behavior:'smooth',block:'start'});});}
-function saveCheckpoint(){store.set('ckpt',{seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name,at:Date.now()});logAct(['S']);}
-function ckptInfo(){const c=store.get('ckpt',null);return c&&c.snap&&c.seed!=null?c:null;}
-function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo();if(!c)return;clearTimeout(autoT);phaseT.forEach(clearTimeout);
+// 저장 지점: 용사(시드)마다 따로 둔다. 최대 6명, 넘치면 가장 오래 손대지 않은 것부터 지운다.
+const CK_MAX=6;
+function ckAll(){let m=store.get('ckpts',null);if(!m||typeof m!=='object'){m={};const old=store.get('ckpt',null);if(old&&old.snap&&old.seed!=null)m[old.seed]=old;store.set('ckpts',m);store.set('ckpt',null);}return m;}
+function ckPut(c){const m=ckAll();c.at=Date.now();m[c.seed]=c;const ks=Object.keys(m).sort((a,b)=>(m[b].at||0)-(m[a].at||0));for(const k of ks.slice(CK_MAX))delete m[k];store.set('ckpts',m);}
+function ckDel(seed){const m=ckAll();delete m[seed];store.set('ckpts',m);}
+function ckList(){const m=ckAll();return Object.values(m).filter(c=>c&&c.snap&&c.seed!=null).sort((a,b)=>(b.at||0)-(a.at||0));}
+function saveCheckpoint(){ckPut({seed:heroSeed,snap:snapshotRun(run),stage:run.stage,heroName:hero.name});logAct(['S']);}
+function ckptInfo(seed){const m=ckAll();const c=m[seed!=null?seed:heroSeed];return c&&c.snap&&c.seed!=null?c:null;}
+function loadCheckpoint(fromStart,seed){fromStart=fromStart===true;const c=ckptInfo(seed!=null?seed:(ckList()[0]||{}).seed);if(!c)return;ckPut(c);clearTimeout(autoT);phaseT.forEach(clearTimeout);
   heroSeed=c.seed>>>0;hero=makeHero(heroSeed);
   const saved=store.get(logKey(heroSeed),null);if(saved&&Array.isArray(saved.log)){runLog=saved.log;runToken=saved.token;hero.rolls=saved.rolls||0;}else{runLog=null;runToken=null;}
   const loads=(runLog?runLog.filter(a=>a[0]==='L').length:0)+1;
@@ -2377,8 +2386,11 @@ function loadCheckpoint(fromStart){fromStart=fromStart===true;const c=ckptInfo()
   lastOut=null;verdictHtml='';paused=false;prevStats=null;
   $('log').innerHTML=`<li><span class="t">0.000%</span><div><b>저장 지점</b> · ${hero.name}이(가) ${STAGES[stage].name} ${STAGES[stage].endless&&STAGES[stage].hunt==null?floorOf(run)+'층':'입구'}에서 다시 일어섰다.</div></li>`;
   renderAll();}
-function ckptButton(){const c=ckptInfo();if(!c)return '';if(!(c.stage===5||(c.snap&&c.snap.huntFrom===5)))return '';const endF=STAGES[c.stage].endless&&STAGES[c.stage].hunt==null&&c.snap.region>0?c.snap.region+1:0;
-  return `<div class="actions" style="margin-top:12px;flex-wrap:wrap"><button class="btn ghost" type="button" id="ckptBtn">저장 지점에서 다시: ${esc(c.heroName)} · ${STAGES[c.stage].name} ${endF?endF+'층':STAGES[c.stage].hunt!=null?'1층':'입구'}</button>${endF?`<button class="btn ghost" type="button" id="ckptBtn1">1층부터 다시</button>`:''}</div>`;}
+function ckptButton(){const L=ckList().filter(c=>c.stage===5||(c.snap&&c.snap.huntFrom===5));if(!L.length)return '';
+  return `<div class="ckSlots"><div class="ckH">저장된 용사 ${L.length}/${CK_MAX} <small>끝없는 전장에 들어선 용사마다 따로 저장된다</small></div>${L.map(c=>{const endF=STAGES[c.stage].endless&&STAGES[c.stage].hunt==null&&c.snap.region>0?c.snap.region+1:0;
+    return `<div class="ckRow"><button class="btn ghost" type="button" data-ck="${c.seed}">이어하기: <b>${esc(c.heroName)}</b> · ${STAGES[c.stage].name} ${endF?endF+'층':STAGES[c.stage].hunt!=null?'1층':'입구'} <small>Lv ${c.snap.lvl||1}</small></button>${endF?`<button class="mini" type="button" data-ck1="${c.seed}">1층부터</button>`:''}<button class="mini warn" type="button" data-ckx="${c.seed}" title="이 저장 지우기">지우기</button></div>`;}).join('')}</div>`;}
+function bindCk(){document.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>loadCheckpoint(false,+b.dataset.ck));document.querySelectorAll('[data-ck1]').forEach(b=>b.onclick=()=>loadCheckpoint(true,+b.dataset.ck1));
+  document.querySelectorAll('[data-ckx]').forEach(b=>b.onclick=()=>{if(!b.dataset.arm){b.dataset.arm=1;b.textContent='정말 지울까?';return;}ckDel(+b.dataset.ckx);renderStage();});}
 function startHunt(){
   if(!run||!enterHunt(run))return; logAct(['h']);
   stage=run.stage; store.set('stage',stage); lastOut=null; verdictHtml=''; paused=false; saveCheckpoint();
@@ -2420,7 +2432,7 @@ function renderAll(){
   {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
 $('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
-  {const ck=ckptInfo();try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!(ck&&k==='fh2_'+logKey(ck.seed)))localStorage.removeItem(k);}}catch(e){}}
+  {const keep=new Set(ckList().map(c=>'fh2_'+logKey(c.seed)));try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!keep.has(k))localStorage.removeItem(k);}}catch(e){}}
   chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();
   {const code=acctOn()&&HOUSE&&stage===0?legacyCode(HOUSE.legacy):'';if(code&&legacySum(code)>0&&applyLegacy(run,code)){logAct(['G',code]);setTimeout(()=>showToast('가문 유산',legacyTxt(code),'ok',2600),300);}}
   {const t=acctOn()&&HOUSE&&HOUSE_ME&&stage===0&&HOUSE_ME.eligible?HOUSE_ME.tier|0:0;if(t>0&&applyHouseBuff(run,'h'+t)){logAct(['H','h'+t]);setTimeout(()=>showToast('👑 '+TIER_TAG[t][0],TIER_TAG[t][2]+' (이번 주)','ok',2600),900);}}lastOut=null;verdictHtml='';$('log').innerHTML='';renderAll();};
@@ -2429,122 +2441,16 @@ setDiceFaces(1+Math.floor(Math.random()*6));$('rollBtn').onclick=()=>newHero();$
 // 오래 틀어 둬도 피곤하지 않게: 100BPM 안팎의 셔플 그루브, 부드러운 음색, 귀에 남는 4마디 훅.
 // 한 바퀴 32마디(A·A'·B·A'') 동안 편성이 바뀌고, 바퀴마다 멜로디 장식이 달라져 같은 소절이 그대로 반복되지 않는다.
 // 세계가 바뀌면 조성·음계·템포가 바뀐다(지상계 장조 → 지하 도리안 → 마계 단조 → 심연 프리지안 → 공허 화성단음계).
-const BGM=(()=>{let ctx=null,out=null,dly=null,noise=null,on=false,timer=null,bar=0,s16=0,nextT=0,cyc=0,th=null,wNow=-1,seed=1;
-  const THEMES=[
-    {style:'adventure',root:60,sc:[0,2,4,5,7,9,11],bpm:102,A:[0,4,5,3],B:[3,4,2,5]},   // 지상계: 밝은 모험
-    {style:'dirge',root:57,sc:[0,2,3,5,7,8,10],bpm:76,A:[0,5,3,4],B:[5,3,6,4]},        // 지하 세계: 하프와 합창, 느린 장송곡
-    {style:'march',root:52,sc:[0,1,3,5,7,8,10],bpm:120,A:[0,1,0,6],B:[5,6,1,0]},       // 마계: 몰아치는 행진
-    {style:'abyss',root:50,sc:[0,2,3,5,7,8,10],bpm:62,A:[0,5,3,6],B:[0,5,3,6]},        // 심연: 드론과 종소리, 북 없음
-    {style:'throne',root:55,sc:[0,2,3,5,7,8,11],bpm:82,A:[0,5,3,4],B:[5,6,3,4]},       // 공허의 옥좌: 장엄한 오르간과 팀파니
-    {style:'endless',root:57,sc:[0,2,3,5,7,9,10],bpm:86,A:[0,3,4,5,2,6],B:[0,3,4,5,2,6]}]; // 끝없는 전장: 오래 들어도 질리지 않게 계속 변하는 곡
-  // 훅: [16분음 위치, 코드음 번호(0 근음·1 3음·2 5음, 3 이상은 한 옥타브 위)]
-  const HOOK=[[[0,4],[3,3],[6,2],[8,3],[11,4],[14,3]],[[0,2],[2,1],[4,2],[7,4],[10,3]],[[0,4],[3,3],[6,2],[8,3],[11,5],[14,4]],[[0,3],[4,2],[6,1],[8,0],[12,2]]];
-  const BRIDGE=[[[0,2],[6,3],[8,4]],[[0,3],[8,2],[12,1]],[[0,2],[4,3],[6,4],[8,5],[12,4]],[[0,3],[8,2]]];
-  const hz=m=>440*Math.pow(2,(m-69)/12);
-  const R=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
-  function worldNow(){try{return typeof stage==='number'?Math.min(5,worldOf(stage)):0;}catch(e){return 0;}}
-  function deg(d){const n=th.sc.length,o=Math.floor(d/n),i=((d%n)+n)%n;return th.root+th.sc[i]+12*o;}
-  function chord(d){return [deg(d),deg(d+2),deg(d+4)];}
-  function ct(ch,k){return ch[k%3]+12*Math.floor(k/3);}
-  function SPB(){return 60/th.bpm/4;}
-  function setup(){ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-16;comp.ratio.value=3;comp.attack.value=0.005;comp.release.value=0.2;
-    out=ctx.createGain();out.gain.value=0;out.connect(comp);comp.connect(ctx.destination);
-    // 리드에만 거는 짧은 메아리(점8분)
-    dly=ctx.createDelay(1.5);const fb=ctx.createGain(),lp=ctx.createBiquadFilter(),wet=ctx.createGain();fb.gain.value=0.32;lp.type='lowpass';lp.frequency.value=2200;wet.gain.value=0.35;
-    dly.connect(lp);lp.connect(fb);fb.connect(dly);lp.connect(wet);wet.connect(out);
-    const n=ctx.sampleRate*0.5;noise=ctx.createBuffer(1,n,ctx.sampleRate);const d=noise.getChannelData(0);for(let i=0;i<n;i++)d[i]=Math.random()*2-1;}
-  function env(g,t,a,peak,dec){g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(peak,t+a);g.gain.exponentialRampToValueAtTime(0.0001,t+a+dec);}
-  function kick(t,v){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(110,t);o.frequency.exponentialRampToValueAtTime(42,t+0.1);env(g,t,0.004,0.55*v,0.22);o.connect(g);g.connect(out);o.start(t);o.stop(t+0.28);}
-  function nz(t,type,freq,peak,dec){const b=ctx.createBufferSource();b.buffer=noise;const f=ctx.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=type==='bandpass'?1.2:0.7;const g=ctx.createGain();env(g,t,0.003,peak,dec);b.connect(f);f.connect(g);g.connect(out);b.start(t,Math.random()*0.3);b.stop(t+dec+0.05);}
-  function voice(t,m,type,peak,a,dec,cut,dest,vib){const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type=type;o.frequency.value=hz(m);
-    if(vib){const l=ctx.createOscillator(),lg=ctx.createGain();l.frequency.value=5.5;lg.gain.value=hz(m)*0.006;l.connect(lg);lg.connect(o.frequency);l.start(t+0.08);l.stop(t+a+dec+0.1);}
-    f.type='lowpass';f.frequency.value=cut;env(g,t,a,peak,dec);o.connect(f);f.connect(g);g.connect(out);if(dest)g.connect(dest);o.start(t);o.stop(t+a+dec+0.1);}
-  function pad(t,ch,len){ch.forEach((m,i)=>[-6,6].forEach(det=>{const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='sawtooth';o.frequency.value=hz(m+12);o.detune.value=det;f.type='lowpass';f.frequency.value=900;
-    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.018,t+len*0.3);g.gain.linearRampToValueAtTime(0.0001,t+len);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+len+0.05);}));}
-  function swing(t,st){return st%2===1?t+SPB()*0.18:t;}
-  // 한 16분음 단위를 연주한다. 바퀴(32마디) 안의 위치에 따라 편성이 바뀐다.
-  function playAdventure(t){const b=bar%32,sec=b<8?'A':b<16?'A2':b<24?'B':'A3',st=s16,tt=swing(t,st),sp=SPB();
-    const prog=sec==='B'?th.B:th.A, ch=chord(prog[(b>>1)%4]), barLen=sp*16;
-    const breakdown=sec==='B'&&b<20, full=sec!=='A';
-    // 드럼
-    if(!breakdown){ if(st===0||st===8||(full&&st===10&&b%2===1)) kick(t,st===0?1:0.8);
-      if(full&&(st===4||st===12)) nz(tt,'bandpass',1900,0.16,0.14);
-      if(st%2===0) nz(tt,'highpass',8000,st%4===2?0.05:0.025,0.035); }
-    if(b===23&&st>=8&&st%2===0) nz(tt,'bandpass',1700,0.05+0.012*(st-8),0.08); // 브리지 끝 빌드업
-    if(b%8===7&&st===14&&!breakdown) nz(tt,'bandpass',2400,0.12,0.1);
-    // 베이스: 근음과 5음을 오가는 셔플
-    if(!breakdown||st===0){ if(st===0||st===6||st===8||st===14) voice(tt,ch[st===6||st===14?2:0]-24,'triangle',0.2,0.006,sp*(st===0?3.5:1.8),700);}
-    // 패드: 두 마디마다
-    if(st===0&&b%2===0) pad(t,ch,barLen*2);
-    // 뜯는 아르페지오(A2, A3)
-    if((sec==='A2'||sec==='A3')&&st%2===0){const k=[0,1,2,3,2,1,4,3][st/2];voice(tt,ct(ch,k)+12,'sine',0.035,0.003,sp*1.6,4000);}
-    // 멜로디: 훅(A계열) 또는 브리지
-    const phrase=sec==='B'?BRIDGE:HOOK, pb=b%4, notes=phrase[pb];
-    const lead=sec==='B'?b>=20:(sec==='A'?b>=0:true);
-    if(lead){const hit=notes.find(n=>n[0]===st);if(hit){let k=hit[1];
-        if(cyc%2===1&&R()<0.25) k+=R()<0.5?1:-1; // 바퀴마다 장식이 조금씩 다르다
-        if(sec==='A3'&&b>=28) k+=3;
-        const nx=notes.find(n=>n[0]>st), len=((nx?nx[0]:16)-st)*sp;
-        voice(tt,ct(ch,Math.max(0,k))+12,'square',0.05,0.01,Math.min(len*0.9,sp*6),2300,dly,true);
-        if(sec==='A3'&&cyc>=1) voice(tt,ct(ch,Math.max(0,k))+24,'triangle',0.018,0.01,Math.min(len*0.8,sp*4),3000);}}
-  }
-  function bell(t,m,peak,dec){voice(t,m,'sine',peak,0.004,dec,6000,dly);voice(t,m+19,'sine',peak*0.25,0.002,dec*0.4,8000);}
-  function tom(t,f0,v,dec){const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.setValueAtTime(f0,t);o.frequency.exponentialRampToValueAtTime(f0*0.55,t+dec*0.6);env(g,t,0.004,v,dec);o.connect(g);g.connect(out);o.start(t);o.stop(t+dec+0.05);}
-  function choir(t,ch,len,v){ch.forEach(m=>{const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='triangle';o.frequency.value=hz(m+12);f.type='lowpass';f.frequency.value=1400;
-    g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v,t+len*0.4);g.gain.linearRampToValueAtTime(0.0001,t+len);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+len+0.05);});}
-  // 지하 세계: 하프 아르페지오 + 합창 + 낮은 북. 멜로디는 훅의 절반만
-  function playDirge(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]);
-    if(st===0&&b%2===0)choir(t,ch,sp*32,0.03);
-    if(st%2===0){const k=[0,1,2,3,4,3,2,1][st/2];voice(t,ct(ch,k),'triangle',0.06,0.003,sp*3,2600,dly);}
-    if((st===0)||(st===10&&b%2===1))tom(t,70,0.4,0.5);
-    if(st===0)voice(t,ch[0]-24,'sine',0.18,0.02,sp*14,400);
-    if(b%8>=4){const hit=HOOK[b%4].find(n=>n[0]===st&&n[0]%4===0);if(hit)voice(t,ct(ch,hit[1])+12,'sine',0.05,0.04,sp*5,3000,dly,true);}}
-  // 마계: 곧은 8분 베이스 오스티나토, 4박 킥, 백비트, 톱니 리드
-  function playMarch(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]),drop=b%16===15&&st>=8;
-    if(!drop&&st%4===0)kick(t,1);
-    if(!drop&&(st===4||st===12))nz(t,'bandpass',1500,0.2,0.16);
-    if(st%2===0)nz(t,'highpass',9000,0.03,0.03);
-    if(drop&&st%2===0)tom(t,140-(st-8)*8,0.35,0.15);
-    if(st%2===0)voice(t,ch[st%8===6?2:0]-24,'sawtooth',0.07,0.004,sp*1.5,500+((b%4)*150));
-    if(st===0&&b%2===0)pad(t,ch,sp*32);
-    if(b%8>=4||b>=24){const hit=HOOK[(b+2)%4].find(n=>n[0]===st);if(hit){const nx=HOOK[(b+2)%4].find(n=>n[0]>st);voice(t,ct(ch,hit[1])+12,'sawtooth',0.035,0.006,Math.min(((nx?nx[0]:16)-st)*sp*0.8,sp*4),1800,dly);}}}
-  // 심연: 북 없이 드론과 종소리. 음이 드물고 무작위라 반복감이 적다
-  function playAbyss(t){const b=bar%32,st=s16,sp=SPB(),ch=chord(th.A[(b>>2)%4]);
-    if(st===0&&b%4===0){choir(t,[ch[0]-12,ch[2]-12],sp*64,0.065);}
-    if(st%4===0&&R()<0.22){const k=Math.floor(R()*6);bell(t,ct(ch,k)+12,0.075,sp*10);}
-    if(st===8&&b%8===6)nz(t,'lowpass',300,0.06,1.2);}
-  // 공허의 옥좌: 오르간 화음과 팀파니, 느리고 장엄한 선율
-  function playThrone(t){const b=bar%32,st=s16,sp=SPB(),prog=b>=16?th.B:th.A,ch=chord(prog[(b>>1)%4]);
-    if(st===0&&b%2===0){ch.forEach(m=>[-4,4].forEach(d=>{const o=ctx.createOscillator(),g=ctx.createGain(),f=ctx.createBiquadFilter();o.type='square';o.frequency.value=hz(m);o.detune.value=d;f.type='lowpass';f.frequency.value=1100;
-      g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.012,t+0.3);g.gain.setValueAtTime(0.012,t+sp*30);g.gain.linearRampToValueAtTime(0.0001,t+sp*32);o.connect(f);f.connect(g);g.connect(out);o.start(t);o.stop(t+sp*32+0.05);}));}
-    if(st===0||(st===12&&b%2===1))tom(t,st===0?62:82,0.5,0.7);
-    if(b%4===3&&st>=8&&st%2===0)tom(t,90,0.15+0.04*(st-8),0.18);
-    if(st===0)voice(t,ch[0]-24,'triangle',0.16,0.02,sp*15,500);
-    if(b>=8){const hit=BRIDGE[b%4].find(n=>n[0]===st);if(hit)choir(t,[ct(ch,hit[1])+12],sp*6,0.05);}}
-  // 끝없는 전장: 2마디마다 화음이 무작위로 이어지고, 짧은 동기를 8마디 쓰다 새로 만든다. 16마디마다 악기 구성이 바뀐다
-  let eCh=0,eMotif=null,eLayers=null;
-  function newMotif(){const m=[];let k=2+Math.floor(R()*2);const n=4+Math.floor(R()*3);const pos=[0,2,4,6,8,10,12,14].filter(()=>R()<0.6).slice(0,n);if(!pos.length)pos.push(0);
-    for(const p of pos){k=Math.max(0,Math.min(6,k+(R()<0.5?-1:1)*(R()<0.7?1:2)));m.push([p,k]);}return m;}
-  function playEndless(t){const b=bar,st=s16,sp=SPB();
-    if(st===0&&b%2===0){const moves=[[3,4,2],[4,5,1],[5,2,3],[0,4,2],[2,5,0],[1,4,0],[0,3,5]];const opts=moves[eCh]||[0];eCh=opts[Math.floor(R()*opts.length)]%7;}
-    if(st===0&&b%8===0)eMotif=newMotif();
-    if(st===0&&b%16===0)eLayers={drum:R()<0.75,arp:R()<0.55,lead:R()<0.8,pad:true};
-    const ch=chord(th.A[eCh%th.A.length]),L=eLayers||{drum:true,arp:false,lead:true,pad:true};
-    if(L.pad&&st===0&&b%2===0)pad(t,ch,sp*32);
-    if(st===0||st===10)voice(t,ch[st===10?2:0]-24,'triangle',0.17,0.01,sp*(st===0?8:5),600);
-    if(L.drum){if(st===0||(st===8&&R()<0.6))kick(t,0.55);if(st===4||st===12)nz(t,'bandpass',1200,0.07,0.12);if(st%2===0)nz(t,'highpass',7000,st%4===2?0.025:0.012,0.03);}
-    if(L.arp&&st%4===2){const k=[0,1,2,3][(st>>2)%4];voice(t,ct(ch,k)+12,'sine',0.03,0.003,sp*2.5,3500,dly);}
-    if(L.lead&&eMotif&&b%4!==3){const hit=eMotif.find(n=>n[0]===st);if(hit){let k=hit[1];if(b%8>=4&&R()<0.3)k+=R()<0.5?1:-1;voice(t,ct(ch,Math.max(0,k))+12,'sine',0.055,0.02,sp*3,2800,dly,true);}}}
-  function play(t){const sty=th.style;if(sty==='dirge')playDirge(t);else if(sty==='march')playMarch(t);else if(sty==='abyss')playAbyss(t);else if(sty==='throne')playThrone(t);else if(sty==='endless')playEndless(t);else playAdventure(t);}
-  function adv(){s16++;if(s16>=16){s16=0;bar++;
-      if(bar%8===0){const w=worldNow();if(w!==wNow){wNow=w;th=THEMES[w];bar=0;}} // 세계가 바뀌면 다음 8마디 경계에서 새 편곡으로
-      if(bar>=32&&th.style!=='endless'){bar=0;cyc++;}}}
-  function tick(){while(nextT<ctx.currentTime+0.15){play(nextT);nextT+=SPB();adv();}}
-  return {get on(){return on;},start(){try{if(!ctx)setup();ctx.resume();}catch(e){return false;}on=true;wNow=worldNow();th=THEMES[wNow];bar=0;s16=0;cyc=0;seed=7;nextT=ctx.currentTime+0.08;
-      out.gain.cancelScheduledValues(ctx.currentTime);out.gain.setValueAtTime(0,ctx.currentTime);out.gain.linearRampToValueAtTime(0.85,ctx.currentTime+1.5);
-      clearInterval(timer);timer=setInterval(tick,25);return true;},
-    stop(){if(!ctx)return;on=false;const t=ctx.currentTime;out.gain.cancelScheduledValues(t);out.gain.setValueAtTime(out.gain.value,t);out.gain.linearRampToValueAtTime(0,t+0.6);setTimeout(()=>{if(!on){clearInterval(timer);ctx.suspend();}},700);}};})();
+// 배경음: 받은 OST 통합본(약 21분)을 끝없이 반복한다. 누른 뒤에만 불러오고, 들은 위치를 기억해 이어서 튼다.
+const BGM=(()=>{let a=null,on=false,fade=null,saveT=null;const VOL=0.45;
+  const src=()=>{try{const x=document.createElement('audio');return x.canPlayType('audio/mp4; codecs="mp4a.40.2"')?'audio/bgm.m4a':'audio/bgm.ogg';}catch(e){return 'audio/bgm.m4a';}};
+  const mk=()=>{a=new Audio(src());a.loop=true;a.preload='auto';a.volume=0;
+    a.addEventListener('loadedmetadata',()=>{const t=+store.get('bgmPos',0)||0;if(t>0&&t<a.duration-5)try{a.currentTime=t;}catch(e){}},{once:true});};
+  const ramp=(to,ms,done)=>{clearInterval(fade);const from=a.volume,t0=performance.now();fade=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);a.volume=Math.max(0,Math.min(1,from+(to-from)*k));if(k>=1){clearInterval(fade);if(done)done();}},40);};
+  return {get on(){return on;},
+    start(){try{if(!a)mk();const p=a.play();if(p&&p.catch)p.catch(()=>{on=false;syncBgm();});}catch(e){return false;}on=true;ramp(VOL,1500);
+      clearInterval(saveT);saveT=setInterval(()=>{if(a&&on)store.set('bgmPos',Math.floor(a.currentTime));},5000);return true;},
+    stop(){if(!a)return;on=false;clearInterval(saveT);store.set('bgmPos',Math.floor(a.currentTime));ramp(0,600,()=>{if(!on)a.pause();});}};})();
 function syncBgm(){const b=$('bgmBtn');b.setAttribute('aria-pressed',BGM.on);b.textContent=BGM.on?'♪':'🔇';b.title=BGM.on?'배경음 끄기':'배경음 켜기';}
 $('bgmBtn').onclick=()=>{if(BGM.on){BGM.stop();store.set('bgm',0);}else{if(BGM.start())store.set('bgm',1);}syncBgm();};
 if(store.get('bgm',1)){const kick=(ev)=>{if(ev&&ev.target&&ev.target.closest&&ev.target.closest('#bgmBtn'))return;document.removeEventListener('pointerdown',kick);document.removeEventListener('keydown',kick);if(!BGM.on){BGM.start();syncBgm();}};document.addEventListener('pointerdown',kick);document.addEventListener('keydown',kick);}
