@@ -1,0 +1,16 @@
+claimA {"ok" : true, "nickname" : "ga12605"}
+claimB {"ok" : true, "nickname" : "gb12605"}
+create {"ok" : true, "id" : 6, "name" : "시험2605"}
+join {"ok" : true, "applied" : true}
+apps ["gb12605"]
+decide {"ok" : true, "joined" : true}
+roster [{"nickname":"ga12605","role":"leader"},{"nickname":"gb12605","role":"member"}]
+b my_house {"role":"member","people":2,"tier":0,"eligible":false}
+b buy (member) {"ok" : false, "error" : "가주나 원로만 유산을 살 수 있다"}
+elder {"ok" : true}
+rank [{"name":"시험2605","people":2,"week_points":0,"tier":0}]
+b leave {"ok" : true}
+b rejoin {"ok":false,"error":"가문을 떠난 지 24시간이 지나야 다른 가문에 들어갈 수 있다"}
+a disband {"ok" : true, "disbanded" : true}
+del 200
+del 200
