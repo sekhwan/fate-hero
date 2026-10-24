@@ -2443,7 +2443,7 @@ setDiceFaces(1+Math.floor(Math.random()*6));$('rollBtn').onclick=()=>newHero();$
 // 세계가 바뀌면 조성·음계·템포가 바뀐다(지상계 장조 → 지하 도리안 → 마계 단조 → 심연 프리지안 → 공허 화성단음계).
 // 배경음: 받은 OST 통합본(약 21분)을 끝없이 반복한다. 누른 뒤에만 불러오고, 들은 위치를 기억해 이어서 튼다.
 const BGM=(()=>{let a=null,on=false,fade=null,saveT=null;const VOL=0.45;
-  const src=()=>{try{const x=document.createElement('audio');return x.canPlayType('audio/mp4; codecs="mp4a.40.2"')?'audio/bgm.m4a':'audio/bgm.ogg';}catch(e){return 'audio/bgm.m4a';}};
+  const src=()=>{try{const x=document.createElement('audio');return x.canPlayType('audio/mp4; codecs="mp4a.40.2"')?'audio/bgm.mp4':'audio/bgm.ogg';}catch(e){return 'audio/bgm.mp4';}};
   const mk=()=>{a=new Audio(src());a.loop=true;a.preload='auto';a.volume=0;
     a.addEventListener('loadedmetadata',()=>{const t=+store.get('bgmPos',0)||0;if(t>0&&t<a.duration-5)try{a.currentTime=t;}catch(e){}},{once:true});};
   const ramp=(to,ms,done)=>{clearInterval(fade);const from=a.volume,t0=performance.now();fade=setInterval(()=>{const k=Math.min(1,(performance.now()-t0)/ms);a.volume=Math.max(0,Math.min(1,from+(to-from)*k));if(k>=1){clearInterval(fade);if(done)done();}},40);};
