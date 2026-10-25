@@ -697,6 +697,31 @@ body.ob-inv .gearBody .pShop{display:block!important}
   .battleCard .opts.cmdbar.wide{grid-template-columns:repeat(3,minmax(0,1fr))!important}.battleCard .opts.cmdbar{padding:6px;gap:6px}.cmdbar .oic{width:18px;height:18px}.cmdbar .opt .l{font-size:13px!important}}
 
 
+
+/* 지역 경로 지도 */
+.route{margin:8px 0 0;padding:2px 10px 6px;border-radius:8px;background:linear-gradient(180deg,rgba(20,14,24,.55),rgba(20,14,24,.25));border:1px solid rgba(160,130,80,.25)}
+.rtHead{display:flex;gap:8px;align-items:baseline;margin-bottom:4px}.rtHead b{font-family:var(--display);font-weight:400;font-size:15px;color:#f3e7cf}.rtHead small{font-size:11.5px;color:var(--muted)}
+.rtPath{list-style:none;margin:0;padding:22px 0 0;display:flex;align-items:flex-start;gap:0;overflow-x:auto;scrollbar-width:none}
+.rtPath::-webkit-scrollbar{display:none}
+.rt{position:relative;flex:1 0 54px;display:flex;flex-direction:column;align-items:center;min-width:54px}
+.rt::before{content:"";position:absolute;top:16px;left:-50%;width:100%;height:3px;background:repeating-linear-gradient(90deg,#7a6440 0 6px,transparent 6px 10px);z-index:0}
+.rt:first-child::before{display:none}
+.rt.done::before,.rt.cur::before{background:#c9a35a}
+.rtI{position:relative;z-index:1;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:16px;background:#231d2a;border:2px solid #6b5a3a;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.rt.done .rtI{filter:grayscale(1) brightness(.6);border-color:#4a4050}
+.rt.done .rtI::after{content:"✓";position:absolute;right:-4px;bottom:-4px;width:15px;height:15px;border-radius:50%;background:#2f9a4a;color:#fff;font-size:10px;display:grid;place-items:center;filter:none}
+.rt.cur .rtI{border-color:#ffd36b;background:#3a2c14;box-shadow:0 0 0 3px rgba(255,211,107,.25),0 0 16px rgba(255,211,107,.6);animation:rtPulse 1.4s ease-in-out infinite}
+@keyframes rtPulse{50%{box-shadow:0 0 0 5px rgba(255,211,107,.15),0 0 22px rgba(255,211,107,.8)}}
+.rt.t-boss .rtI{width:42px;height:42px;margin-top:-4px;font-size:20px;border-color:#c0392b;background:radial-gradient(circle,#4a1410,#231d2a)}
+.rt.t-boss.cur .rtI{border-color:#ff7a5a;box-shadow:0 0 0 3px rgba(255,90,60,.3),0 0 20px rgba(255,90,60,.7)}
+.rt.extra .rtI{border-style:dashed;border-color:#9ad6ff}
+.rtL{margin-top:3px;font-size:10.5px;color:#bfb2a0;white-space:nowrap;max-width:76px;overflow:hidden;text-overflow:ellipsis}
+.rt.cur .rtL{color:#ffe27a;font-weight:700}.rt.t-boss .rtL{color:#ff9a8a}.rt.done .rtL{color:#6a6070}
+.rtMe{position:absolute;top:-22px;z-index:2;width:24px;height:24px;border-radius:50%;overflow:hidden;border:2px solid #ffd36b;background:#231d2a;box-shadow:0 2px 6px #000;animation:rtBob 1s ease-in-out infinite}
+.rtMe img{width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+@keyframes rtBob{50%{transform:translateY(-3px)}}
+@media (max-width:640px){.rt{flex-basis:44px;min-width:44px}.rtI{width:28px;height:28px;font-size:13px}.rt::before{top:13px}.rt.t-boss .rtI{width:34px;height:34px;font-size:16px}.rtL{font-size:9.5px;max-width:56px}}
+@media (prefers-reduced-motion:reduce){.rt.cur .rtI,.rtMe{animation:none}}
 /* ===== 영웅 뽑기 카드 ===== */
 .hrv{position:fixed;inset:0;z-index:92;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;--c1:#b9a98a;--c2:#6b5a3a;opacity:0;transition:opacity .25s}
 .hrv.in{opacity:1}.hrv.out{opacity:0}
@@ -1246,7 +1271,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   <div class="what" id="pctWhat"></div>
 </div>
 <div class="track" id="track"><div class="fill" id="fill" style="width:0%"></div></div>
-<div class="trackLbl"><span id="tFrom"></span><span id="tTo"></span></div>
+<div class="trackLbl"><span id="tFrom"></span><span id="tTo"></span></div><div class="route" id="route" hidden></div>
 </div><div class="zbody"><div id="stage"></div></div></div>
     </section>
     <section class="gear" aria-label="정비와 상점">
@@ -2292,9 +2317,28 @@ function powerParts(s){const t=s.stats,cf=curseF(s),ic=k=>cf<1?(1-cf)*itemStatSu
   out.push(`= 전투력 ${fmt(power(s)/s.stageCarry*10)}`);return out;}
 function tipAttr(title,lines){return ` data-tt="${esc(title)}" data-tl="${esc((lines||[]).filter(Boolean).join('¦'))}" tabindex="0"`;}
 function traitHtml(st){const t=WORLD_TRAITS[worldOf(st)];return t?`<br><span class="trait tipt"${tipAttr('세계 특성 · '+t.name,[t.d,'세계마다 특성이 달라 같은 빌드가 끝까지 통하지 않는다. 스킬을 고를 때 참고하자.'])}>세계 특성 · ${t.name}: ${t.d}</span>`:'';}
+// ===== 지역 경로 지도: 이번 지역의 길목이 아이콘으로 이어진다. 지금 위치에 영웅 말이 선다 =====
+let routeMem={key:null,nodes:[]};
+const RT_IC={battle:'⚔️',explore:'🧭',rest:'🔥',prep:'🎲',boss:'👑',skill:'📘',event:'✦'};
+const RT_NM={battle:'전투',explore:'탐험',rest:'야영',prep:'운명의 내기',boss:'지배자',skill:'스킬',event:'사건'};
+function rtType(n){return n.type==='battle'&&n.boss?'boss':n.type;}
+function renderRoute(){const el=$('route');if(!el)return;
+  if(!run||run.dead||run.over||!run.queue||!run.queue.length){el.hidden=true;return;}
+  const key=run.stage+':'+run.region+':'+heroSeed;
+  if(routeMem.key!==key){routeMem={key,nodes:run.queue.filter(n=>n.type!=='event'&&n.type!=='skill')};}
+  const q=run.queue,cur=q[0];const R=routeMem.nodes;const firstLeft=R.findIndex(n=>q.includes(n));
+  const items=[];R.forEach((n,i)=>{const st=i<firstLeft||firstLeft<0?'done':n===cur?'cur':'next';
+    if(i===firstLeft&&cur&&!R.includes(cur))items.push({t:cur.type==='skill'?'skill':'event',st:'cur',extra:1});
+    items.push({t:rtType(n),st,n});});
+  const face=(()=>{const k=hero?portraitKey(hero):null;return k?`<img src="hero/${k}.webp" alt="">`:'';})();
+  const st=STAGES[run.stage];const rg=st.regions[run.region];
+  el.hidden=false;
+  el.innerHTML=`<ol class="rtPath">${items.map(it=>{
+      const lab=it.t==='boss'?esc(it.n.name):it.extra&&it.t==='event'?'돌발 사건':RT_NM[it.t]||'';
+      return `<li class="rt ${it.st} t-${it.t}${it.extra?' extra':''}" title="${esc(RT_NM[it.t]||'')}${it.t==='boss'?' · '+esc(it.n.name):''}"><span class="rtI">${RT_IC[it.t]||'•'}</span>${it.st==='cur'?`<span class="rtMe">${face}</span>`:''}<span class="rtL">${lab}</span></li>`;}).join('')}</ol>`;}
 function renderTrack(){
   const s=STAGES[stage]; $('demonCount').textContent=fmt(run&&run.kills||0);
-  if(s.endless){const tr=$('track');tr.querySelectorAll('.tick').forEach(t=>t.remove());const f=run?floorOf(run):0;const bf=best[stage]||0;
+  if(s.endless){renderRoute();const tr=$('track');tr.querySelectorAll('.tick').forEach(t=>t.remove());const f=run?floorOf(run):0;const bf=best[stage]||0;
     $('pctNum').innerHTML=`${f}<small>층</small>`;$('fill').style.width=Math.min(100,bf?f/Math.max(bf,1)*100:0)+'%';
     $('tFrom').textContent='1층';$('tTo').textContent=bf?`최고 기록 ${bf}층`:'끝이 없다';
     $('pctWhat').innerHTML=(run&&!run.dead&&!run.over?`<b>${s.regions[run.region][0]}</b> · 층마다 적이 강해진다${s.hunt!=null?' · 언제든 왼쪽 버튼으로 다음 세계로 떠날 수 있다':' · 처치한 악마 '+fmt(run.kills||0)+'마리'}`:`<b>${s.name}</b> · ${s.sub}`)+traitHtml(stage);return;}
@@ -2303,6 +2347,7 @@ function renderTrack(){
   const ws=s.regions.map((_,i)=>Math.pow(DEMON_W,i)),tot=ws.reduce((a,b)=>a+b,0);let acc=0;
   ws.forEach((w,i)=>{acc+=w;if(i<ws.length-1){const t=document.createElement('div');t.className='tick'+(run&&run.pacified&&run.pacified[i]?' on':'');t.style.left=(acc/tot*100)+'%';tr.appendChild(t);}});
   const p=run?pct(run):0; $('pctNum').innerHTML=pfmt(p)+'<small>%</small>'; $('fill').style.width=p+'%';
+  renderRoute();
   if(!run) $('pctWhat').innerHTML=`<b>${s.name}</b> · ${s.sub}. 지역 ${s.regions.length}곳.`+traitHtml(stage);
   else if(!run.dead&&!run.over) $('pctWhat').innerHTML=`<b>${s.regions[run.region][0]}</b> · 지역 ${run.region+1}/${s.regions.length} · 처치한 악마 ${fmt(run.kills||0)}마리`+traitHtml(stage);
 }
