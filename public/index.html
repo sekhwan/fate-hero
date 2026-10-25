@@ -1245,6 +1245,7 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
   .cmdbar .opt[disabled]{min-height:44px}
 }
 .skipHint{font-size:11px;color:var(--muted);opacity:.8}
+.myD{margin-top:10px}.myD>summary{cursor:pointer;list-style:none;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;padding:2px 0}.myD>summary::-webkit-details-marker{display:none}.myD>summary::after{content:'▾';margin-left:auto;color:var(--muted)}.myD:not([open])>summary::after{content:'▸'}.myD>summary b{color:#d59aff}.mySum{font-size:12px;color:var(--muted)}.myReady{font-style:normal;font-size:11.5px;font-weight:800;color:#1a0d20;background:linear-gradient(90deg,#ff9a9a,#ffe08a,#9affc8,#9ad6ff,#d59aff);padding:1px 8px;border-radius:99px}.myD[open]>summary{margin-bottom:6px}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -1370,7 +1371,7 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
       <div class="gearBody" data-tab="shop">
         <div class="pane pShop"><div class="zone zs stall"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="shopSign" id="shopSign" hidden><img class="smImg" id="smImg" alt=""><div class="smTalk"><b id="smName"></b><span id="smLine"></span></div></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
-        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div id="mythBox"></div><div class="items"><div id="hItems"></div></div></div></div></div>
+        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div class="items"><div id="hItems"></div></div><div id="mythBox"></div></div></div></div>
       </div>
     </section>
     <div class="logWrap"><h4>토벌 일지</h4><ul class="log" id="log"><li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li></ul></div>
@@ -2235,9 +2236,11 @@ function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHT
   const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}" data-myth="${m.id}" tabindex="0"><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
   const matNames=c.mats.map(i=>itemName(run.items[i]));
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
-  box.innerHTML=`<div class="myth${c.ok?' ready':''}"><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
+  const opn=c.ok||store.get('mythOpen',false);
+  box.innerHTML=`<details class="myth myD${c.ok?' ready':''}"${opn?' open':''}><summary><b>🌈 신화 합성</b><span class="mySum">재료 ${Math.min(4,c.mats.length)}/4 · 명성 ${c.fame?'✓':'✗'} · 보유 신화 ${own.length}/4</span>${c.ok?'<em class="myReady">합성 가능!</em>':''}</summary><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
     <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
-    <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></div>`;
+    <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></details>`;
+  {const d=box.querySelector('details');if(d)d.ontoggle=()=>{if(!c.ok)store.set('mythOpen',d.open);};}
   box.querySelectorAll('[data-myth]').forEach(el=>{const m=MYTH_BY[el.dataset.myth];const v=own.includes(m.id)?((run.mythV||{})[m.id]||20):0;
     el.onmouseenter=el.onfocus=()=>mythCardShow(el,m,v);el.onmouseleave=el.onblur=mythCardHide;el.onclick=()=>{const c=$('mythCard');if(c&&c.classList.contains('on'))mythCardHide();else mythCardShow(el,m,v);};});
   const b=$('mythBtn');if(b)b.onclick=doMyth;}
