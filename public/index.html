@@ -1190,6 +1190,59 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
   .hstrip .more{grid-column:1/-1;font-size:12px;color:var(--muted)}
 }
 
+
+body.inRun #goBtn,body.inRun #pauseBtn,body.inRun #rollBtn{display:none!important}
+body.inRun .front>.actions:not(:has(#leaveBtn:not([hidden]),#travel:not([hidden]))){display:none}
+body.inRun .wbBar{padding:3px 10px;margin:4px 0 0}body.inRun .wbBar .wbAtk{padding:3px 10px}
+body.inRun .stages{margin-top:4px}
+.cmdbar .opt[data-id^="wk:"]{padding:6px 4px!important}.cmdbar .opt[data-id^="wk:"] .p:empty{display:none}.cmdbar .opt{gap:1px!important}.cmdbar .opt[data-id^="wk:"] .oic{display:none}.cmdbar .opt[data-id^="wk:"] .l{font-size:12.5px!important}
+.aInfo .hintRow{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 12px}.aInfo .hintRow .hint{margin:0!important}
+.aInfo .bdl{font-size:11.5px;color:var(--muted);font-family:var(--mono);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px}
+body.inRun .zone.zb>.zh{display:none}
+body.inRun .battleCard>.where{display:none}
+body.inRun .grid{margin-top:6px}
+body.inRun .zone.zb{margin-top:0}
+body.inRun .progStrip{padding-top:4px;padding-bottom:4px}
+.aClue{margin-top:5px;padding:5px 8px;border:1px solid #6a5a90;border-radius:6px;background:rgba(40,30,70,.55);display:grid;grid-template-columns:auto 1fr 1fr;gap:2px 10px;align-items:baseline;font-size:12.5px}.aClue b{color:#cdb8ff;white-space:nowrap}.aClue span{font-style:italic;color:#f0e6d0}.aClue small{grid-column:1/-1;font-size:11px;color:var(--muted)}
+@media (max-width:640px){.aClue{grid-template-columns:1fr}}
+/* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
+body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
+body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
+body.inRun header.hb .hbSub{display:none}
+body.inRun header.hb .helpBtn.hbBig{padding:6px 20px!important;font-size:14px!important;min-width:100px}
+body.inRun .zone.zb>.zh{padding:5px 12px}
+body.inRun .zb .zbody{padding:8px 12px 10px}
+body.inRun .zone.zb .pct{gap:2px 10px}
+body.inRun #pctNum{font-size:24px}
+body.inRun .route{margin-top:4px;padding:0 8px 2px}
+body.inRun .rtPath{padding-top:18px}
+body.inRun .rtI{width:28px;height:28px;font-size:13px}body.inRun .rt::before{top:13px}body.inRun .rt.t-boss .rtI{width:34px;height:34px;font-size:16px}
+body.inRun .rtL{font-size:10px;margin-top:1px}
+body.inRun .rtMe{top:-19px;width:21px;height:21px}
+.decide.battleCard{margin-top:6px!important;min-height:0!important}
+.battleCard .where{margin-bottom:2px}
+.aStage{min-height:0!important;padding:8px 14px 0!important}
+.fMon .fBody{width:clamp(150px,26vh,290px)!important;height:clamp(150px,26vh,290px)!important}
+.arena.boss .fMon .fBody{width:clamp(150px,27vh,320px)!important;height:clamp(150px,27vh,320px)!important}
+.fHero .fBody{width:clamp(110px,19vh,200px)!important;height:clamp(140px,25vh,260px)!important}
+.aVs{padding-bottom:24px!important}.aVs .vsT{font-size:clamp(22px,3.2vh,34px)!important}.aVs b{font-size:clamp(20px,3vh,30px)!important}
+.hpBar{margin:3px 0 4px!important}
+.aInfo{padding:14px 14px 4px!important}
+.aInfo h3{font-size:17px!important;line-height:1.3}
+.aInfo .hint{font-size:13px!important}
+.aInfo .risk{margin:1px 0!important;font-size:12px!important}
+.aInfo .bd,.aInfo .breakdown,.aInfo>div:last-child{font-size:11.5px}
+.battleCard .wkBox{margin:6px 0 0;padding:6px 10px}
+.battleCard .wkBox ol{display:grid;grid-template-columns:1fr 1fr;gap:2px 18px;margin:2px 0 2px 16px;font-size:13px}
+.battleCard .wkBox small{font-size:11.5px;line-height:1.4;display:block}
+.battleCard .opts.cmdbar{margin-top:8px!important;padding:7px!important;gap:6px!important;position:sticky;bottom:6px;z-index:6}
+.cmdbar .opt{padding:7px 6px 6px!important}
+.cmdbar .oic{width:18px!important;height:18px!important}
+.cmdbar .opt .l{font-size:14px!important}.cmdbar .opt .p{font-size:17px!important}
+@media (max-height:980px) and (min-width:641px){.arena.boss .fMon .fBody{width:22vh!important;height:22vh!important}.arena.boss .fHero .fBody{width:15vh!important;height:20vh!important}.arena.boss .aStage{padding-top:4px!important}.arena.boss~.wkBox,.battleCard .wkBox{margin-top:4px}}
+@media (max-height:800px) and (min-width:641px){.fMon .fBody{width:21vh!important;height:21vh!important}.fHero .fBody{width:14vh!important;height:19vh!important}.arena.boss .fMon .fBody{width:18vh!important;height:18vh!important}.arena.boss .fHero .fBody{width:12vh!important;height:16vh!important}.aInfo{padding-top:10px!important}}
+@media (max-width:640px){.battleCard .opts.cmdbar{position:static}.battleCard .wkBox ol{grid-template-columns:1fr}.fMon .fBody,.arena.boss .fMon .fBody{width:clamp(130px,21vh,190px)!important;height:clamp(130px,21vh,190px)!important}.fHero .fBody{width:clamp(90px,14vh,120px)!important;height:clamp(110px,18vh,150px)!important}
+  body.inRun header.hb{padding:8px 12px!important}}
 </style>
 <style>html,body{background:#14121a}</style>
 </head>
@@ -2374,7 +2427,7 @@ function arenaHtml(n,c,compact){const P=power(run),E=n.E||1,share=Math.max(0.06,
       <div class="fighter fMon"><div class="fTag"><b>${esc(n.name)}</b>${n.count>1?`<span>×${fmtK(n.count)}</span>`:n.boss?'<span>지배자</span>':''}</div><div class="hpBar mon"><i style="width:100%"></i><em>${n.boss?'👑 ':''}${esc(n.place||'')}</em></div><div class="fBody art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div></div>
     </div>
     <div class="clash" title="내 전투력 ${fmt(Math.round(P))} vs 적 ${fmt(Math.round(E))}"><i style="width:${(share*100).toFixed(1)}%"></i><span class="cl">⚔ ${fmtS(Math.round(P/run.stageCarry*10))}</span><span class="cr">${fmtS(Math.round(E/run.stageCarry*10))} ⚔</span></div>
-    ${compact?'':`<div class="aInfo"><h3>${c.title}</h3><p class="hint">${c.hint}</p>${riskHtml(n)}${breakdown(n)}</div>`}
+    ${compact?'':`<div class="aInfo"><h3>${c.title}</h3><div class="hintRow"><span class="hint">${c.hint}</span>${riskHtml(n)}</div>${breakdown(n,true)}${n.boss&&n.clues?`<div class="aClue"><b>🔍 단서</b><span>${esc(n.clues[0])}</span><span>${esc(n.clues[1])}</span><small>진짜일 확률 약 ${Math.round(n.acc*100)}% (놈의 기만 ${deceit(run)} / 내 지능 ${run.stats.int}) · 맞히면 ${pctTxt(n.pWkHit)}%, 틀리면 ${pctTxt(n.pWkMiss)}%</small></div>`:''}</div>`}
   </div>`;}
 // 전투 결과 연출: 이기면 베기 + 격파, 지면 화면 흔들림 + 붉은 번쩍임 (8배속에서도 0.5초 안에 끝난다)
 function battleFx(oc,boss){const z=document.querySelector('.zone.zb');if(!z||!oc)return;let L=$('fxLayer');if(!L){L=document.createElement('div');L.id='fxLayer';const zb=z.querySelector('.zbody')||z;zb.style.position='relative';zb.appendChild(L);}
@@ -2406,7 +2459,7 @@ function renderStage(){
   const why=mode==='manual'?'':n.type==='skill'?'스킬 선택':n.type==='prep'?'마지막 지배자':n.type!=='battle'?'중요한 만남':n.boss?'지배자 전투':n.quest?'의뢰':n.p<0.6?'불리한 싸움':'생명력 위험';
   box.innerHTML=`<div class="decide${n.type==='battle'?' battleCard':''}"><div class="where">${s.regions[run.region][0]} · ${n.type==='battle'?(n.boss?'지배자 전투':n.quest?'의뢰 토벌':'전투'):n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건'}${why?`<span class="why">${why} · 직접 결정</span>`:''}</div>
      <div class="head">${n.type==='battle'?arenaHtml(n,c,false):`${sceneHtml(n)}${compImgOf(n)?`<div class="compPic"><img src="${compImgOf(n)}" alt=""></div>`:''}<h3>${c.title}</h3><p class="hint">${compOfferHtml(n)?String(c.hint).replace(/\s*\([^()]*\)\s*$/,''):c.hint}</p>${compOfferHtml(n)}`}</div>
-     ${n.type==='battle'&&n.boss&&n.clues?`<div class="wkBox"><b>🔍 관찰 단서</b><ol><li>${esc(n.clues[0])}</li><li>${esc(n.clues[1])}</li></ol><small>눈썰미: 놈의 기만 ${deceit(run)} / 내 지능 ${run.stats.int} → 단서 하나가 진짜일 확률 약 ${Math.round(n.acc*100)}%. 약점을 맞히면 승률 ${pctTxt(n.pWkHit)}%, 틀리면 ${pctTxt(n.pWkMiss)}%.</small></div>`:''}
+     ${false?`<div class="wkBox"><b>🔍 관찰 단서</b><ol><li>${esc(n.clues[0])}</li><li>${esc(n.clues[1])}</li></ol><small>눈썰미: 놈의 기만 ${deceit(run)} / 내 지능 ${run.stats.int} → 단서 하나가 진짜일 확률 약 ${Math.round(n.acc*100)}%. 약점을 맞히면 승률 ${pctTxt(n.pWkHit)}%, 틀리면 ${pctTxt(n.pWkMiss)}%.</small></div>`:''}
      <div class="opts${c.options.length>4?' many':''}${n.type==='battle'?' cmdbar'+(c.options.length>4?' wide':''):''}"${n.type==='battle'?` style="--n:${c.options.length<=5?c.options.length:4}"`:''}>${c.options.map((o,i)=>`<button class="opt" type="button" data-id="${o.id}" title="${esc(o.desc||'')}" ${o.disabled?'disabled':''}><span class="k">${i+1}</span>${n.type==='battle'?optIcon(o.id):''}<span class="l">${o.label}</span>${o.prob!=null?`<span class="p ${probCls(o.prob)}">${pctTxt(o.prob)}%<small>성공</small></span>`:'<span class="p"></span>'}<span class="d">${o.desc}</span></button>`).join('')}</div>
      <div class="autobar"><span>숫자 키 1~${Math.min(9,c.options.length)}로도 고를 수 있다</span></div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
   bindModes();
@@ -2446,10 +2499,11 @@ function compOfferHtml(n){const K={heroine:['💗',hSlot(run&&run.hero)],friend:
   const c=n.kind==='proposal'?spOf(run,n):n.c;if(!c||!c.d)return '';const slot={heroine:'heroine',friend:'friend',pet:'pet'}[n.kind];const cur=slot&&run&&run.comp[slot];
   if(c.rare&&!RARE_SEEN.has(n)){RARE_SEEN.add(n);setTimeout(()=>rareFx(c),60);}
   return `<div class="compOffer${c.rare?' rare':''}">${c.rare?'<div class="coRare">✦ 희귀 동료 · 1%의 만남 ✦</div>':''}<div class="coHead"><span class="coIc">${K[0]}</span><span>${K[1]}로 합류하면</span><b>${esc(c.name)}</b></div><div class="coFx">${c.d.split(/,\s*/).map(x=>`<span>${esc(x)}</span>`).join('')}</div>${cur?`<div class="coNote">지금 ${K[1]}: ${esc(cur.name)} (바뀌지 않는다)</div>`:''}</div>`;}
-function breakdown(n){const w=n.parts;if(!w)return '';const P=power(run)/run.stageCarry*10,E=n.E/run.stageCarry*10;const f=v=>(v>=0?'+':'')+(v*100).toFixed(1);
+function breakdown(n,compact){const w=n.parts;if(!w)return '';const P=power(run)/run.stageCarry*10,E=n.E/run.stageCarry*10;const f=v=>(v>=0?'+':'')+(v*100).toFixed(1);
   const parts=[`기본 ${Math.round(w.base*100)}%`];if(Math.abs(w.luck)>=0.001)parts.push(`행운 ${f(w.luck)}`);if(w.under)parts.push(`펫 ${f(w.under)}`);if(w.fame>=0.001)parts.push(`명성 ${f(w.fame)}`);if(w.item)parts.push(`아이템 ${f(w.item)}`);if(w.pw<0.999&&(w.fame||w.item||w.luck>0))parts.push(`전투력 열세로 보너스 ${Math.round(w.pw*100)}%만 적용`);
   if(n.boss){const bp=[`${n.final?'최종 지배자':'지배자'} 기본 ${Math.round(n.pRaw*100)}%`];if(n.final&&n.unp)bp.push(`미평정 ${n.unp}곳 반영`);if(n.bonus)bp.push(`결전 준비 ${f(n.bonus)}`);if(n.deal)bp.push(`${n.deal>0?'맹세한 기사':'보물의 저주'} ${f(n.deal)}`);const tb=teamBonus(run);if(tb)bp.push(`동료 합동 ${f(tb)}`);parts.length=0;parts.push(...bp);}
   if(n.lp>=0.001)parts.push(`행운의 일격 ${(n.lp*100).toFixed(1)}%`);
+  if(compact)return `<div class="bdl" title="${esc(parts.join(' · '))}">${w.ratio.toFixed(2)}배 · ${parts.join(' · ')}</div>`;
   return `<div style="font-size:12.5px;color:var(--muted);margin-top:6px;font-family:var(--mono)">내 전투력 <span style="color:var(--pw)">${fmt(P)}</span> vs 적 ${fmt(E)} (${w.ratio.toFixed(2)}배)<br>${parts.join(' · ')}</div>`;}
 const ART_PAL=[['#7a9a4a','#4d6630','#f4e05c'],['#9c8a7a','#5e4e44','#ff6a3a'],['#a05ac8','#5e2f7c','#ffd36a'],['#3a5fa8','#1f3466','#9ff2ff'],['#2a2430','#14101a','#ffcf5a'],['#b03a2e','#5e1a14','#ffe38a']];
 function hashStr(t){let h=2166136261;for(const ch of t){h^=ch.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
@@ -2852,6 +2906,7 @@ function nextStage(){
 }
 function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
+  document.body.classList.toggle('inRun',!!(run&&!run.dead&&!run.over));
   if(typeof obCheck==='function')obCheck();if(typeof gdSoon==='function')gdSoon();
   applyWorldBg();
   {const d=$('hDeals');if(d){const a=[];if(run&&!run.dead&&!run.over){if(run.oath)a.push(`<span class="dg" title="치료해 준 기사가 약속한 지배자전에 달려온다">🛡️ 맹세: ${run.oath.left}지역 뒤 기사 합류</span>`);if(run.oathBoss)a.push(`<span class="dg">🛡️ 기사 합류 중: 이번 지배자전 +${Math.round(OATH_BOSS*100)}%p</span>`);
