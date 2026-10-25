@@ -1225,6 +1225,25 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
 .opts.hasWk.sub .opt[data-id^="wk:"]{padding:10px 6px!important}
 .opts.hasWk.sub .opt[data-id^="wk:"] .l{font-size:14px!important}
 .cmdbar .wkMenu .p small{display:block!important;font-size:10px;color:var(--muted)}
+/* 데스크톱: 전투 선택지를 장면 오른쪽에 세로 1열로 */
+@media (min-width:901px){
+  .decide.battleCard{display:grid!important;grid-template-columns:minmax(0,1fr) 168px;grid-template-areas:"head opts" "bar bar";column-gap:10px;align-items:stretch}
+  .decide.battleCard>.head{grid-area:head;min-height:0}
+  .decide.battleCard>.opts.cmdbar{grid-area:opts;display:flex!important;flex-direction:column;justify-content:flex-start;margin-top:0!important;position:static!important;padding:8px!important;gap:6px!important}
+  .decide.battleCard>.autobar{grid-area:bar}
+  .decide.battleCard>.where{display:none}
+  .cmdbar .opt{display:grid!important;grid-template-columns:22px minmax(0,1fr) auto!important;align-items:center;text-align:left!important;padding:10px 10px!important;min-height:52px;flex:none}
+  .cmdbar .opt .oic{grid-column:1;justify-self:start}
+  .cmdbar .opt .l{grid-column:2;font-size:14px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cmdbar .opt .p{grid-column:3;font-size:17px!important;text-align:right}
+  .cmdbar .wkMenu .p small{font-size:9.5px!important;text-align:right}
+  .opts.hasWk.sub .opt[data-id^="wk:"],.opts.hasWk.sub .wkBack{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+  .opts.hasWk.sub .opt[data-id^="wk:"] .l{white-space:normal}
+  .opts.hasWk .opt[data-id^="wk:"],.opts.hasWk .wkBack{display:none!important}
+  .opts.hasWk.sub>.opt:not([data-id^="wk:"]):not(.wkBack){display:none!important}
+  .cmdbar .opt.wkMenu{order:10}.opts.hasWk.sub .wkBack{order:11}
+  .cmdbar .opt[disabled]{min-height:44px}
+}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
