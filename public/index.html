@@ -1525,7 +1525,7 @@ async function houseSave(){const d=houseDraft,m=$('hsMsg');m.className='msg';m.t
   try{let url=d.url;const uid=jwtSub();
     if(d.file){const t=await authFresh();const r=await fetch(`${RANK.url}/storage/v1/object/crests/${uid}.webp`,{method:'POST',headers:{apikey:RANK.key,Authorization:'Bearer '+t,'Content-Type':'image/webp','x-upsert':'true'},body:d.file.blob});
       if(!r.ok){const t2=await r.text();throw new Error('그림 올리기 실패: '+t2.slice(0,80));}url=`${RANK.url}/storage/v1/object/public/crests/${uid}.webp?v=${Date.now()}`;}
-    const res=await rpc('save_house',{p_name:d.name,p_crest:Object.assign({},d.crest,url&&!d.file?{keepUrl:1}:{}),p_crest_url:d.file?url:null,p_color1:d.color1,p_color2:d.color2});
+    const cr=Object.assign({},d.crest);delete cr.keepUrl;const res=await rpc('save_house',{p_name:d.name,p_crest:Object.assign(cr,url&&!d.file?{keepUrl:1}:{}),p_crest_url:d.file?url:null,p_color1:d.color1,p_color2:d.color2});
     if(!res||!res.ok)throw new Error((res&&res.error)||'서버 오류');
     const first=!HOUSE;await houseLoad();closeHouse();acctRender();
     showToast(first?'가문을 세웠다':'가문을 고쳤다',`${HOUSE.name}`,'ok',2400);
