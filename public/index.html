@@ -657,14 +657,23 @@ body.ob-inv .gearBody .pShop{display:block!important}
 #gdPop .gdH{display:flex;align-items:center;gap:8px;margin-bottom:6px}#gdPop .gdI{font-size:22px}#gdPop .gdH b{color:var(--brass);font-size:15px}#gdPop .gdH em{margin-left:auto;font-style:normal;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--brass);color:#1a1620}
 #gdPop .gdT{font-size:13.5px;line-height:1.6;color:var(--fg)}#gdPop .gdT b{color:var(--brass)}
 #gdPop .gdB{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}#gdPop .gdB .btn{padding:6px 14px;font-size:13px}
-#gdDim{position:fixed;inset:0;z-index:94;background:rgba(0,0,0,.62);display:none}#gdDim.on{display:block}
-#gdPop .gdNeed{margin-right:auto;font-size:12.5px;color:var(--brass);align-self:center}#gdPop .gdSkip{background:none;border:0;color:var(--muted);font-size:11.5px;text-decoration:underline;cursor:pointer;padding:4px}
-#gdRing{position:fixed;z-index:95;border:3px solid var(--brass);border-radius:10px;pointer-events:none;opacity:0;box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 18px var(--brass);animation:gdPulse 1.2s ease-in-out infinite}
+#gdDim{position:fixed;inset:0;z-index:94;background:rgba(4,10,20,.66);display:none}#gdDim.on{display:block}
+#gdPop{--gd:#4fdcf2;--gd2:#1b8fb0;position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);z-index:96;width:min(480px,calc(100vw - 32px));padding:16px 16px 12px;border-radius:14px;background:linear-gradient(180deg,#0f2a3a,#0b1c28);border:2px solid var(--gd);box-shadow:0 0 0 1px rgba(79,220,242,.25),0 0 28px rgba(79,220,242,.35),0 14px 40px rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-family:inherit}
+#gdPop::before{content:'💡 안내';position:absolute;top:-12px;left:14px;padding:2px 10px;border-radius:99px;background:var(--gd);color:#062030;font-size:11.5px;font-weight:800;letter-spacing:.5px}
+#gdPop.top{bottom:auto;top:22px;transform:translate(-50%,-16px)}
+#gdPop.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#gdPop .gdH{display:flex;align-items:center;gap:8px;margin:4px 0 6px}#gdPop .gdI{font-size:22px}#gdPop .gdH b{color:#e8fbff;font-size:15.5px}#gdPop .gdH em{margin-left:auto;font-style:normal;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--gd);color:var(--gd)}
+#gdPop .gdT{font-size:13.5px;line-height:1.65;color:#cfe6ee}#gdPop .gdT b{color:var(--gd);font-weight:700}
+#gdPop .gdB{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+#gdPop .gdB .btn{padding:7px 16px;font-size:13px;background:var(--gd);border-color:var(--gd);color:#062030;font-weight:800;box-shadow:none}
+#gdPop .gdB .btn:hover{background:#86ebfa}
+#gdPop .gdNeed{margin-right:auto;font-size:12.5px;color:var(--gd);align-self:center;font-weight:700}#gdPop .gdSkip{background:none;border:0;color:#7f9aa6;font-size:11.5px;text-decoration:underline;cursor:pointer;padding:4px}
+#gdRing{position:fixed;z-index:95;border:3px solid #4fdcf2;border-radius:10px;pointer-events:none;opacity:0;box-shadow:0 0 0 3px rgba(4,10,20,.5),0 0 20px #4fdcf2,inset 0 0 14px rgba(79,220,242,.45);animation:gdPulse 1.1s ease-in-out infinite}
 #gdRing.on{opacity:1}
-#gdArrow{position:fixed;z-index:96;transform:translateX(-50%);font-size:26px;color:var(--brass);text-shadow:0 2px 6px #000;pointer-events:none;opacity:0;animation:gdBob .8s ease-in-out infinite}
+#gdArrow{position:fixed;z-index:96;transform:translateX(-50%);font-size:28px;color:#4fdcf2;text-shadow:0 0 10px #4fdcf2,0 2px 6px #000;pointer-events:none;opacity:0;animation:gdBob .8s ease-in-out infinite}
 #gdArrow.on{opacity:1}
-@keyframes gdPulse{50%{box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 30px var(--brass)}}
-@keyframes gdBob{50%{margin-top:-8px}}
+@keyframes gdPulse{50%{box-shadow:0 0 0 3px rgba(4,10,20,.5),0 0 36px #4fdcf2,inset 0 0 20px rgba(79,220,242,.6)}}
+@keyframes gdBob{50%{margin-top:-9px}}
 @media (prefers-reduced-motion:reduce){#gdRing,#gdArrow{animation:none}}
 #obTip{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);z-index:88;max-width:min(460px,calc(100vw - 32px));padding:12px 16px 12px 14px;border-radius:10px;background:#211d28;border:1px solid var(--brass);box-shadow:0 10px 30px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 #obTip.on{opacity:1;transform:translate(-50%,0);pointer-events:auto} #obTip .oi{font-size:20px;line-height:1.2} #obTip b{display:block;color:var(--brass);font-size:14px} #obTip span{font-size:13.5px;color:var(--fg);line-height:1.5} #obTip small{display:block;font-size:11px;color:var(--muted);margin-top:4px}
