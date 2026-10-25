@@ -1469,7 +1469,8 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
       <li><b>2·4·6·8·10레벨</b>에 한 번씩, 그 뒤로는 <b>13·16·19…처럼 3레벨마다</b> 스킬을 고른다. 세계를 정복할 때도 1번 고른다. 레벨 옆 경험치 막대에서 다음 스킬 레벨을 볼 수 있다.</li>
       <li>스킬 습득의 기본 확률은 <b>기술마다 55~85%</b>로 다르게 제시된다. 행운 5당 +2%p, 실패할 때마다 쌓이는 <b>깨달음</b> 1개당 +5%p(최대 95%). 실패하면 그 기회는 사라지고, 성공하면 깨달음은 초기화된다.</li>
       <li>스킬은 <b>전투·생존·성장·재물</b> 네 계열로 나뉜다. 한 계열의 랭크 합이 <b>3</b>과 <b>6</b>이 되면 숙련 보너스가 붙는다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵다.</li>
-      <li>스킬은 언제나 직접 고른다. 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
+      <li>한 번이라도 <b>레벨 50</b>에 닿으면 <b>16배속</b>이, <b>레벨 200</b>에 닿으면 <b>완전 자동</b>이 영구히 열린다. 완전 자동은 사냥터와 끝없는 전장에서만 작동하며 스킬 선택까지 알아서 한다.</li>
+      <li>본 세계에서는 스킬을 언제나 직접 고른다. 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
     </ul>
     <div class="tblWrap"><table id="helpSkills"></table></div>
     <h3>조합</h3>
@@ -2023,7 +2024,7 @@ const GD_TOUR=[
 // 한 번 직접 결정 화면으로 멈춘 길목은 끝날 때까지 멈춘 채로 둔다
 // (장비를 사거나 강화해 승률이 오르면 '중요하지 않은 싸움'이 되어 저절로 넘어가 버리던 문제)
 const impStick=new WeakSet();
-function impNow(c){if(!c||!c.node)return false;if(impStick.has(c.node))return true;const v=isImportant(run,c,mode)||gdWant(c);if(v)impStick.add(c.node);return v;}
+function impNow(c){if(!c||!c.node)return false;if(impStick.has(c.node))return true;const v=isImportant(run,c,effMode())||gdWant(c);if(v)impStick.add(c.node);return v;}
 function gdWant(c){if(typeof gdCur!=='undefined'&&gdCur&&gdCur.tour)return true;return !!(typeof GD!=='undefined'&&!GD.off&&!GD.seen.tourB&&c&&c.node&&c.node.type==='battle'&&(c.options||[]).some(o=>o.id==='fight'));}
 function gdTour(i){const op=document.querySelector('#stage .decide .opts');if(!op){gdClose(true);return;}
   const steps=GD_TOUR.filter(t=>op.querySelector(`.opt[data-id="${t[0]}"]`));if(i>=steps.length){gdClose(true);return;}
@@ -2097,7 +2098,7 @@ function gdReset(){GD={done:{},seen:{},off:false,runs:0};gdSave();showToast&&sho
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
   return `<div class="obNext">📜 <b>${esc(hero.hidden?hero.hidden.title:hero.race.name+' '+hero.wealth.name)}</b>이(가) 용사 연대기에 ${v?'★'.repeat(v)+'로 기록되었다':'오르지 못했다(첫 지역을 넘겨야 기록된다)'}.<br>${nx?`다음 목표: 이 조합으로 <b>${nx}</b>. `:''}새 용사를 뽑아 다른 칸도 채워 보자. 위의 「랜덤 영웅 뽑기」를 누른다.</div>`;}
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
-let stage=0, hero=null, run=null, mode=(m=>m==='manual'?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
+let stage=0, hero=null, run=null, mode=(m=>m==='manual'||(m==='auto'&&(store.get('maxLvl',0)>=200))?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
 const dist={};
 // 상위 % 분포: 자동 판 2000개. 한 번에 돌리면 3~5초 멈추므로 출정 중 백그라운드에서 조금씩 만들고, 버전별로 저장해 둔다
@@ -2575,15 +2576,26 @@ function monsterPixel(name,st,boss){
   }
   return `<svg viewBox="0 0 ${W+2} ${H+2}" shape-rendering="crispEdges" style="filter:hue-rotate(${hue}deg)" role="img" aria-label="${name}">${rects}</svg>`;
 }
-const SPEEDS=[1,2,4,8];
+// 숙련 보상: 한 번이라도 레벨 50에 닿으면 16배속, 레벨 200에 닿으면 완전 자동(사냥터·끝없는 전장에서만)이 영구히 열린다
+const U16_LV=50,UAUTO_LV=200;
+function maxLvlEver(){let v=store.get('maxLvl',0)||0;try{if(typeof chron!=='undefined'&&chron.st&&chron.st.maxLvl)v=Math.max(v,chron.st.maxLvl);}catch(e){}return v;}
+function u16(){return maxLvlEver()>=U16_LV;}function uAuto(){return maxLvlEver()>=UAUTO_LV;}
+function autoOk(){return uAuto()&&!!run&&!run.dead&&!run.over&&!!STAGES[run.stage]&&(STAGES[run.stage].endless||STAGES[run.stage].hunt!=null);}
+function effMode(){return mode==='auto'&&!autoOk()?'key':mode;}
+function lvlUnlockCheck(){if(!run)return;const L=run.lvl||1,was=maxLvlEver();if(L<=was)return;store.set('maxLvl',L);try{if(typeof chron!=='undefined'&&chron.st){chron.st.maxLvl=L;chSave();}}catch(e){}
+  const msg=[];if(was<U16_LV&&L>=U16_LV)msg.push(['⏩','16배속이 열렸다',`레벨 ${U16_LV}에 처음 도달했다. 이제 아래 속도 버튼에서 <b>16×</b>를 고를 수 있다. 앞으로 태어나는 모든 용사에게 열려 있다.`]);
+  if(was<UAUTO_LV&&L>=UAUTO_LV)msg.push(['🤖','완전 자동이 열렸다',`레벨 ${UAUTO_LV}에 처음 도달했다. <b>사냥터와 끝없는 전장</b>에서 <b>완전 자동</b>을 고르면 스킬 선택까지 모두 알아서 진행한다. 본 세계(지상계~공허의 옥좌)에서는 중요한 결정을 직접 내린다.`]);
+  msg.forEach((m,i)=>setTimeout(()=>{if(typeof gdOpen==='function'&&!gdCur)gdOpen({ic:m[0],head:m[1],text:m[2],el:null});else showToast(m[1],m[2].replace(/<[^>]+>/g,''),'ok',4000);},600+i*400));}
+function SPEEDS_NOW(){return u16()?[1,2,4,8,16]:[1,2,4,8];}
+const SPEEDS=[1,2,4,8,16];
 // 기본 8배속. 예전 기본값(1배속)이 저장된 사람도 한 번은 8배속으로 옮긴다. 이후 고른 속도는 그대로 기억한다.
-let speed=(v=>SPEEDS.includes(v)?v:8)(store.get('spd8')?store.get('speed',8):8), paused=false; store.set('spd8',1);
+let speed=(v=>SPEEDS_NOW().includes(v)?v:8)(store.get('spd8')?store.get('speed',8):8), paused=false; store.set('spd8',1);
 store.set('speed',speed); store.set('mode2',mode); // 예전 설정(16배속, 전부 자동, 지배자만)을 새 설정으로 옮긴다
 function stepMs(n){const base=n.type==='battle'?(n.boss?9000:7000):n.type==='explore'?5000:n.type==='rest'||n.type==='prep'?4000:4500;const sf=[1,1.35,1.8,2,2.6][stage]||1;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches?300:base*sf/speed;}
 const PHASES={prep:['무기를 손질한다','작전을 세운다','결전의 문 앞에 선다'],battle:['적과 거리를 좁힌다','칼날이 부딪친다','승부가 기울기 시작한다'],explore:['주변을 살핀다','깊숙이 들어간다','무언가가 보인다'],rest:['모닥불을 피운다','밤이 깊어간다','동이 튼다'],event:['다가간다','이야기를 나눈다']};
-const MODES=[['manual','전부 직접'],['key','중요한 것만']];
-function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MODES.map(([k,l])=>`<button class="mode" type="button" data-m="${k}" aria-pressed="${mode===k}">${l}</button>`).join('')}<button class="mode" type="button" data-pause="1" aria-pressed="${paused}" style="${paused?'border-color:var(--ember);color:var(--ember)':''}">${paused?'재개 ▶':'일시정지 ❚❚'}</button><span class="speed">${SPEEDS.map(v=>`<button class="mode" type="button" data-sp="${v}" aria-pressed="${speed===v}">${v}×</button>`).join('')}</span></div>`;}
+const MODES=[['manual','전부 직접'],['key','중요한 것만'],['auto','완전 자동']];
+function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MODES.filter(([k])=>k!=='auto'||uAuto()).map(([k,l])=>k==='auto'?`<button class="mode" type="button" data-m="auto" aria-pressed="${mode==='auto'}" ${autoOk()?'':'title="사냥터와 끝없는 전장에서만 작동한다. 본 세계에서는 중요한 것만으로 진행된다"'}>${l}${autoOk()?'':' <small>(사냥터·끝없는 전장)</small>'}</button>`:`<button class="mode" type="button" data-m="${k}" aria-pressed="${mode===k}">${l}</button>`).join('')}<button class="mode" type="button" data-pause="1" aria-pressed="${paused}" style="${paused?'border-color:var(--ember);color:var(--ember)':''}">${paused?'재개 ▶':'일시정지 ❚❚'}</button><span class="speed">${SPEEDS_NOW().map(v=>`<button class="mode" type="button" data-sp="${v}" aria-pressed="${speed===v}">${v}×</button>`).join('')}</span></div>`;}
 function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode2',mode);clearTimeout(autoT);renderStage();});
   document.querySelectorAll('[data-pause]').forEach(b=>b.onclick=togglePause);
   document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{speed=+b.dataset.sp;store.set('speed',speed);clearTimeout(autoT);renderStage();});}
@@ -2950,7 +2962,7 @@ function nextStage(){
 }
 function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
-  document.body.classList.toggle('inRun',!!(run&&!run.dead&&!run.over));
+  document.body.classList.toggle('inRun',!!(run&&!run.dead&&!run.over));lvlUnlockCheck();
   if(typeof obCheck==='function')obCheck();if(typeof gdSoon==='function')gdSoon();
   applyWorldBg();
   {const d=$('hDeals');if(d){const a=[];if(run&&!run.dead&&!run.over){if(run.oath)a.push(`<span class="dg" title="치료해 준 기사가 약속한 지배자전에 달려온다">🛡️ 맹세: ${run.oath.left}지역 뒤 기사 합류</span>`);if(run.oathBoss)a.push(`<span class="dg">🛡️ 기사 합류 중: 이번 지배자전 +${Math.round(OATH_BOSS*100)}%p</span>`);
