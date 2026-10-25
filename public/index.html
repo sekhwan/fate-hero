@@ -1676,7 +1676,7 @@ function obCheck(){if(run){
   for(const k in OB_KEYS)document.body.classList.toggle('ob-'+k,!(OB.full||OB.u[k]));
   const b=$('obBtn');if(b){b.textContent=OB.full?'단계별로 보기':'모든 정보 보기';b.setAttribute('aria-pressed',String(!!OB.full));}}
 // ── 친절한 안내: 초반 목표(화살표) + 처음 보는 사건 설명 ──
-let GD=store.get('gd1',null);if(!GD||typeof GD!=='object'){GD={done:{},seen:{},off:false};}
+let GD=store.get('gd1',null);if(!GD||typeof GD!=='object'){GD={done:{},seen:{},off:false};}GD.off=false; // 안내는 끌 수 없다(강제 유도)
 function gdSave(){store.set('gd1',GD);}
 function gdPct(v){return Math.round(v*100);}
 const GD_GOALS=[
@@ -1751,9 +1751,8 @@ function gdPos(){const a=$('gdArrow'),r=$('gdRing'),d=$('gdDim'),p=$('gdPop');if
   gdRaf=requestAnimationFrame(gdPos);}
 function gdOpen(t){gdCur=t;const o=gdEl();const needAct=!!t.act;t.block=needAct||!!t.tour;
   if(!needAct&&run&&!run.dead&&!run.over&&!paused){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
-  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${t.next?`<button type="button" class="btn" id="gdNext">다음 ▶</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:`<button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`}</div>`;
+  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${t.next?`<button type="button" class="btn" id="gdNext">다음 ▶</button>`:needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span>`:`<button type="button" class="btn" id="gdOk">알겠다</button>`}</div>`;
   o.classList.add('on');{const k=$('gdOk');if(k)k.onclick=()=>gdClose(true);const nx=$('gdNext');if(nx)nx.onclick=()=>t.next();}
-  $('gdOff').onclick=()=>{GD.off=true;gdSave();gdClose(false);showToast&&showToast('안내','안내를 껐다. 상단 「안내 다시 보기」로 다시 켤 수 있다.','ok',2600);};
   if(t.el&&t.el.scrollIntoView){try{t.el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}}
   cancelAnimationFrame(gdRaf);gdPos();}
 function gdClose(ok){const o=$('gdPop');if(o)o.classList.remove('on');cancelAnimationFrame(gdRaf);['gdArrow','gdRing','gdDim'].forEach(k=>{const e=$(k);if(e)e.classList.remove('on');});
