@@ -707,7 +707,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .hrv.r0 .hrvRays{display:none}.hrv.r1.flip .hrvRays{opacity:.35}
 @keyframes hrSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 .hrv.rH.flip .hrvRays{background:repeating-conic-gradient(#ff8a8a55 0 5deg,transparent 5deg 12deg,#ffe08a55 12deg 17deg,transparent 17deg 24deg,#8affc855 24deg 29deg,transparent 29deg 36deg,#8ad6ff55 36deg 41deg,transparent 41deg 48deg)}
-.hrvCard{position:relative;width:min(300px,78vw);aspect-ratio:3/4.3;perspective:1200px;transform:translateY(-60vh) rotate(-8deg);transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+.hrvCard{position:relative;width:min(300px,78vw);aspect-ratio:3/4.9;perspective:1200px;transform:translateY(-60vh) rotate(-8deg);transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
 .hrv.in .hrvCard{transform:none}
 .hrv.shake:not(.flip) .hrvCard{animation:hrShake .12s linear infinite}
 .hrv.r3.shake:not(.flip) .hrvCard,.hrv.r4.shake:not(.flip) .hrvCard,.hrv.rH.shake:not(.flip) .hrvCard{animation-duration:.08s;filter:drop-shadow(0 0 22px var(--c1))}
@@ -720,12 +720,14 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .hcBT{font-family:var(--display);font-size:22px;color:var(--c1);letter-spacing:.1em;text-shadow:0 2px 4px #000}
 .hcFront{transform:rotateY(180deg);background:linear-gradient(180deg,color-mix(in srgb,var(--c2) 55%,#14101a),#120e18 60%);display:flex;flex-direction:column;align-items:center;padding:14px 14px 12px;text-align:center}
 .hHid{font-size:12px;font-weight:800;letter-spacing:.08em;color:#1a0d20;background:linear-gradient(90deg,#ff9a9a,#ffe08a,#9affc8,#9ad6ff,#d59aff);padding:2px 10px;border-radius:99px;margin-bottom:4px}
-.hcPic{width:78%;aspect-ratio:1;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--c1) 35%,transparent),transparent 65%)}
+.hcPic{width:70%;aspect-ratio:1;display:flex;align-items:flex-end;justify-content:center;background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--c1) 35%,transparent),transparent 65%)}
 .hcPic img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 10px #000a)}.hcPic .pfb{width:60%;color:#5a5060}
 .hcName{font-family:var(--display);font-size:26px;color:#fff3dc;margin-top:4px;text-shadow:0 2px 6px #000}
 .hcSub{font-size:13px;color:#d8c8b0}
 .hcW{margin-top:6px;display:flex;gap:8px;align-items:baseline;justify-content:center}.hcW b{color:var(--c1);font-size:17px;text-shadow:0 0 10px color-mix(in srgb,var(--c1) 60%,transparent)}.hcW small{font-size:11px;color:#a89a88}
 .hcWd{font-size:12px;color:#bfb2a0;margin-top:2px}
+.hcSt{display:flex;gap:18px;justify-content:center;margin-top:6px}.hcSt span{display:flex;flex-direction:column;align-items:center;line-height:1.15}.hcSt small{font-size:10.5px;color:#a89a88}.hcSt b{font-size:19px;color:#ffb26b;font-variant-numeric:tabular-nums}.hcSt span+span b{color:#9fe8a8}
+.hcCmb{margin-top:8px;padding:5px 8px;border-radius:8px;border:1px dashed #4a4050;font-size:12px;color:#bfb2a0;display:flex;flex-direction:column;gap:1px;max-width:100%}.hcCmb small{font-size:10.5px;color:#8a7f90}.hcCmb.ok{border:1px solid #ffd36b;background:linear-gradient(90deg,#3a2a08,#241a08);box-shadow:0 0 14px rgba(255,211,107,.35)}.hcCmb.ok b{color:#ffe27a;font-size:13px}.hcCmb.ok small{color:#e8d09a}
 .hcTr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px}
 .hTr{font-size:11.5px;padding:2px 8px;border-radius:99px;border:1px solid}.hTr.g{color:#9fe8a8;border-color:#3a7a4a;background:#12261a}.hTr.b{color:#ff9a8a;border-color:#7a3a3a;background:#261212}.hTr.n{color:#a89a88;border-color:#4a4050}
 .hrvBtns{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;white-space:nowrap;padding:0 12px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
@@ -1780,13 +1782,16 @@ function heroReveal(h){const R=heroRarity(h);let o=$('hrv');if(!o){o=document.cr
   const k=portraitKey(h);const W=WEALTH.find(x=>x.name===h.wealth.name)||{};const pc=wealthPct(h.wealth.name);
   const tr=(h.traits||[]).map(t=>`<span class="hTr ${t.good?'g':t.good===false?'b':'n'}">${esc(t.name)}</span>`).join('');
   const title=h.hidden?`<div class="hHid">✦ ${esc(h.hidden.title)} ✦</div>`:'';
+  let pw=0,hpM=0;try{const t=newRun(h,0,1);pw=Math.round(power(t)/t.stageCarry*10);hpM=t.maxHp;}catch(e){}
+  const cL=COMBOS.filter(c=>c.race===h.race.name),god=cL.find(c=>c.god);const godOk=god&&(!god.tr||(h.traits||[]).some(t=>t.name===god.tr));
+  const cmb=cL.length?`<div class="hcCmb ${godOk?'ok':''}">${godOk?`<b>★ 전설 조합 가능</b><small>${esc(god.name)}</small>`:`<span>조합 ${cL.length-(god?1:0)}종 가능</span>${god?`<small>전설 조합 불가 · 필요 특성 「${esc(god.tr||'')}」</small>`:''}`}</div>`:'';
   o.className='hrv '+R.cls;
   o.innerHTML=`<div class="hrvBg"></div><div class="hrvRays"></div><div class="hrvCard"><div class="hcIn">
      <div class="hcBack"><div class="hcSeal">⚔</div><div class="hcBT">운명의 용사</div></div>
      <div class="hcFront">${title}<div class="hcPic">${k?`<img src="hero/${k}.webp" alt="">`:`<span class="pfb">${SIL}</span>`}</div>
        <div class="hcName">${esc(h.name)}</div><div class="hcSub">${esc(h.race.name)} ${esc(h.job)} · ${h.gender==='f'?'여':'남'}</div>
        <div class="hcW"><b>${esc(h.wealth.name)}</b>${h.hidden?'':`<small>${pc<1?pc.toFixed(1):Math.round(pc)}% 확률</small>`}</div>
-       <div class="hcWd">${esc(W.desc||'')}</div><div class="hcTr">${tr||'<span class="hTr n">특성 없음</span>'}</div></div>
+       <div class="hcWd">${esc(W.desc||'')}</div><div class="hcSt"><span><small>전투력</small><b>${fmt(pw)}</b></span><span><small>생명력</small><b>${fmt(hpM)}</b></span></div><div class="hcTr">${tr||'<span class="hTr n">특성 없음</span>'}</div>${cmb}</div>
    </div></div>
    <div class="hrvBtns"><button type="button" class="btn" id="hrvGo">이 운명으로 출정</button><button type="button" class="btn ghost" id="hrvRe">🎲 다시 뽑기</button><button type="button" class="btn ghost" id="hrvOk">확인</button></div>
    <div class="hrvSkip">누르면 바로 넘어간다</div>`;
