@@ -1805,7 +1805,8 @@ function gdMark(id){gdAct(id);}
 // 처음 영웅 3명까지는 출정할 때마다 안내를 처음부터 다시 보여 준다
 const GD_RUNS=3;
 function gdNewRun(){GD.runs=(GD.runs||0)+1;if(GD.runs<=GD_RUNS){GD.seen={'g:go':1};GD.done={go:1};}gdSave();}
-setInterval(()=>{if(!gdCur&&typeof hero!=='undefined')gdCheck();},1500);
+setInterval(()=>{if(!gdCur&&typeof hero!=='undefined')gdCheck();try{const st=run&&!run.dead&&!run.over?run.stage:stage;if(STAGES[st]&&STAGES[st].hunt==null)distWarm(st);}catch(e){}},1500);
+setTimeout(()=>{try{distWarm(typeof stage==='number'?stage:0);}catch(e){}},3000);
 function gdReset(){GD={done:{},seen:{},off:false,runs:0};gdSave();showToast&&showToast('안내','처음부터 다시 안내한다.','ok',2000);gdSoon();}
 
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
@@ -1814,7 +1815,16 @@ let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get(
 let stage=0, hero=null, run=null, mode=(m=>m==='manual'||m==='auto'?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
 const dist={};
-function getDist(st){if(dist[st])return dist[st];const a=[];for(let i=1;i<=2000;i++){const h=makeHero((i*2246822519+st*977)>>>0);a.push(pct(autoRun(h,st,i*104729+st)));}a.sort((x,y)=>x-y);return dist[st]=a;}
+// 상위 % 분포: 자동 판 2000개. 한 번에 돌리면 3~5초 멈추므로 출정 중 백그라운드에서 조금씩 만들고, 버전별로 저장해 둔다
+const DIST_N=2000,distJob={};
+function distKey(st){return 'dist_'+ENGINE_VERSION+'_'+st;}
+function distRun(st,i){const h=makeHero((i*2246822519+st*977)>>>0);return pct(autoRun(h,st,i*104729+st));}
+function distLoad(st){if(dist[st])return dist[st];const c=store.get(distKey(st),null);if(Array.isArray(c)&&c.length===DIST_N){dist[st]=c;return c;}return null;}
+function distWarm(st){if(STAGES[st]&&STAGES[st].endless)return;if(distLoad(st)||distJob[st])return;const j=distJob[st]={a:[],i:1};
+  const step=()=>{if(dist[st])return;const t0=performance.now();while(j.i<=DIST_N&&performance.now()-t0<12){j.a.push(distRun(st,j.i++));}
+    if(j.i>DIST_N){const a=j.a.sort((x,y)=>x-y).map(v=>Math.round(v*1000)/1000);dist[st]=a;try{store.set(distKey(st),a);}catch(e){}delete distJob[st];return;}setTimeout(step,30);};
+  setTimeout(step,500);}
+function getDist(st){const c=distLoad(st);if(c)return c;const j=distJob[st];const a=j?j.a.slice():[];for(let i=j?j.i:1;i<=DIST_N;i++)a.push(distRun(st,i));a.sort((x,y)=>x-y);if(j){dist[st]=a;delete distJob[st];}return dist[st]=a;}
 const isEndless=()=>!!STAGES[stage].endless;
 function progTxt(){return run&&STAGES[run.stage].endless?`${floorOf(run)}층`:pfmt(run?pct(run):0)+'%';}
 function topPct(st,p){if(STAGES[st].endless)return 0;const a=getDist(st);let lo=0,hi=a.length;while(lo<hi){const m=(lo+hi)>>1;if(a[m]<p)lo=m+1;else hi=m;}return Math.max(0.05,(a.length-lo)/a.length*100);}
@@ -2599,7 +2609,7 @@ function renderAll(){
   {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt){const to=run.huntFrom===5?5:STAGES[run.stage].hunt+1;lb.textContent=to===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[to].name}로`;lb.className='btn wbtn solid';lb.style.setProperty('--wc',WCOL[to]);}}
   {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
-$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';gdAct('go');gdNewRun();setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
+$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';gdAct('go');gdNewRun();distWarm(stage);setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
   {const keep=new Set(ckList().map(c=>'fh2_'+logKey(c.seed)));try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!keep.has(k))localStorage.removeItem(k);}}catch(e){}}
   chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();
   {const code=acctOn()&&HOUSE&&stage===0?legacyCode(HOUSE.legacy):'';if(code&&legacySum(code)>0&&applyLegacy(run,code)){logAct(['G',code]);setTimeout(()=>showToast('가문 유산',legacyTxt(code),'ok',2600),300);}}
