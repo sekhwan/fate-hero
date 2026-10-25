@@ -929,6 +929,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .gtabs+.gearBody .zone{margin-top:8px}
 .gearBody{gap:16px}
 .shopWide{background:none;border:0;padding:0}
+.newHeroRow{margin:12px 0 4px;display:flex;justify-content:center}.newHeroRow .btn{min-width:min(360px,100%);padding:12px 18px;font-size:15px}
 .irow button.wear{border-color:rgba(79,220,242,.55);color:#7fe8f7} .irow button.wear.pin{border-color:rgba(240,200,90,.6);color:var(--brass)} .aff{color:#7fe3a0} .aff i{font-style:normal;color:var(--muted);margin:0 3px} .pinTag{margin-left:4px;font-size:11px}
 .irow button.enh{border-color:color-mix(in srgb,var(--zg) 70%,transparent);color:var(--zg)}
 
@@ -2153,7 +2154,7 @@ function pctTxt(p){return p<0.1?(p*100).toFixed(1):Math.round(p*100);}
 function renderStage(){
   const box=$('stage');if(typeof gdSoon==='function')gdSoon();
   if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{bindCk();}return;}
-  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
+  if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?`<div class="actions newHeroRow"><button class="btn" type="button" id="newHeroBtn">🎲 새로운 영웅으로 다시 시작하기</button></div>`:'')+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();{const nh=$('newHeroBtn');if(nh)nh.onclick=()=>{const rb=$('rollBtn2');if(rb&&rb.disabled)return;nh.disabled=true;scrollTo({top:0,behavior:'smooth'});newHero();};}const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
   if(!(isImportant(run,c,mode)||gdWant(c))){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
