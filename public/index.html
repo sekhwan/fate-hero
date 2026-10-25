@@ -657,6 +657,8 @@ body.ob-inv .gearBody .pShop{display:block!important}
 #gdPop .gdH{display:flex;align-items:center;gap:8px;margin-bottom:6px}#gdPop .gdI{font-size:22px}#gdPop .gdH b{color:var(--brass);font-size:15px}#gdPop .gdH em{margin-left:auto;font-style:normal;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--brass);color:#1a1620}
 #gdPop .gdT{font-size:13.5px;line-height:1.6;color:var(--fg)}#gdPop .gdT b{color:var(--brass)}
 #gdPop .gdB{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}#gdPop .gdB .btn{padding:6px 14px;font-size:13px}
+#gdDim{position:fixed;inset:0;z-index:94;background:rgba(0,0,0,.62);display:none}#gdDim.on{display:block}
+#gdPop .gdNeed{margin-right:auto;font-size:12.5px;color:var(--brass);align-self:center}#gdPop .gdSkip{background:none;border:0;color:var(--muted);font-size:11.5px;text-decoration:underline;cursor:pointer;padding:4px}
 #gdRing{position:fixed;z-index:95;border:3px solid var(--brass);border-radius:10px;pointer-events:none;opacity:0;box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 18px var(--brass);animation:gdPulse 1.2s ease-in-out infinite}
 #gdRing.on{opacity:1}
 #gdArrow{position:fixed;z-index:96;transform:translateX(-50%);font-size:26px;color:var(--brass);text-shadow:0 2px 6px #000;pointer-events:none;opacity:0;animation:gdBob .8s ease-in-out infinite}
@@ -1670,21 +1672,21 @@ function gdSave(){store.set('gd1',GD);}
 function gdPct(v){return Math.round(v*100);}
 const GD_GOALS=[
  {id:'go',ic:'🗡️',head:'첫 출정',text:()=>'영웅님, 출정 버튼을 눌러 여정을 시작하세요. 길목마다 싸울지, 피할지, 달랠지를 직접 고르게 됩니다.',
-  when:()=>hero&&!run,el:()=>$('goBtn'),done:()=>!!run},
- {id:'shop',ic:'🏪',head:'상점에서 장비를 사세요',text:()=>'영웅님, 지금 상점에 <b>▲ 더 좋음</b> 장비가 있습니다. 초반에는 금화로 장비를 사서 갈아입는 것이 가장 빠르게 강해지는 길입니다. 장비는 자동으로 사지 않으니 직접 눌러야 합니다.',
-  when:()=>run&&!run.dead&&!run.over&&!!gdBuyBtn(),el:()=>gdBuyBtn(),tab:'shop',done:()=>!!GD.done.shop},
- {id:'enh',ic:'🔨',head:'장비를 +1~+2까지 강화하세요',text:()=>`영웅님, 정비 칸의 강화 버튼으로 장비를 키울 수 있습니다. +0→+1은 성공 ${gdPct(ENH_RATE[0])}%이고 실패해도 잃는 것이 없습니다. +1→+2는 ${gdPct(ENH_RATE[1])}%지만 <b>+1부터는 실패하면 장비가 부서집니다</b>. 초반에는 +1~+2까지만 올리고, 그 이상은 금화가 넉넉할 때 노리세요.`,
-  when:()=>run&&!run.dead&&!run.over&&!!gdEnhBtn(),el:()=>gdEnhBtn(),tab:'inv',done:()=>!!(run&&run.items.some(it=>(it.plus||0)>=1))||!!GD.done.enh2},
- {id:'hunt',ic:'🏹',head:'다음 세계로 가기 전에 사냥터에 들르세요',text:()=>'영웅님, 세계를 정복했습니다. 하지만 다음 세계의 적은 <b>훨씬 강합니다</b>. 바로 넘어가지 말고 이 세계의 <b>사냥터</b>에서 경험치와 장비를 모으세요. 층마다 수문장을 쓰러뜨리면 장비가 확정으로 나오고, 충분히 강해지면 언제든 다음 세계로 떠날 수 있습니다. 세계를 하나 넘을 때마다 꼭 들르세요.',
-  when:()=>!!$('huntBtn'),el:()=>$('huntBtn'),done:()=>!!(run&&STAGES[run.stage]&&STAGES[run.stage].hunt!=null),repeat:true},
- {id:'rank',ic:'🏆',head:'기록을 랭킹에 올리세요',text:()=>'영웅님의 여정이 끝났습니다. 서버가 모든 행동을 처음부터 다시 재생해 검증한 뒤 랭킹에 올립니다. 닉네임을 적고 등록을 누르세요.',
-  when:()=>!!$('rankSubmit'),el:()=>$('rankSubmit'),done:()=>!!GD.done.rank},
- {id:'house',ic:'🏰',head:'가문에 드세요',text:()=>`영웅님, 가문에 들면 앞으로 태어날 용사가 모두 족보에 남고, 가문 순위에 따라 버프를 받습니다. 1위 가문은 <b>전투력 +${gdPct(HBUFF.h1.mult-1)}%</b>, <b>전설 발견 +${gdPct(HBUFF.h1.legend)}%</b>, 10대 가문도 전투력 +${gdPct(HBUFF.h4.mult-1)}%입니다. 가문 버튼에서 직접 세우거나 랭킹의 가문 탭에서 가입을 신청하세요(계정 필요).`,
-  when:()=>!!GD.done.rank&&!HOUSE&&(!run||run.dead||run.over),el:()=>$('chronBtn'),done:()=>!!HOUSE}
+  when:()=>hero&&!run,el:()=>$('goBtn'),act:'go',done:()=>!!run},
+ {id:'shop',ic:'🏪',head:'상점에서 장비를 사세요',text:()=>'영웅님, 지금 상점에 <b>▲ 더 좋음</b> 장비가 있습니다. 초반에는 금화로 장비를 사서 갈아입는 것이 가장 빠르게 강해지는 길입니다. 장비는 자동으로 사지 않으니 <b>빛나는 구매 버튼을 눌러 보세요</b>.',
+  when:()=>run&&!run.dead&&!run.over&&!!gdBuyBtn(),el:()=>gdBuyBtn(),tab:'shop',act:'buy',done:()=>!!GD.done.shop},
+ {id:'enh',ic:'🔨',head:'아이템 강화가 중요해요',text:()=>`영웅님, 같은 장비라도 강화하면 훨씬 강해집니다. <b>+0 장비의 강화 버튼을 눌러 +1강을 해 보세요.</b> +0→+1은 성공 ${gdPct(ENH_RATE[0])}%이고 실패해도 잃는 것이 없습니다. (+1부터는 실패하면 장비가 부서지니, 초반에는 +2 정도까지만 노리세요.)`,
+  when:()=>run&&!run.dead&&!run.over&&!!gdEnhBtn(),el:()=>gdEnhBtn(),tab:'inv',act:'enh',done:()=>!!GD.done.enh},
+ {id:'hunt',ic:'🏹',head:'다음 세계로 가기 전에 사냥터에 들르세요',text:()=>'영웅님, 세계를 정복했습니다. 하지만 다음 세계의 적은 <b>훨씬 강합니다</b>. 바로 넘어가지 말고 이 세계의 <b>사냥터</b>에서 경험치와 장비를 모으세요. 층마다 수문장을 쓰러뜨리면 장비가 확정으로 나오고, 충분히 강해지면 언제든 다음 세계로 떠날 수 있습니다. 세계를 하나 넘을 때마다 꼭 들르세요. <b>사냥터 버튼을 눌러 보세요.</b>',
+  when:()=>!!$('huntBtn'),el:()=>$('huntBtn'),act:'hunt',done:()=>!!(run&&STAGES[run.stage]&&STAGES[run.stage].hunt!=null),repeat:true},
+ {id:'rank',ic:'🏆',head:'기록을 랭킹에 올리세요',text:()=>'영웅님의 여정이 끝났습니다. 서버가 모든 행동을 처음부터 다시 재생해 검증한 뒤 랭킹에 올립니다. 닉네임을 적고 <b>등록 버튼을 눌러 보세요</b>.',
+  when:()=>!!$('rankSubmit'),el:()=>$('rankSubmit'),act:'rank',done:()=>!!GD.done.rank},
+ {id:'house',ic:'🏰',head:'가문에 드세요',text:()=>`영웅님, 가문에 들면 앞으로 태어날 용사가 모두 족보에 남고, 가문 순위에 따라 버프를 받습니다. 1위 가문은 <b>전투력 +${gdPct(HBUFF.h1.mult-1)}%</b>, <b>전설 발견 +${gdPct(HBUFF.h1.legend)}%</b>, 10대 가문도 전투력 +${gdPct(HBUFF.h4.mult-1)}%입니다. <b>가문 버튼을 눌러 보세요.</b> 직접 세우거나, 랭킹의 가문 탭에서 가입을 신청할 수 있습니다(계정 필요).`,
+  when:()=>!!GD.done.rank&&!HOUSE&&(!run||run.dead||run.over),el:()=>$('chronBtn'),act:'house',done:()=>!!HOUSE||!!GD.done.house}
 ];
 function gdVis(el){return !!(el&&el.offsetParent!==null&&!el.disabled);}
 function gdBuyBtn(){const bs=[...document.querySelectorAll('#shop .ware')];for(const w of bs){if(!w.querySelector('.wt.up'))continue;const b=w.querySelector('[data-buy]');if(b&&!b.disabled)return b;}return null;}
-function gdEnhBtn(){const b=document.querySelector('#hItems [data-enh]:not([disabled])');return b||null;}
+function gdEnhBtn(){const bs=[...document.querySelectorAll('#hItems [data-enh]:not([disabled])')];return bs.find(b=>{const it=run&&run.items[+b.dataset.enh];return it&&!(it.plus||0);})||null;}
 // 처음 만나는 사건
 const GD_EV={
  battle:['⚔️','전투','고를 수 있는 길은 넷입니다. <b>기본 공격</b>은 표시된 승리확률로 싸우고, <b>스킬 공격</b>은 전투 스킬만큼 승률이 오르지만 지역마다 '+SK_USES+'번만 쓸 수 있습니다. <b>도망</b>은 민첩, <b>회유</b>는 매력·지능·명성에 달려 있습니다. 불리한 싸움을 이길수록 좋은 장비가 나옵니다. 위의 <b>패배 시</b> 줄에서 지면 잃을 생명력을 미리 확인하세요.'],
@@ -1709,23 +1711,37 @@ function gdEvKeys(c){const n=c&&c.node;if(!n)return [];
   if(n.type==='skill')return ['skill']; if(n.type==='prep')return ['prep'];
   if(n.type==='event'){const k=n.kind;if(k==='friend'||k==='pet')return ['heroine'];return GD_EV[k]?[k]:[];}
   return [];}
-let gdCur=null,gdPausedIt=false,gdRaf=0,gdLastGoal=null;
-function gdEl(){let o=$('gdPop');if(!o){o=document.createElement('div');o.id='gdPop';o.setAttribute('role','dialog');document.body.appendChild(o);
+let gdCur=null,gdPausedIt=false,gdRaf=0;
+function gdEl(){let o=$('gdPop');if(!o){const d=document.createElement('div');d.id='gdDim';document.body.appendChild(d);
+  o=document.createElement('div');o.id='gdPop';o.setAttribute('role','dialog');document.body.appendChild(o);
   const a=document.createElement('div');a.id='gdArrow';a.textContent='▼';document.body.appendChild(a);const r=document.createElement('div');r.id='gdRing';document.body.appendChild(r);}return o;}
-function gdPos(){const a=$('gdArrow'),r=$('gdRing');if(!gdCur||!gdCur.el||!document.body.contains(gdCur.el)||gdCur.el.offsetParent===null){if(a)a.classList.remove('on');if(r)r.classList.remove('on');}
-  else{const b=gdCur.el.getBoundingClientRect();{const p=$('gdPop');if(p)p.classList.toggle('top',b.top+b.height/2>innerHeight*0.55);}r.style.cssText=`left:${b.left-6}px;top:${b.top-6}px;width:${b.width+12}px;height:${b.height+12}px`;r.classList.add('on');
-    a.style.left=(b.left+b.width/2)+'px';a.style.top=(b.top-34)+'px';a.classList.add('on');}
+// 화면을 어둡게 덮고, 눌러야 할 버튼만 구멍을 뚫어 둔다 (리니지M식 강제 유도)
+function gdPos(){const a=$('gdArrow'),r=$('gdRing'),d=$('gdDim'),p=$('gdPop');if(!gdCur){return;}
+  let el=gdCur.el;
+  if(gdCur.goal&&(!el||!document.body.contains(el)||el.offsetParent===null||el.disabled)){const g=GD_GOALS.find(x=>x.id===gdCur.id);let ok=false;try{ok=g.when();}catch(e){}el=ok?g.el():null;
+    if(!el){gdClose(false);return;}gdCur.el=el;}
+  if(!gdCur.el){a.classList.remove('on');r.classList.remove('on');d.classList.remove('on');}
+  else{const b=el.getBoundingClientRect(),x0=b.left-6,y0=b.top-6,x1=b.right+6,y1=b.bottom+6;
+    r.style.cssText=`left:${x0}px;top:${y0}px;width:${x1-x0}px;height:${y1-y0}px`;r.classList.add('on');
+    a.style.left=(b.left+b.width/2)+'px';a.style.top=(b.top-34)+'px';a.classList.add('on');
+    if(gdCur.block){d.style.clipPath=`polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${x0}px ${y0}px,${x0}px ${y1}px,${x1}px ${y1}px,${x1}px ${y0}px,${x0}px ${y0}px)`;d.classList.add('on');}else d.classList.remove('on');
+    if(p)p.classList.toggle('top',b.top+b.height/2>innerHeight*0.5);}
   gdRaf=requestAnimationFrame(gdPos);}
-function gdOpen(t){gdCur=t;const o=gdEl();
-  if(run&&!run.dead&&!run.over&&!paused&&typeof togglePause==='function'){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
-  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB"><button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="btn ghost" id="gdOff">안내 모두 끄기</button></div>`;
-  o.classList.add('on');$('gdOk').onclick=()=>gdClose();$('gdOff').onclick=()=>{GD.off=true;gdSave();gdClose();showToast&&showToast('안내','안내를 껐다. 「게임 방법」 아래에서 다시 켤 수 있다.','ok',2600);};
+function gdOpen(t){gdCur=t;const o=gdEl();const needAct=!!t.act;t.block=needAct;
+  if(!needAct&&run&&!run.dead&&!run.over&&!paused){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
+  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:`<button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`}</div>`;
+  o.classList.add('on');{const k=$('gdOk');if(k)k.onclick=()=>gdClose(true);}
+  $('gdOff').onclick=()=>{GD.off=true;gdSave();gdClose(false);showToast&&showToast('안내','안내를 껐다. 상단 「안내 다시 보기」로 다시 켤 수 있다.','ok',2600);};
   if(t.el&&t.el.scrollIntoView){try{t.el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}}
   cancelAnimationFrame(gdRaf);gdPos();}
-function gdClose(){const o=$('gdPop');if(o)o.classList.remove('on');cancelAnimationFrame(gdRaf);['gdArrow','gdRing'].forEach(k=>{const e=$(k);if(e)e.classList.remove('on');});
-  const was=gdCur;gdCur=null;if(was&&was.goal){GD.seen['g:'+was.id]=1;gdSave();}
+function gdClose(ok){const o=$('gdPop');if(o)o.classList.remove('on');cancelAnimationFrame(gdRaf);['gdArrow','gdRing','gdDim'].forEach(k=>{const e=$(k);if(e)e.classList.remove('on');});
+  const was=gdCur;gdCur=null;
+  if(was&&was.goal&&!ok&&!GD.off){delete GD.seen[was.key];gdSave();} // 대상이 사라져 못 끝낸 목표는 나중에 다시
   if(gdPausedIt){gdPausedIt=false;if(run&&!run.dead&&!run.over&&paused){paused=false;syncPause&&syncPause();renderStage();}}
-  setTimeout(gdCheck,250);}
+  setTimeout(gdCheck,ok?600:250);}
+// 유도한 동작을 실제로 했을 때만 닫힌다
+function gdAct(k){if(gdCur&&gdCur.act===k){if(gdCur.goal){GD.done[gdCur.id]=1;gdSave();}gdClose(true);}
+  else if(k&&GD_GOALS.some(g=>g.act===k&&!g.repeat)){const g=GD_GOALS.find(g=>g.act===k);if(g&&!GD.done[g.id]){GD.done[g.id]=1;gdSave();}}}
 function gdTabFor(g){if(!g.tab)return;const t=document.querySelector(`.gtabs [data-gt="${g.tab}"]`);if(t&&t.offsetParent!==null&&t.getAttribute('aria-pressed')!=='true')t.click();}
 let gdT=null;function gdSoon(){clearTimeout(gdT);gdT=setTimeout(gdCheck,120);}
 function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.classList.contains('on')){gdSoon();return;}}if(['chronModal','houseModal','acctModal','rankModal','duelModal','helpModal','bossBox','travel'].some(k=>{const e=$(k);return e&&!e.hidden;}))return;
@@ -1733,13 +1749,14 @@ function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.cla
   for(const g of GD_GOALS){if(GD.done[g.id]&&!g.repeat)continue;let ok=false;try{ok=g.done();}catch(e){}if(ok){if(!g.repeat){GD.done[g.id]=1;gdSave();}continue;}
     let w=false;try{w=g.when();}catch(e){}if(!w)continue;
     const key='g:'+g.id+(g.repeat&&run?':'+run.stage:'');if(GD.seen[key])continue;
-    gdTabFor(g);const el=g.el();if(!el)continue;GD.seen[key]=1;gdSave();gdOpen({goal:true,id:g.id,ic:g.ic,head:g.head,text:g.text(),el});return;}
+    gdTabFor(g);const el=g.el();if(!el)continue;GD.seen[key]=1;gdSave();gdOpen({goal:true,id:g.id,key,act:g.act,ic:g.ic,head:g.head,text:g.text(),el});return;}
   // 처음 보는 사건
   if(run&&!run.dead&&!run.over){const c=current(run);let k=gdEvKeys(c).find(x=>!GD.seen[x])||null;
     if(!k&&STAGES[run.stage]){const st=STAGES[run.stage];if(st.hunt!=null&&st.hunt!==5&&!GD.seen.hunt)k='hunt';else if(st.endless&&st.hunt==null&&!GD.seen.endless)k='endless';}
-    if(k&&!GD.seen[k]){GD.seen[k]=1;gdSave();const [ic,head,text]=GD_EV[k];gdOpen({ic,head,text,el:null});return;}}
+    if(k&&!GD.seen[k]){const ks=gdEvKeys(c);GD.seen[k]=1;gdSave();const [ic,head,text]=GD_EV[k];const op=document.querySelector('#stage .decide .opts');
+      if(op&&ks.includes(k)){const more=ks.filter(x=>x!==k&&!GD.seen[x]);if(more.length){gdOpen({ic,head,text,el:null});return;}gdOpen({ic,head,text:text+' <b>아래 선택지 중 하나를 직접 골라 보세요.</b>',el:op,act:'opt'});}else gdOpen({ic,head,text,el:null});return;}}
 }
-function gdMark(id){if(!GD.done[id]){GD.done[id]=1;gdSave();}}
+function gdMark(id){gdAct(id);}
 function gdReset(){GD={done:{},seen:{},off:false};gdSave();showToast&&showToast('안내','처음부터 다시 안내한다.','ok',2000);gdSoon();}
 
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
@@ -1860,7 +1877,7 @@ function renderShop(t){
       <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${esc(itemTxt(run,it))}</div></div></div>
       <button type="button" class="buy c-${o.cur}" data-buy="${i}" ${dis?'disabled':''}>${o.sold?'판매 완료':`<span>구매</span><b>${o.cur==='gold'?COIN:STAR}${fmtS(o.price)}</b>`}</button>
       ${!o.sold&&poor&&up&&!full?`<div class="wneed">${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다</div>`:''}</div>`;}).join('')+'</div>'+autoNote;
-  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){gdMark('shop');logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
+  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){gdAct('buy');logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';
 function shownPower(){return Math.round(power(run)/run.stageCarry*10);}
@@ -1979,7 +1996,7 @@ function doMyth(){if(!run)return;const c=mythCheck(run);if(!c.ok)return;
   // 결과가 드러난 뒤에 업적·도감 알림을 띄운다 (먼저 뜨면 결과를 미리 알게 된다)
   mythShow(r,matIt,()=>{if(r.ok)chAch('myth');chUpdate();});
   renderAll();}
-function doEnhance(idx){if(!run)return;const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)ckPut(ck);if(!r)return;logAct(['e',idx]);chUpdate();TRACK.st.enh++;TRACK.ev(null);prevStats=null;
+function doEnhance(idx){if(!run)return;gdAct('enh');const it=run.items[idx];const pw0=shownPower();const ck=ckptInfo();const ckOk=ck&&ck.seed===heroSeed;const r=enhanceSync(run,idx,ckOk?ck.snap:null);if(r&&ckOk)ckPut(ck);if(!r)return;logAct(['e',idx]);chUpdate();TRACK.st.enh++;TRACK.ev(null);prevStats=null;
   const lg=$('log');const e=lg.querySelector('.empty');if(e)e.remove();const li=document.createElement('li');
   let txt,cls;
   if(r.destroyed){const pw1=shownPower();txt=`+${r.from} ${r.name}이(가) 강화에 실패해 산산조각 났다.${pw1!==pw0?` 전투력 ${fmt(pw0)} → ${fmt(pw1)}`:''}`;cls='bad';}
@@ -2172,7 +2189,7 @@ function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MOD
 function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode2',mode);clearTimeout(autoT);renderStage();});
   document.querySelectorAll('[data-pause]').forEach(b=>b.onclick=togglePause);
   document.querySelectorAll('[data-sp]').forEach(b=>b.onclick=()=>{speed=+b.dataset.sp;store.set('speed',speed);clearTimeout(autoT);renderStage();});}
-function decide(id,auto){const f0=run&&STAGES[run.stage].endless&&STAGES[run.stage].hunt==null?floorOf(run):0;
+function decide(id,auto){if(!auto)gdAct('opt');const f0=run&&STAGES[run.stage].endless&&STAGES[run.stage].hunt==null?floorOf(run):0;
   if(!run||run.dead||run.over)return;
   const c=current(run);const n=c.node;const opt=c.options.find(o=>o.id===id);if(!opt||opt.disabled)return;
   prevStats={...run.stats};
@@ -2275,7 +2292,7 @@ function worldHtml(w){if(!w)return '';
   return `<div class="wSum">월드랭킹 ${w.rank}위 / ${w.total}명${P(w.points)} · 대전 ${w.rounds.length}회 ${tw}승 ${tl}패</div>
    <div class="wRounds">${head}.${w.rounds[0]&&w.rounds[0].pts!=null?'<br><small>점수는 기대 승률보다 잘 싸우면 오르고 못 싸우면 내려간다. 훨씬 약한 상대에게 이기면 조금, 지면 크게 움직인다.</small>':''}<br>${w.rounds.map(r=>`${r.floor}층: ${r.w}승 ${r.l}패 → ${r.pts!=null?`점수 ${sg(r.pts)}`:`${sg(r.delta)}위`} (${r.from}위 → ${r.to}위)`).join('<br>')}</div>
    ${w.rounds.map(r=>`<details><summary>${r.floor}층 대전 · ${r.w}승 ${r.l}패</summary><ul class="duelList">${(byM[r.milestone]||[]).map(m=>`<li><div class="dh"><span>vs ${esc(m.opp)}${m.bot?'<span class="botTag">봇</span>':''} <small style="font-weight:400;color:var(--muted)">${m.oppRank}위 · ${esc(m.opCard.race)} · 전투력 ${fmt(m.opCard.power)} · 생명력 ${fmt(m.opCard.hp)}</small></span><span class="${m.win?'w':'l'}">${m.win?'승리':'패배'} · ${esc(m.how)}${m.pts!=null?` · 점수 ${sg(m.pts)}`:''}</span></div>${m.ex!=null?`<div class="ds">점수로 본 기대 승률 ${Math.round(m.ex*100)}% · 실제 승률 ${Math.round(m.p*100)}%</div>`:''}<div class="ds">상대: ${st(m.opCard)}</div><ol>${m.log.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></li>`).join('')}</ul></details>`).join('')}`;}
-function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>submitRun();const o=$('rankOpen2');if(o)o.onclick=()=>openRank('hero');}
+function bindRankBox(){const b=$('rankSubmit');if(b)b.onclick=()=>{gdAct('rank');submitRun();};const o=$('rankOpen2');if(o)o.onclick=()=>openRank('hero');}
 let lastSubmitted=null;
 async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w':BS?'b':'rank';
   const nick=($(P+'Nick').value||'').trim().slice(0,12);const msg=$(P+'Msg');
@@ -2289,7 +2306,7 @@ async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w'
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
     lastSubmitted=heroSeed;const k=j.ranks||{};if(acctOn()&&!(PROF&&PROF.nickname)){PROF={nickname:nick};store.set('prof',PROF);acctRender();}
     if(!acctOn())setTimeout(()=>{const mm=$(P+'Msg');if(mm&&!mm.querySelector('.acHint'))mm.insertAdjacentHTML('beforeend',` <span class="acHint">· <a href="#" onclick="openAcct();return false">가입</a>하면 닉네임 「${esc(nick)}」를 내 것으로 지킬 수 있다</span>`);},50);
-    gdMark('rank');msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
+    msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
     if(j.boss){const B=j.boss;
       if(B.cooldown){wbSetNext(B.next_at);msg.className='msg err';msg.textContent=(BS?'':msg.textContent+' · ')+`월드 보스: 이 용사는 ${wbWaitTxt()} 뒤에 다시 공격할 수 있다.`;}
       else if(B.skipped){msg.textContent+=' · 월드 보스 피해는 「⚔ 공격하기」로만 들어간다 (그사이 처치는 쌓여 있다).';}
@@ -2490,7 +2507,7 @@ function ckptButton(){const L=ckList().filter(c=>c.stage===5||(c.snap&&c.snap.hu
     return `<div class="ckRow"><button class="btn ghost" type="button" data-ck="${c.seed}">이어하기: <b>${esc(c.heroName)}</b> · ${STAGES[c.stage].name} ${endF?endF+'층':STAGES[c.stage].hunt!=null?'1층':'입구'} <small>Lv ${c.snap.lvl||1}</small></button>${endF?`<button class="mini" type="button" data-ck1="${c.seed}">1층부터</button>`:''}<button class="mini warn" type="button" data-ckx="${c.seed}" title="이 저장 지우기">지우기</button></div>`;}).join('')}</div>`;}
 function bindCk(){document.querySelectorAll('[data-ck]').forEach(b=>b.onclick=()=>loadCheckpoint(false,+b.dataset.ck));document.querySelectorAll('[data-ck1]').forEach(b=>b.onclick=()=>loadCheckpoint(true,+b.dataset.ck1));
   document.querySelectorAll('[data-ckx]').forEach(b=>b.onclick=()=>{if(!b.dataset.arm){b.dataset.arm=1;b.textContent='정말 지울까?';return;}ckDel(+b.dataset.ckx);renderStage();});}
-function startHunt(){
+function startHunt(){gdAct('hunt');
   if(!run||!enterHunt(run))return; logAct(['h']);
   stage=run.stage; store.set('stage',stage); lastOut=null; verdictHtml=''; paused=false; saveCheckpoint();
   const lg=$('log'); const li=document.createElement('li'); li.innerHTML=`<span class="t">1층</span><div><b>${STAGES[stage].name}</b> · ${hero.name}이(가) 사냥을 시작했다.</div>`; lg.prepend(li);
@@ -2530,7 +2547,7 @@ function renderAll(){
   {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt){const to=run.huntFrom===5?5:STAGES[run.stage].hunt+1;lb.textContent=to===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[to].name}로`;lb.className='btn wbtn solid';lb.style.setProperty('--wc',WCOL[to]);}}
   {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
-$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
+$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';gdAct('go');setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
   {const keep=new Set(ckList().map(c=>'fh2_'+logKey(c.seed)));try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!keep.has(k))localStorage.removeItem(k);}}catch(e){}}
   chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();
   {const code=acctOn()&&HOUSE&&stage===0?legacyCode(HOUSE.legacy):'';if(code&&legacySum(code)>0&&applyLegacy(run,code)){logAct(['G',code]);setTimeout(()=>showToast('가문 유산',legacyTxt(code),'ok',2600),300);}}
@@ -2561,7 +2578,7 @@ function fillHelpSkills(){const t=$('helpSkills');if(!t||t.dataset.done)return;t
 function openHelp(){TRACK.st.help++;TRACK.ev('help');fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}
 $('helpBtn').onclick=openHelp;
-$('chronBtn').onclick=openChron;$('gdResetBtn').onclick=gdReset;$('acctBtn').onclick=openAcct;$('houseClose').onclick=closeHouse;$('houseModal').addEventListener('click',e=>{if(e.target.id==='houseModal')closeHouse();});document.addEventListener('keydown',e=>{if(!$('houseModal').hidden&&e.key==='Escape')closeHouse();});$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
+$('chronBtn').onclick=()=>{gdAct('house');openChron();};$('gdResetBtn').onclick=gdReset;$('acctBtn').onclick=openAcct;$('houseClose').onclick=closeHouse;$('houseModal').addEventListener('click',e=>{if(e.target.id==='houseModal')closeHouse();});document.addEventListener('keydown',e=>{if(!$('houseModal').hidden&&e.key==='Escape')closeHouse();});$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
 $('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank(RANK.on?undefined:'boss');
 $('rankClose').onclick=closeRank;$('rankModal').addEventListener('click',e=>{if(e.target.id==='rankModal')closeRank();});
 document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{rankCol=b.dataset.rk;loadRank();});
