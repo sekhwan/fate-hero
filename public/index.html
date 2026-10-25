@@ -728,7 +728,7 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .hcWd{font-size:12px;color:#bfb2a0;margin-top:2px}
 .hcTr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:8px}
 .hTr{font-size:11.5px;padding:2px 8px;border-radius:99px;border:1px solid}.hTr.g{color:#9fe8a8;border-color:#3a7a4a;background:#12261a}.hTr.b{color:#ff9a8a;border-color:#7a3a3a;background:#261212}.hTr.n{color:#a89a88;border-color:#4a4050}
-.hrvBtns{position:relative;display:flex;gap:10px;white-space:nowrap;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
+.hrvBtns{position:relative;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;white-space:nowrap;padding:0 12px;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
 .hrv.done .hrvBtns{opacity:1;transform:none;pointer-events:auto}
 .hrvSkip{position:relative;font-size:12px;color:#8a7f90}.hrv.done .hrvSkip{visibility:hidden}
 @media (prefers-reduced-motion:reduce){.hrvCard,.hcIn{transition:none}.hrv .hrvRays{animation:none!important}.hrv.shake .hrvCard{animation:none!important}}
@@ -1788,7 +1788,7 @@ function heroReveal(h){const R=heroRarity(h);let o=$('hrv');if(!o){o=document.cr
        <div class="hcW"><b>${esc(h.wealth.name)}</b>${h.hidden?'':`<small>${pc<1?pc.toFixed(1):Math.round(pc)}% 확률</small>`}</div>
        <div class="hcWd">${esc(W.desc||'')}</div><div class="hcTr">${tr||'<span class="hTr n">특성 없음</span>'}</div></div>
    </div></div>
-   <div class="hrvBtns"><button type="button" class="btn" id="hrvGo">이 운명으로 출정</button><button type="button" class="btn ghost" id="hrvOk">확인</button></div>
+   <div class="hrvBtns"><button type="button" class="btn" id="hrvGo">이 운명으로 출정</button><button type="button" class="btn ghost" id="hrvRe">🎲 다시 뽑기</button><button type="button" class="btn ghost" id="hrvOk">확인</button></div>
    <div class="hrvSkip">누르면 바로 넘어간다</div>`;
   o.hidden=false;void o.offsetWidth;o.classList.add('in');
   const shake=R.k==='hid'||R.k>=3?900:R.k>=1?650:450;
@@ -1796,6 +1796,7 @@ function heroReveal(h){const R=heroRarity(h);let o=$('hrv');if(!o){o=document.cr
   hrvT.push(setTimeout(()=>o.classList.add('shake'),280));hrvT.push(setTimeout(flip,280+shake));
   o.onclick=e=>{if(e.target.closest('button'))return;if(!o.classList.contains('flip')){hrvT.forEach(clearTimeout);hrvT=[];flip();}else if(o.classList.contains('done'))hrvClose();};
   $('hrvOk').onclick=()=>hrvClose();
+  $('hrvRe').onclick=()=>{const rb=$('rollBtn2');if(rb&&rb.disabled)return;$('hrvRe').disabled=true;const ov=$('hrv');hrvT.forEach(clearTimeout);hrvT=[];ov.hidden=true;ov.className='hrv';ov.innerHTML='';newHero();};
   $('hrvGo').onclick=()=>{hrvClose();const g=$('goBtn');if(g&&!g.disabled&&g.onclick)g.onclick();};}
 function hrvClose(){const o=$('hrv');if(!o)return;hrvT.forEach(clearTimeout);hrvT=[];o.classList.add('out');setTimeout(()=>{o.hidden=true;o.className='hrv';o.innerHTML='';if(typeof gdSoon==='function')gdSoon();},260);}
 function showDice(h,anim){if(!anim)return;const ro=document.querySelector('.roster');ro.classList.remove('rolling');void ro.offsetWidth;ro.classList.add('rolling');
