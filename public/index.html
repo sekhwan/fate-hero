@@ -1928,6 +1928,10 @@ const GD_TOUR=[
  ['talk','🤝','회유한다',()=>`<b>매력·지능·명성</b>이 높을수록 잘 통합니다. 성공하면 싸움 없이 적을 <b>용병</b>으로 삼습니다(1명당 전투력 +${+(MERC_K*4).toFixed(1)}%, 최대 ${MERC_CAP}명). 실패하면 분노한 적과 불리하게 싸웁니다.`],
  ['wk','❔','약점 공략',()=>`몬스터마다 약점(${WK.map(w=>WK_NAME[w]).join("·")})이 하나씩 있고, 그에 맞는 내 능력치가 높을수록 유리합니다. 처음엔 약점을 몰라 <b>효과가 절반</b>이고 이득인지 손해인지 해 봐야 압니다. <b>같은 몬스터를 3번 쓰러뜨리면 약점이 밝혀져</b> 효과가 온전히 적용됩니다. 지배자는 따로 단서를 보고 약점을 추리합니다.`]
 ];
+// 한 번 직접 결정 화면으로 멈춘 길목은 끝날 때까지 멈춘 채로 둔다
+// (장비를 사거나 강화해 승률이 오르면 '중요하지 않은 싸움'이 되어 저절로 넘어가 버리던 문제)
+const impStick=new WeakSet();
+function impNow(c){if(!c||!c.node)return false;if(impStick.has(c.node))return true;const v=isImportant(run,c,mode)||gdWant(c);if(v)impStick.add(c.node);return v;}
 function gdWant(c){if(typeof gdCur!=='undefined'&&gdCur&&gdCur.tour)return true;return !!(typeof GD!=='undefined'&&!GD.off&&!GD.seen.tourB&&c&&c.node&&c.node.type==='battle'&&(c.options||[]).some(o=>o.id==='fight'));}
 function gdTour(i){const op=document.querySelector('#stage .decide .opts');if(!op){gdClose(true);return;}
   const steps=GD_TOUR.filter(t=>op.querySelector(`.opt[data-id="${t[0]}"]`));if(i>=steps.length){gdClose(true);return;}
@@ -2392,7 +2396,7 @@ function renderStage(){
   if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{bindCk();}return;}
   if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?`<div class="actions newHeroRow"><button class="btn" type="button" id="newHeroBtn">🎲 새로운 영웅으로 다시 시작하기</button></div>`:'')+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();{const nh=$('newHeroBtn');if(nh)nh.onclick=()=>{const rb=$('rollBtn2');if(rb&&rb.disabled)return;nh.disabled=true;scrollTo({top:0,behavior:'smooth'});newHero();};}const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
-  if(!(isImportant(run,c,mode)||gdWant(c))){
+  if(!impNow(c)){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
     const body=`<div><b>${label} · ${c.title}</b><div class="phase" id="phase">${(PHASES[n.type]||PHASES.event)[0]}…</div><div style="font-size:13px;margin-top:4px">자동 선택: ${pick.label}${n.type==='battle'?` (승리확률 ${pctTxt(n.p)}%)`:''}</div></div>`;
@@ -2527,7 +2531,7 @@ function togglePause(){if(!run||run.dead||run.over)return;paused=!paused;clearTi
 function syncPause(){const b=$('pauseBtn');if(!b)return;const busy=run&&!run.dead&&!run.over;b.disabled=!busy;b.classList.toggle('on',paused&&busy);b.textContent=paused&&busy?'재개 ▶':'일시정지 ❚❚';}
 function tickAuto(ms){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];if(paused)return;
   const c0=run&&current(run); if(c0){const ph=PHASES[c0.node.type]||PHASES.event; ph.forEach((t,i)=>{if(i)phaseT.push(setTimeout(()=>{const el=$('phase');if(el)el.textContent=t+'…';},ms*i/ph.length));});}
-  autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if((isImportant(run,c,mode)||gdWant(c))){renderStage();return;}
+  autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if(impNow(c)){renderStage();return;}
     if(c.node.type==='rest'){const b=autoShop(run);if(b.length)logBuy(b.map(x=>x.it),b[0].why);}
     decide(autoChoice(run,c),true);},ms||1000);}
 // 쓰러질 뻔한 순간: 화면 연출 + 기록 강조
