@@ -612,6 +612,7 @@ header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!import
 .battleCard .monster .art.boss{background:radial-gradient(circle at 50% 60%,rgba(255,90,40,.42),transparent 70%)}
 .battleCard .monster .art .mimg{filter:drop-shadow(0 8px 14px rgba(0,0,0,.7))}
 .battleCard h3{font-size:22px;min-height:0}
+.risk{font-size:12.5px;line-height:1.5;color:var(--muted);margin:4px 0 2px}.risk .rk{font-weight:700;color:var(--fg)}.risk .rd{font-weight:700;color:#e5534b}
 .battleCard .hint b{font-size:30px;color:#ffe08a;display:inline-block;margin-left:4px;vertical-align:-3px}
 .battleCard .opts{grid-template-columns:repeat(auto-fit,minmax(0,1fr));grid-auto-flow:column;gap:8px;margin-top:14px}
 .battleCard .opt{grid-template-columns:1fr;text-align:center;padding:10px 8px;gap:2px}
@@ -650,6 +651,19 @@ header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!import
 /* 처음 10분: 처음 만날 때 하나씩 열리는 화면 */
 body.ob-combo #cmbBox,body.ob-skill .skills,body.ob-comp .party,body.ob-merc #mercBox,body.ob-inv .pInv,body.ob-inv .gt[data-gt="inv"],body.ob-end .pvpBox,body.ob-end [data-rk="world"]{display:none!important}
 body.ob-inv .gearBody .pShop{display:block!important}
+#gdPop{position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);z-index:96;width:min(480px,calc(100vw - 32px));padding:14px 16px;border-radius:12px;background:#211d28;border:1px solid var(--brass);box-shadow:0 12px 36px rgba(0,0,0,.7);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s}
+#gdPop.top{bottom:auto;top:22px;transform:translate(-50%,-16px)}
+#gdPop.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#gdPop .gdH{display:flex;align-items:center;gap:8px;margin-bottom:6px}#gdPop .gdI{font-size:22px}#gdPop .gdH b{color:var(--brass);font-size:15px}#gdPop .gdH em{margin-left:auto;font-style:normal;font-size:11px;padding:2px 8px;border-radius:99px;background:var(--brass);color:#1a1620}
+#gdPop .gdT{font-size:13.5px;line-height:1.6;color:var(--fg)}#gdPop .gdT b{color:var(--brass)}
+#gdPop .gdB{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}#gdPop .gdB .btn{padding:6px 14px;font-size:13px}
+#gdRing{position:fixed;z-index:95;border:3px solid var(--brass);border-radius:10px;pointer-events:none;opacity:0;box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 18px var(--brass);animation:gdPulse 1.2s ease-in-out infinite}
+#gdRing.on{opacity:1}
+#gdArrow{position:fixed;z-index:96;transform:translateX(-50%);font-size:26px;color:var(--brass);text-shadow:0 2px 6px #000;pointer-events:none;opacity:0;animation:gdBob .8s ease-in-out infinite}
+#gdArrow.on{opacity:1}
+@keyframes gdPulse{50%{box-shadow:0 0 0 4px rgba(0,0,0,.35),0 0 30px var(--brass)}}
+@keyframes gdBob{50%{margin-top:-8px}}
+@media (prefers-reduced-motion:reduce){#gdRing,#gdArrow{animation:none}}
 #obTip{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);z-index:88;max-width:min(460px,calc(100vw - 32px));padding:12px 16px 12px 14px;border-radius:10px;background:#211d28;border:1px solid var(--brass);box-shadow:0 10px 30px rgba(0,0,0,.6);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;display:flex;gap:10px;align-items:flex-start;cursor:pointer}
 #obTip.on{opacity:1;transform:translate(-50%,0);pointer-events:auto} #obTip .oi{font-size:20px;line-height:1.2} #obTip b{display:block;color:var(--brass);font-size:14px} #obTip span{font-size:13.5px;color:var(--fg);line-height:1.5} #obTip small{display:block;font-size:11px;color:var(--muted);margin-top:4px}
 .obNext{margin:12px 0 0;padding:12px 14px;border:1px dashed var(--brass);background:rgba(210,166,78,.06);font-size:14px;line-height:1.7} .obNext b{color:var(--brass)}
@@ -1046,7 +1060,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <div class="hbTitle">
       <div><h1>운명의 <span>용사</span></h1><p class="hbSub">무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까</p></div></div>
       <p class="tag">영웅은 몇 번이든 랜덤으로 다시 뽑을 수 있다. 출정한 뒤에는 길 위의 결정만 남는다. 무작위로 태어난 용사는 세상의 악마를 몇 %까지 무찌를 수 있을까.</p>
-      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button></span></div>
+      <div class="hbNav"><button class="helpBtn hbBig" type="button" id="chronBtn">가문</button><button class="helpBtn hbBig" type="button" id="rankBtn">랭킹</button><span class="hbLinks"><button class="hbLink" type="button" id="helpBtn">게임 방법</button><button class="hbLink" type="button" id="gdResetBtn">안내 다시 보기</button></span></div>
     </div>
     <div class="hbSide"><div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
       <div class="hbChips"><button class="hbChip" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button><button class="hbChip" type="button" id="bgmBtn" aria-pressed="false" title="배경음 켜기">♪</button></div></div>
@@ -1188,7 +1202,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
     <h3>진행</h3>
     <ul>
       <li>한 지역은 <b>전투 → 탐험 → 전투 → (야영) → 전투 → 탐험 → 지배자</b> 순서다. 야영은 두 지역에 한 번이고, 세계의 마지막 지배자 앞에서만 <b>운명의 내기</b>가 열린다.</li>
-      <li><b>전투</b>: 싸운다(승리확률), 도망간다(민첩), 회유한다(매력·지능·명성) 중 고른다.</li>
+      <li><b>전투</b>: 기본 공격(승리확률), 스킬 공격(전투 스킬만큼 승률 상승, 지역마다 2번), 도망(민첩), 회유(매력·지능·명성) 중 고른다. 지배자전에서는 약점 공략도 고를 수 있다.</li>
       <li><b>탐험</b>: 샅샅이 뒤지면 아이템·기연·뜻밖의 만남이 많지만 함정도 많다.</li>
       <li><b>휴식</b>: 생명력을 회복한다. 푹 자면 많이 회복하지만 습격당할 수 있다.</li>
       <li>생명력이 0이 되면 전사한다. 성수나 부활 효과가 있으면 한 번 버틴다. <b>성수와 부활의 깃털은 각각 1개까지만</b> 지닐 수 있고, 더 얻으면 금화로 바뀐다.</li>
@@ -1647,10 +1661,87 @@ function obCheck(){if(run){
     if(run.comp&&(run.comp.heroine||run.comp.friend||run.comp.pet)||run.spouse)obUnlock('comp');
     if((run.allies||0)>0)obUnlock('merc');
     if(run.items&&run.items.some(it=>!it.heal&&!it.revive))obUnlock('inv');
-    if(run.stage===5||run.huntFrom===5)obUnlock('end');
-    if(!run.dead&&!run.over&&run.shop&&run.shop.length)obTip('shop','🏪','상점','지역마다 새 물건이 들어온다. 성수와 부활 깃털은 자동으로 산다.');}
+    if(run.stage===5||run.huntFrom===5)obUnlock('end');}
   for(const k in OB_KEYS)document.body.classList.toggle('ob-'+k,!(OB.full||OB.u[k]));
   const b=$('obBtn');if(b){b.textContent=OB.full?'단계별로 보기':'모든 정보 보기';b.setAttribute('aria-pressed',String(!!OB.full));}}
+// ── 친절한 안내: 초반 목표(화살표) + 처음 보는 사건 설명 ──
+let GD=store.get('gd1',null);if(!GD||typeof GD!=='object'){GD={done:{},seen:{},off:false};}
+function gdSave(){store.set('gd1',GD);}
+function gdPct(v){return Math.round(v*100);}
+const GD_GOALS=[
+ {id:'go',ic:'🗡️',head:'첫 출정',text:()=>'영웅님, 출정 버튼을 눌러 여정을 시작하세요. 길목마다 싸울지, 피할지, 달랠지를 직접 고르게 됩니다.',
+  when:()=>hero&&!run,el:()=>$('goBtn'),done:()=>!!run},
+ {id:'shop',ic:'🏪',head:'상점에서 장비를 사세요',text:()=>'영웅님, 지금 상점에 <b>▲ 더 좋음</b> 장비가 있습니다. 초반에는 금화로 장비를 사서 갈아입는 것이 가장 빠르게 강해지는 길입니다. 장비는 자동으로 사지 않으니 직접 눌러야 합니다.',
+  when:()=>run&&!run.dead&&!run.over&&!!gdBuyBtn(),el:()=>gdBuyBtn(),tab:'shop',done:()=>!!GD.done.shop},
+ {id:'enh',ic:'🔨',head:'장비를 +1~+2까지 강화하세요',text:()=>`영웅님, 정비 칸의 강화 버튼으로 장비를 키울 수 있습니다. +0→+1은 성공 ${gdPct(ENH_RATE[0])}%이고 실패해도 잃는 것이 없습니다. +1→+2는 ${gdPct(ENH_RATE[1])}%지만 <b>+1부터는 실패하면 장비가 부서집니다</b>. 초반에는 +1~+2까지만 올리고, 그 이상은 금화가 넉넉할 때 노리세요.`,
+  when:()=>run&&!run.dead&&!run.over&&!!gdEnhBtn(),el:()=>gdEnhBtn(),tab:'inv',done:()=>!!(run&&run.items.some(it=>(it.plus||0)>=1))||!!GD.done.enh2},
+ {id:'hunt',ic:'🏹',head:'다음 세계로 가기 전에 사냥터에 들르세요',text:()=>'영웅님, 세계를 정복했습니다. 하지만 다음 세계의 적은 <b>훨씬 강합니다</b>. 바로 넘어가지 말고 이 세계의 <b>사냥터</b>에서 경험치와 장비를 모으세요. 층마다 수문장을 쓰러뜨리면 장비가 확정으로 나오고, 충분히 강해지면 언제든 다음 세계로 떠날 수 있습니다. 세계를 하나 넘을 때마다 꼭 들르세요.',
+  when:()=>!!$('huntBtn'),el:()=>$('huntBtn'),done:()=>!!(run&&STAGES[run.stage]&&STAGES[run.stage].hunt!=null),repeat:true},
+ {id:'rank',ic:'🏆',head:'기록을 랭킹에 올리세요',text:()=>'영웅님의 여정이 끝났습니다. 서버가 모든 행동을 처음부터 다시 재생해 검증한 뒤 랭킹에 올립니다. 닉네임을 적고 등록을 누르세요.',
+  when:()=>!!$('rankSubmit'),el:()=>$('rankSubmit'),done:()=>!!GD.done.rank},
+ {id:'house',ic:'🏰',head:'가문에 드세요',text:()=>`영웅님, 가문에 들면 앞으로 태어날 용사가 모두 족보에 남고, 가문 순위에 따라 버프를 받습니다. 1위 가문은 <b>전투력 +${gdPct(HBUFF.h1.mult-1)}%</b>, <b>전설 발견 +${gdPct(HBUFF.h1.legend)}%</b>, 10대 가문도 전투력 +${gdPct(HBUFF.h4.mult-1)}%입니다. 가문 버튼에서 직접 세우거나 랭킹의 가문 탭에서 가입을 신청하세요(계정 필요).`,
+  when:()=>!!GD.done.rank&&!HOUSE&&(!run||run.dead||run.over),el:()=>$('chronBtn'),done:()=>!!HOUSE}
+];
+function gdVis(el){return !!(el&&el.offsetParent!==null&&!el.disabled);}
+function gdBuyBtn(){const bs=[...document.querySelectorAll('#shop .ware')];for(const w of bs){if(!w.querySelector('.wt.up'))continue;const b=w.querySelector('[data-buy]');if(b&&!b.disabled)return b;}return null;}
+function gdEnhBtn(){const b=document.querySelector('#hItems [data-enh]:not([disabled])');return b||null;}
+// 처음 만나는 사건
+const GD_EV={
+ battle:['⚔️','전투','고를 수 있는 길은 넷입니다. <b>기본 공격</b>은 표시된 승리확률로 싸우고, <b>스킬 공격</b>은 전투 스킬만큼 승률이 오르지만 지역마다 '+SK_USES+'번만 쓸 수 있습니다. <b>도망</b>은 민첩, <b>회유</b>는 매력·지능·명성에 달려 있습니다. 불리한 싸움을 이길수록 좋은 장비가 나옵니다. 위의 <b>패배 시</b> 줄에서 지면 잃을 생명력을 미리 확인하세요.'],
+ talk:['🤝','회유와 용병','회유에 성공한 적은 <b>용병</b>이 됩니다. 용병 1명당 전투력 +'+(+(MERC_K*4).toFixed(1))+'%(지휘 스킬과 지능으로 늘어남), 최대 '+MERC_CAP+'명입니다. 대신 싸움에서 지면 용병이 쓰러집니다.'],
+ boss:['👑','지배자전','지역의 끝을 지키는 지배자입니다. 쓰러뜨리면 그 지역이 평정되고 생명력이 50% 회복됩니다. 지면 한 번 더 도전할 수 있고, 도망치면 그 지역은 미평정으로 남아 마지막 지배자가 강해집니다.'],
+ weak:['🔍','약점 단서','지배자마다 약점이 하나 숨어 있고, 관찰 단서 두 개가 주어집니다. 단서는 틀릴 수도 있습니다. <b>지능이 높을수록</b> 진짜 단서일 확률이 오르고, 깊은 세계의 지배자일수록 속임수가 늘어납니다. 약점을 맞히면 승률 3배, 틀리면 절반입니다.'],
+ skill:['📘','스킬 선택','스킬은 전투·생존·성장·재물 네 계열입니다. 한 계열의 랭크 합이 3과 6이 되면 <b>숙련 보너스</b>가 붙습니다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵습니다.'],
+ prep:['🎲','운명의 내기','세계의 마지막 지배자 앞에서 운명의 여신이 가위바위보를 겁니다. 이기면 축복, 지면 저주, 비기면 그대로입니다. 행운이 높을수록 이길 확률이 오르고, 거절해도 됩니다. 마지막 지배자와는 도망·회유 없이 싸움만 가능합니다.'],
+ heroine:['💞','동료와의 만남','히로인·친구·펫은 저마다 고유한 효과로 용사를 돕습니다. 합류 여부는 표시된 확률로 정해지고, 출신이 높을수록 확률이 오릅니다. 아주 드물게 효과가 두 배인 <b>희귀 동료</b>도 나옵니다.'],
+ quest:['📜','의뢰','명성이 쌓이면 의뢰가 들어옵니다. 지정된 적을 토벌하면 아이템과 큰 능력치 보상을 받고, 명성과 매력이 충분하면 의뢰인의 가족과 혼담이 오갈 수 있습니다.'],
+ proposal:['💍','혼담','혼인하면 배우자가 평생 곁에서 돕습니다(전투력 +15%와 배우자마다 다른 효과). 출신이 높을수록 청혼이 받아들여질 확률이 오릅니다.'],
+ cursed:['⚖️','운명의 갈림길: 저주받은 보물','정답이 없는 선택입니다. 보물을 집으면 영웅 장비 80%·전설 장비 20% 확률로 얻지만, 다음 지배자전 승률이 -'+Math.round(CURSE_BOSS*100)+'%p 됩니다.'],
+ oath:['🛡️','운명의 갈림길: 기사의 맹세','쓰러진 기사를 돌보면 지금 생명력 20%를 잃지만, '+OATH_AFTER+'지역 뒤 지배자전에 기사가 합류해 승률 +'+Math.round(OATH_BOSS*100)+'%p를 더해 줍니다.'],
+ pact:['😈','운명의 갈림길: 악마의 거래','계약하면 다음 지배자를 꺾을 때까지 전투력 +'+Math.round((PACT_POW-1)*100)+'%를 얻지만, 계약금으로 최대 생명력을 내야 합니다.'],
+ gambler:['🥤','명성 도박꾼','명성을 걸고 컵 세 개 중 공이 든 컵을 고릅니다. 맞힐 확률은 1/3, 맞히면 건 명성의 3배를 돌려받고 틀리면 건 명성을 잃습니다.'],
+ hidden:['❓','히든 이벤트','출신마다 아주 드물게 찾아오는 퀴즈입니다. 맞히면 출신에 맞는 큰 보상을 받고, 틀리면 기회가 사라집니다.'],
+ hunt:['🏹','사냥터','층마다 적이 강해지고, 수문장을 쓰러뜨리면 장비가 확정으로 나옵니다. 충분히 강해졌다 싶으면 언제든 다음 세계로 떠나세요.'],
+ endless:['🌌','끝없는 전장','층마다 적이 강해지고, 수문장에게 두 번 지거나 쓰러지면 여정이 끝납니다. 5층마다 자동 저장되고, 신화 합성과 월드랭킹이 열립니다.']
+};
+function gdEvKeys(c){const n=c&&c.node;if(!n)return [];
+  if(n.type==='battle'){if(n.boss)return n.clues?['boss','weak']:['boss'];if(!GD.seen.battle)return ['battle'];return (c.options||[]).some(o=>o.id==='talk')?['talk']:[];}
+  if(n.type==='skill')return ['skill']; if(n.type==='prep')return ['prep'];
+  if(n.type==='event'){const k=n.kind;if(k==='friend'||k==='pet')return ['heroine'];return GD_EV[k]?[k]:[];}
+  return [];}
+let gdCur=null,gdPausedIt=false,gdRaf=0,gdLastGoal=null;
+function gdEl(){let o=$('gdPop');if(!o){o=document.createElement('div');o.id='gdPop';o.setAttribute('role','dialog');document.body.appendChild(o);
+  const a=document.createElement('div');a.id='gdArrow';a.textContent='▼';document.body.appendChild(a);const r=document.createElement('div');r.id='gdRing';document.body.appendChild(r);}return o;}
+function gdPos(){const a=$('gdArrow'),r=$('gdRing');if(!gdCur||!gdCur.el||!document.body.contains(gdCur.el)||gdCur.el.offsetParent===null){if(a)a.classList.remove('on');if(r)r.classList.remove('on');}
+  else{const b=gdCur.el.getBoundingClientRect();{const p=$('gdPop');if(p)p.classList.toggle('top',b.top+b.height/2>innerHeight*0.55);}r.style.cssText=`left:${b.left-6}px;top:${b.top-6}px;width:${b.width+12}px;height:${b.height+12}px`;r.classList.add('on');
+    a.style.left=(b.left+b.width/2)+'px';a.style.top=(b.top-34)+'px';a.classList.add('on');}
+  gdRaf=requestAnimationFrame(gdPos);}
+function gdOpen(t){gdCur=t;const o=gdEl();
+  if(run&&!run.dead&&!run.over&&!paused&&typeof togglePause==='function'){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
+  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB"><button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="btn ghost" id="gdOff">안내 모두 끄기</button></div>`;
+  o.classList.add('on');$('gdOk').onclick=()=>gdClose();$('gdOff').onclick=()=>{GD.off=true;gdSave();gdClose();showToast&&showToast('안내','안내를 껐다. 「게임 방법」 아래에서 다시 켤 수 있다.','ok',2600);};
+  if(t.el&&t.el.scrollIntoView){try{t.el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}}
+  cancelAnimationFrame(gdRaf);gdPos();}
+function gdClose(){const o=$('gdPop');if(o)o.classList.remove('on');cancelAnimationFrame(gdRaf);['gdArrow','gdRing'].forEach(k=>{const e=$(k);if(e)e.classList.remove('on');});
+  const was=gdCur;gdCur=null;if(was&&was.goal){GD.seen['g:'+was.id]=1;gdSave();}
+  if(gdPausedIt){gdPausedIt=false;if(run&&!run.dead&&!run.over&&paused){paused=false;syncPause&&syncPause();renderStage();}}
+  setTimeout(gdCheck,250);}
+function gdTabFor(g){if(!g.tab)return;const t=document.querySelector(`.gtabs [data-gt="${g.tab}"]`);if(t&&t.offsetParent!==null&&t.getAttribute('aria-pressed')!=='true')t.click();}
+let gdT=null;function gdSoon(){clearTimeout(gdT);gdT=setTimeout(gdCheck,120);}
+function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.classList.contains('on')){gdSoon();return;}}if(['chronModal','houseModal','acctModal','rankModal','duelModal','helpModal','bossBox','travel'].some(k=>{const e=$(k);return e&&!e.hidden;}))return;
+  // 목표: 차례대로, 아직 안 끝난 것 중 지금 할 수 있는 것
+  for(const g of GD_GOALS){if(GD.done[g.id]&&!g.repeat)continue;let ok=false;try{ok=g.done();}catch(e){}if(ok){if(!g.repeat){GD.done[g.id]=1;gdSave();}continue;}
+    let w=false;try{w=g.when();}catch(e){}if(!w)continue;
+    const key='g:'+g.id+(g.repeat&&run?':'+run.stage:'');if(GD.seen[key])continue;
+    gdTabFor(g);const el=g.el();if(!el)continue;GD.seen[key]=1;gdSave();gdOpen({goal:true,id:g.id,ic:g.ic,head:g.head,text:g.text(),el});return;}
+  // 처음 보는 사건
+  if(run&&!run.dead&&!run.over){const c=current(run);let k=gdEvKeys(c).find(x=>!GD.seen[x])||null;
+    if(!k&&STAGES[run.stage]){const st=STAGES[run.stage];if(st.hunt!=null&&st.hunt!==5&&!GD.seen.hunt)k='hunt';else if(st.endless&&st.hunt==null&&!GD.seen.endless)k='endless';}
+    if(k&&!GD.seen[k]){GD.seen[k]=1;gdSave();const [ic,head,text]=GD_EV[k];gdOpen({ic,head,text,el:null});return;}}
+}
+function gdMark(id){if(!GD.done[id]){GD.done[id]=1;gdSave();}}
+function gdReset(){GD={done:{},seen:{},off:false};gdSave();showToast&&showToast('안내','처음부터 다시 안내한다.','ok',2000);gdSoon();}
+
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
   return `<div class="obNext">📜 <b>${esc(hero.hidden?hero.hidden.title:hero.race.name+' '+hero.wealth.name)}</b>이(가) 용사 연대기에 ${v?'★'.repeat(v)+'로 기록되었다':'오르지 못했다(첫 지역을 넘겨야 기록된다)'}.<br>${nx?`다음 목표: 이 조합으로 <b>${nx}</b>. `:''}새 용사를 뽑아 다른 칸도 채워 보자. 위의 「랜덤 영웅 뽑기」를 누른다.</div>`;}
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
@@ -1769,7 +1860,7 @@ function renderShop(t){
       <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${esc(itemTxt(run,it))}</div></div></div>
       <button type="button" class="buy c-${o.cur}" data-buy="${i}" ${dis?'disabled':''}>${o.sold?'판매 완료':`<span>구매</span><b>${o.cur==='gold'?COIN:STAR}${fmtS(o.price)}</b>`}</button>
       ${!o.sold&&poor&&up&&!full?`<div class="wneed">${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다</div>`:''}</div>`;}).join('')+'</div>'+autoNote;
-  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
+  box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){gdMark('shop');logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';
 function shownPower(){return Math.round(power(run)/run.stageCarry*10);}
@@ -1977,15 +2068,14 @@ function outcomeHtml(o){return `<div class="outcome"><p>${o.text}</p>${o.effects
 function probCls(p){return p>=0.6?'hi':p>=0.25?'mid':'lo';}
 function riskHtml(n){if(typeof lossRisk!=='function')return '';const k=lossRisk(run,n);
   const dmg=k.lo===k.hi?`${k.lo}`:`${k.lo}~${k.hi}`;
-  const tail=k.fall<=0?'버틸 수 있다':k.save?`쓰러지면 <b>${k.save}</b> 소모 (${pctTxt(k.fall)}%)`:`<b style="color:#e5534b">사망 위험 ${pctTxt(k.death)}%</b>`;
-  return `<p class="hint risk" style="margin:2px 0 0">패배 시 생명력 -${dmg} (현재 ${k.hp}) · ${tail}</p>`;}
+  const tail=k.fall<=0?'버틸 수 있다':k.save?`쓰러지면 <span class="rk">${k.save}</span> 소모 (${pctTxt(k.fall)}%)`:`<span class="rd">사망 위험 ${pctTxt(k.death)}%</span>`;
+  return `<div class="risk">패배 시 생명력 -${dmg} (현재 ${k.hp}) · ${tail}</div>`;}
 function pctTxt(p){return p<0.1?(p*100).toFixed(1):Math.round(p*100);}
 function renderStage(){
-  const box=$('stage');
+  const box=$('stage');if(typeof gdSoon==='function')gdSoon();
   if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{bindCk();}return;}
   if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
-  if(n.type==='battle')obTip('battle','⚔️','첫 전투','승리확률이 낮은 싸움일수록 이기면 좋은 아이템이 나온다. 불리하면 도망치거나 회유할 수도 있다.');
   if(!isImportant(run,c,mode)){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
@@ -2199,7 +2289,7 @@ async function submitRun(which){const W=which==='w',BS=which==='b';const P=W?'w'
     if(!r.ok||!j.ok){msg.className='msg err';msg.textContent='등록하지 못했다: '+(j.error||('서버 오류 '+r.status));btn.disabled=false;return;}
     lastSubmitted=heroSeed;const k=j.ranks||{};if(acctOn()&&!(PROF&&PROF.nickname)){PROF={nickname:nick};store.set('prof',PROF);acctRender();}
     if(!acctOn())setTimeout(()=>{const mm=$(P+'Msg');if(mm&&!mm.querySelector('.acHint'))mm.insertAdjacentHTML('beforeend',` <span class="acHint">· <a href="#" onclick="openAcct();return false">가입</a>하면 닉네임 「${esc(nick)}」를 내 것으로 지킬 수 있다</span>`);},50);
-    msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
+    gdMark('rank');msg.className='msg ok';msg.textContent=`등록 완료 · 처치한 악마 ${k.kills||'-'}위 · 최종 전투력 ${k.power||'-'}위 · 도달 기록 ${k.reach||'-'}위 (검증된 기록: 처치 ${fmt(j.summary.kills)}마리, 전투력 ${fmt(j.summary.power)}, ${j.summary.reach})`;
     if(j.boss){const B=j.boss;
       if(B.cooldown){wbSetNext(B.next_at);msg.className='msg err';msg.textContent=(BS?'':msg.textContent+' · ')+`월드 보스: 이 용사는 ${wbWaitTxt()} 뒤에 다시 공격할 수 있다.`;}
       else if(B.skipped){msg.textContent+=' · 월드 보스 피해는 「⚔ 공격하기」로만 들어간다 (그사이 처치는 쌓여 있다).';}
@@ -2427,7 +2517,7 @@ function nextStage(){
 }
 function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
-  if(typeof obCheck==='function')obCheck();
+  if(typeof obCheck==='function')obCheck();if(typeof gdSoon==='function')gdSoon();
   applyWorldBg();
   {const d=$('hDeals');if(d){const a=[];if(run&&!run.dead&&!run.over){if(run.oath)a.push(`<span class="dg" title="치료해 준 기사가 약속한 지배자전에 달려온다">🛡️ 맹세: ${run.oath.left}지역 뒤 기사 합류</span>`);if(run.oathBoss)a.push(`<span class="dg">🛡️ 기사 합류 중: 이번 지배자전 +${Math.round(OATH_BOSS*100)}%p</span>`);
     if(run.bossCurse)a.push(`<span class="db">☠️ 저주: 다음 지배자전 -${Math.round(run.bossCurse*100)}%p</span>`);if(run.pact)a.push(`<span class="dp" title="다음 지배자에게 지거나 도망치면 모든 능력치 -${Math.round(PACT_PEN*100)}%">😈 계약: 전투력 +${Math.round((PACT_POW-1)*100)}%</span>`);}d.innerHTML=a.join('');}}
@@ -2471,7 +2561,7 @@ function fillHelpSkills(){const t=$('helpSkills');if(!t||t.dataset.done)return;t
 function openHelp(){TRACK.st.help++;TRACK.ev('help');fillHelpSkills();const m=$('helpModal');m.hidden=false;helpWasPaused=paused;if(run&&!run.dead&&!run.over&&!paused){togglePause();}$('helpClose').focus();store.set('seenHelp',1);}
 function closeHelp(){$('helpModal').hidden=true;if(run&&!run.dead&&!run.over&&paused&&!helpWasPaused)togglePause();$('helpBtn').focus();}
 $('helpBtn').onclick=openHelp;
-$('chronBtn').onclick=openChron;$('acctBtn').onclick=openAcct;$('houseClose').onclick=closeHouse;$('houseModal').addEventListener('click',e=>{if(e.target.id==='houseModal')closeHouse();});document.addEventListener('keydown',e=>{if(!$('houseModal').hidden&&e.key==='Escape')closeHouse();});$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
+$('chronBtn').onclick=openChron;$('gdResetBtn').onclick=gdReset;$('acctBtn').onclick=openAcct;$('houseClose').onclick=closeHouse;$('houseModal').addEventListener('click',e=>{if(e.target.id==='houseModal')closeHouse();});document.addEventListener('keydown',e=>{if(!$('houseModal').hidden&&e.key==='Escape')closeHouse();});$('acctClose').onclick=closeAcct;$('acctModal').addEventListener('click',e=>{if(e.target.id==='acctModal')closeAcct();});document.addEventListener('keydown',e=>{if(!$('acctModal').hidden&&e.key==='Escape')closeAcct();});acctRender();if(acctOn())acctAfterLogin().catch(()=>{});$('chronClose').onclick=closeChron;document.querySelectorAll('[data-ch]').forEach(b=>b.onclick=()=>{chTab=b.dataset.ch;renderChron();});document.addEventListener('keydown',e=>{if(!$('chronModal').hidden&&e.key==='Escape')closeChron();},true);
 $('rankBtn').hidden=false;$('rankBtn').onclick=()=>openRank(RANK.on?undefined:'boss');
 $('rankClose').onclick=closeRank;$('rankModal').addEventListener('click',e=>{if(e.target.id==='rankModal')closeRank();});
 document.querySelectorAll('[data-rk]').forEach(b=>b.onclick=()=>{rankCol=b.dataset.rk;loadRank();});
