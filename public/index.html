@@ -1771,7 +1771,10 @@ function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.cla
       if(op&&ks.includes(k)){const more=ks.filter(x=>x!==k&&!GD.seen[x]);if(more.length){gdOpen({ic,head,text,el:null});return;}gdOpen({ic,head,text:text+' <b>아래 선택지 중 하나를 직접 골라 보세요.</b>',el:op,act:'opt'});}else gdOpen({ic,head,text,el:null});return;}}
 }
 function gdMark(id){gdAct(id);}
-function gdReset(){GD={done:{},seen:{},off:false};gdSave();showToast&&showToast('안내','처음부터 다시 안내한다.','ok',2000);gdSoon();}
+// 처음 영웅 3명까지는 출정할 때마다 안내를 처음부터 다시 보여 준다
+const GD_RUNS=3;
+function gdNewRun(){GD.runs=(GD.runs||0)+1;if(GD.runs<=GD_RUNS){GD.seen={'g:go':1};GD.done={go:1};}gdSave();}
+function gdReset(){GD={done:{},seen:{},off:false,runs:0};gdSave();showToast&&showToast('안내','처음부터 다시 안내한다.','ok',2000);gdSoon();}
 
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
   return `<div class="obNext">📜 <b>${esc(hero.hidden?hero.hidden.title:hero.race.name+' '+hero.wealth.name)}</b>이(가) 용사 연대기에 ${v?'★'.repeat(v)+'로 기록되었다':'오르지 못했다(첫 지역을 넘겨야 기록된다)'}.<br>${nx?`다음 목표: 이 조합으로 <b>${nx}</b>. `:''}새 용사를 뽑아 다른 칸도 채워 보자. 위의 「랜덤 영웅 뽑기」를 누른다.</div>`;}
@@ -2561,7 +2564,7 @@ function renderAll(){
   {const lb=$('leaveBtn');const inHunt=run&&!run.dead&&!run.over&&STAGES[run.stage].hunt!=null;lb.hidden=!inHunt;if(inHunt){const to=run.huntFrom===5?5:STAGES[run.stage].hunt+1;lb.textContent=to===5?'사냥 마치고 끝없는 전장으로 돌아가기':`사냥 마치고 ${STAGES[to].name}로`;lb.className='btn wbtn solid';lb.style.setProperty('--wc',WCOL[to]);}}
   {const tv=$('travel');const ok=run&&canTravel(run);tv.hidden=!ok;if(ok)$('travelBtns').innerHTML=[0,1,2,3].map(k=>`<button type="button" class="btn ghost wbtn" style="--wc:${WCOL[k]}" data-tv="${k}">${STAGES[k].name}</button>`).join('');}
 }
-$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';gdAct('go');setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
+$('goBtn').onclick=()=>{if(run||!hero)return;TRACK.st.runs++;enhMsg='';gdAct('go');gdNewRun();setTimeout(()=>TRACK.ev('go',{race:hero.race.name}),50);clearTimeout(autoT);paused=false;run=newRun(hero,stage,mixSeed(heroSeed,1));hero.rolls=store.get('rolls',1);store.set('rolls',0);
   {const keep=new Set(ckList().map(c=>'fh2_'+logKey(c.seed)));try{for(let i=localStorage.length-1;i>=0;i--){const k=localStorage.key(i);if(k&&k.startsWith('fh2_rl_')&&k!=='fh2_'+logKey(heroSeed)&&!keep.has(k))localStorage.removeItem(k);}}catch(e){}}
   chRun={dec:0,near:0,started:false,start:stage};runLog=[['start',heroSeed,stage]];persistLog();
   {const code=acctOn()&&HOUSE&&stage===0?legacyCode(HOUSE.legacy):'';if(code&&legacySum(code)>0&&applyLegacy(run,code)){logAct(['G',code]);setTimeout(()=>showToast('가문 유산',legacyTxt(code),'ok',2600),300);}}
