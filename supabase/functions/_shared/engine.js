@@ -386,7 +386,7 @@ const SKILLS=[
   {id:'blade',role:'전투',name:'검술',d:r=>`전투력 +${Math.round(SKV.blade*r*100)}%`},
   {id:'giant',role:'전투',name:'거인 사냥',d:r=>`승률 60% 미만인 싸움에서 승률 +${Math.round(SKV.giant*r*100)}%p`},
   {id:'boss',role:'전투',name:'지배자 사냥',d:r=>`지배자전 승률 최대 +${Math.round(SKV.boss*r*100)}%p (적보다 약할수록 줄어든다)`},
-  {id:'command',role:'전투',name:'지휘',d:r=>`즉시 용병 ${SKV.cmdHire}명 합류, 용병 1명당 전투력 ${4+Math.round(SKV.command*r*100)}%, 용병 상한 +${SKV.cmdcap*r}`},
+  {id:'command',role:'전투',name:'지휘',d:r=>`즉시 용병 ${SKV.cmdHire}명 합류, 용병 1명당 전투력 +${+(MERC_K*(4+SKV.command*r*100)).toFixed(1)}% (기본 ${+(MERC_K*4).toFixed(1)}%, 지능이 높으면 더 오른다), 용병 상한 +${SKV.cmdcap*r}`},
   {id:'grit',role:'생존',name:'질긴 목숨',d:r=>`세계마다 ${r}번, 쓰러질 때 생명력 ${Math.round(SKV.grit*100)}%로 버틴다`},
   {id:'flee',role:'생존',name:'도주술',d:r=>`도망 확률 +${Math.round(SKV.flee*r*100)}%p, 도망쳐도 명성이 줄지 않는다`},
   {id:'talk',role:'생존',name:'설득',d:r=>`회유 확률 +${Math.round(SKV.talk*r*100)}%p`},
@@ -925,6 +925,20 @@ function fmtG(n){if(!isFinite(n))return String(n);const a=Math.abs(n);if(a<1e5)r
   for(const[v,u]of BIG_UNITS)if(a>=v){const x=n/v;return (Math.abs(x)>=100?Math.round(x).toLocaleString('ko-KR'):x.toFixed(1).replace(/\.0$/,''))+u;}return fmtExact(n);}
 function fmtK(n){return fmtG(n);}
 
+function lossRisk(s,n){ // 패배 시 예상 피해(읽기 전용, 판정에 영향 없음)
+  const f=k=>n.final?Math.min(0.5,(0.2+0.4*(1-n.p))*k):(0.22+0.8*(1-n.p))*k*(n.boss?1.25:1);
+  const lo0=n.final?0.8:0.7, hi0=n.final?1.2:1.3;
+  const d=k=>Math.max(1,Math.round(s.maxHp*f(k)*(1-SKV.mDmg[mastery(s,'생존')])/Math.max(0.5,1+tsum(s,'hp',0))));
+  const lo=d(lo0), hi=d(hi0), hp=s.hp;
+  const fall=hi>=hp?(lo>=hp?1:(hp-lo)<=0?1:(hi-hp+1)/(hi-lo+1)):0;
+  let save=null; if(fall>0){
+    if(s.items.some(it=>it.heal)) save='성수';
+    else if(['heroine','friend'].map(k=>s.comp[k]).find(c=>c&&c.save&&!s.saves[c.name])) save='동료의 구원';
+    else if(s.gritLeft>0) save='질긴 목숨';
+    else if(s.revive>0||s.items.some(it=>it.revive)) save='부활';
+  }
+  return {lo,hi,hp,fall:Math.min(1,fall),save,death:save?0:Math.min(1,fall)};
+}
 function hurt(s,frac,out){
   frac*=1-SKV.mDmg[mastery(s,'생존')];
   const dmg=Math.max(1,Math.round(s.maxHp*frac/Math.max(0.5,1+tsum(s,'hp',0)))); s.hp-=dmg; out.push({t:'bad',x:`체력 -${dmg}`});
@@ -1306,4 +1320,4 @@ function isImportant(s,c,mode){
 }
 function autoRun(hero,stage,seed){const s=newRun(hero,stage,seed);let g=0;while(!s.dead&&!s.over&&g++<800){const c=current(s);if(!c)break;if(c.node.type==='rest')autoShop(s);choose(s,autoChoice(s,c));}return s;}
 globalThis.FateEngine={WK,WK_NAME,WK_STAT,WK_ICON,monWeak,deceit,clueAcc,ENDLESS_MON,HBUFF,applyHouseBuff,intXp,skAmp,mercPer,COMBO_PLUS,itemTxt,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,GAMBLE_CONT,GAMBLE_P,GAMBLE_PAY,GAMBLE_MIN,gambleStake,COMP_REQ,compOk,fmtG,fmtExact,canKeepSpare,spareCount,SPARE_MAX,rng,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,nextPickLevel,pvpRaw,RACE_RING,raceRel,raceBeats,PVP_KEYS,PVP_NAME,pvpStats,pvpCard,duel,duelPlan,MYTHS,MYTH_BY,mythCheck,mythFuse,enhCostParts,holdFull,COMBOS,COMBO_BY,comboList,skillRate,cmb,enhRate,raceInfo,traitInfo,wealthInfo,wardP,ROLES,MASTERY,mastery,roleRanks,SKV,SKILL_BY,SKILLS,WORLD_TRAITS,sk,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,makeHero,newRun,current,choose,buy,sell,enhance,advanceStage,enterHunt,leaveHunt,STAGES};
-if(typeof module!=='undefined') module.exports={WK,WK_NAME,monWeak,deceit,clueAcc,ENDLESS_MON,HBUFF,applyHouseBuff,HEROINES,FRIENDS,PETS,SPOUSES,hpMax,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},setBaseK:v=>{BASE_K=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
+if(typeof module!=='undefined') module.exports={lossRisk,WK,WK_NAME,monWeak,deceit,clueAcc,ENDLESS_MON,HBUFF,applyHouseBuff,HEROINES,FRIENDS,PETS,SPOUSES,hpMax,HEROES_M,SPOUSES_M,RARE,RARE_ALL,RARE_P,heroList,spList,spOf,rareNames,COMP_REQ,compOk,canKeepSpare,spareCount,SPARE_MAX,pvpMight,enhanceSync,mythFuseSync,wbRewardSync,applyLegacy,legacyParse,legacyCode,legacySum,LEGACY,LEG_KEYS,travelHunt,canTravel,isPickLevel,PVP_KEYS,pvpStats,pvpCard,duel,duelPlan,MYTHS,mythCheck,mythFuse,COMBOS,COMBO_BY,comboList,skillRate,cmb,MINIONS,raceInfo,traitInfo,wealthInfo,ROLES,mastery,roleRanks,SKILLS,SKILL_BY,WORLD_TRAITS,sk,SKV,setSKV:o=>Object.assign(SKV,o),setDiff:a=>{DIFF=a},setQuestE:v=>{QUEST_E=v},setGoldIn:v=>{GOLD_IN=v},winProb,setGW:a=>{GW=a},setFreshSk:a=>{FRESH_SK=a},setEnhScale:v=>{ENH_SCALE=v},setFinalTries:v=>{FINAL_TRIES=v},wtrait,ENGINE_VERSION,mixSeed,snapshotRun,restoreRun,previewPowerAt,runSummary,replayLog,enterHunt,leaveHunt,worldOf,HUNT_BASE,setHuntStart:v=>{HUNT_START=v},setFresh:a=>{FRESH=a},setCarryRef:(a,al)=>{CARRY_REF=a;if(al!=null)CARRY_ALPHA=al;},powerOf:s=>power(s),GRADE_ENH,setBonusMin:v=>{BONUS_MIN=v},floorOf,setStep:a=>{CARRY_STEP=a},effLuk,effCha,RESIST,TIER_NAME,tierOf,setLvl:v=>{LVL_B=v},setBaseK:v=>{BASE_K=v},itemDescAt,enhance,enhCost,canEnhance,itemName,itemDesc,ENH_RATE,ENH_BREAK,wouldUpgrade,slotOf,procCurve,nextRegion,rng,luckProc,charmProc,setCarry:v=>{CARRY_ADJ=v},unpacified,setUnp:v=>{UNP_PEN=v},advanceStage,setLate:v=>{LATE=v},teamBonus,autoEssentials,revives,winParts,sell,sellPrice,fameBonus,buy,autoShop,GRADES,setFinal:v=>{FINAL_X=v},autoChoice,fameTitle,regionShare,isImportant,makeHero,newRun,current,choose,autoRun,pct,STAGES};
