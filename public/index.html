@@ -1244,6 +1244,7 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
   .cmdbar .opt.wkMenu{order:10}.opts.hasWk.sub .wkBack{order:11}
   .cmdbar .opt[disabled]{min-height:44px}
 }
+.skipHint{font-size:11px;color:var(--muted);opacity:.8}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -2491,8 +2492,8 @@ function renderStage(){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
     const body=`<div><b>${label} · ${c.title}</b><div class="phase" id="phase">${(PHASES[n.type]||PHASES.event)[0]}…</div><div style="font-size:13px;margin-top:4px">자동 선택: ${pick.label}${n.type==='battle'?` (승리확률 ${pctTxt(n.p)}%)`:''}</div></div>`;
-    box.innerHTML=`<div class="autoCard${n.type==='battle'?' battleAuto':''}">${n.type==='battle'?arenaHtml(n,c,true)+body:sceneHtml(n,true)+body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':''}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
-    bindModes(); tickAuto(ms); return;
+    box.innerHTML=`<div class="autoCard${n.type==='battle'?' battleAuto':''}">${n.type==='battle'?arenaHtml(n,c,true)+body:sceneHtml(n,true)+body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':'<span class="skipHint">화면을 누르면 바로 넘어간다 · Enter</span>'}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
+    bindModes(); {const ac=box.querySelector('.autoCard');if(ac){ac.style.cursor='pointer';ac.title='누르면 바로 넘어간다';ac.onclick=e=>{if(e.target.closest('button,a'))return;skipAuto();};}} tickAuto(ms); return;
   }
   const why=mode==='manual'?'':n.type==='skill'?'스킬 선택':n.type==='prep'?'마지막 지배자':n.type!=='battle'?'중요한 만남':n.boss?'지배자 전투':n.quest?'의뢰':n.p<0.6?'불리한 싸움':'생명력 위험';
   box.innerHTML=`<div class="decide${n.type==='battle'?' battleCard':''}"><div class="where">${s.regions[run.region][0]} · ${n.type==='battle'?(n.boss?'지배자 전투':n.quest?'의뢰 토벌':'전투'):n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건'}${why?`<span class="why">${why} · 직접 결정</span>`:''}</div>
@@ -2625,9 +2626,12 @@ function togglePause(){if(!run||run.dead||run.over)return;paused=!paused;clearTi
 function syncPause(){const b=$('pauseBtn');if(!b)return;const busy=run&&!run.dead&&!run.over;b.disabled=!busy;b.classList.toggle('on',paused&&busy);b.textContent=paused&&busy?'재개 ▶':'일시정지 ❚❚';}
 function tickAuto(ms){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];if(paused)return;
   const c0=run&&current(run); if(c0){const ph=PHASES[c0.node.type]||PHASES.event; ph.forEach((t,i)=>{if(i)phaseT.push(setTimeout(()=>{const el=$('phase');if(el)el.textContent=t+'…';},ms*i/ph.length));});}
-  autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if(impNow(c)){renderStage();return;}
+  autoT=setTimeout(autoStep,ms||1000);}
+function autoStep(){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];if(!run||run.dead||run.over)return;const c=current(run);if(!c)return;if(impNow(c)){renderStage();return;}
     if(c.node.type==='rest'){const b=autoShop(run);if(b.length)logBuy(b.map(x=>x.it),b[0].why);}
-    decide(autoChoice(run,c),true);},ms||1000);}
+    decide(autoChoice(run,c),true);}
+// 자동으로 넘어가는 장면은 누르면 바로 넘어간다 (연타 방지: 0.15초)
+let skipAt=0;function skipAuto(){const now=Date.now();if(now-skipAt<150||paused||!run||run.dead||run.over)return;const c=current(run);if(!c||impNow(c))return;skipAt=now;autoStep();}
 // 쓰러질 뻔한 순간: 화면 연출 + 기록 강조
 const NEAR_TXT={revive:['부활','죽음의 문턱에서 되살아났다'],potion:['기사회생','성수가 목숨을 붙잡았다'],saver:['구원','동료가 몸을 던져 구해냈다'],grit:['불굴','질긴 목숨으로 버텨냈다']};
 function nearDeathFx(e){const [h,sub]=NEAR_TXT[e.near]||['생존',e.x];let o=$('nearFx');if(!o){o=document.createElement('div');o.id='nearFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
@@ -3020,7 +3024,7 @@ let gearTab=store.get('gearTab','shop');function setGearTab(t){gearTab=t;store.s
 document.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>setGearTab(b.dataset.gt));setGearTab(gearTab);
 
 $('leaveBtn').onclick=leaveHuntNow;$('travel').addEventListener('click',e=>{const b=e.target.closest('[data-tv]');if(b)travelTo(+b.dataset.tv);});
-document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(document.querySelector('#mythFx.on,#gbFx.on'))return;if(e.key===' '&&!impNow(current(run))){e.preventDefault();togglePause();return;}if(!impNow(current(run)))return;const k=+e.key;if(k>=1&&k<=9){const vis=[...document.querySelectorAll('#stage .opts .opt')].filter(b=>b.offsetParent!==null);const b=vis[k-1];if(b&&!b.disabled)b.click();}});
+document.addEventListener('keydown',e=>{if(!run||run.dead||run.over)return;if(e.key==='Enter'&&!e.target.closest('input,textarea,button')){const c=current(run);if(c&&!impNow(c)){e.preventDefault();skipAuto();return;}}if(document.querySelector('#mythFx.on,#gbFx.on'))return;if(e.key===' '&&!impNow(current(run))){e.preventDefault();togglePause();return;}if(!impNow(current(run)))return;const k=+e.key;if(k>=1&&k<=9){const vis=[...document.querySelectorAll('#stage .opts .opt')].filter(b=>b.offsetParent!==null);const b=vis[k-1];if(b&&!b.disabled)b.click();}});
 newHero(true);
 if(!store.get('seenHelp',0)&&OB.full) openHelp();
 if(!OB.full&&!OB.tips.intro){OB.tips.intro=1;obSave();setTimeout(()=>obShow('🎲','운명의 용사','용사는 무작위로 태어난다. 마음에 들면 「이 운명으로 출정」, 아니면 「랜덤 영웅 뽑기」. 자세한 규칙은 위의 「게임 방법 보기」에 있다.'),700);}
