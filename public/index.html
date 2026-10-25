@@ -1219,7 +1219,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
       <li><b>2·4·6·8·10레벨</b>에 한 번씩, 그 뒤로는 <b>13·16·19…처럼 3레벨마다</b> 스킬을 고른다. 세계를 정복할 때도 1번 고른다. 레벨 옆 경험치 막대에서 다음 스킬 레벨을 볼 수 있다.</li>
       <li>스킬 습득의 기본 확률은 <b>기술마다 55~85%</b>로 다르게 제시된다. 행운 5당 +2%p, 실패할 때마다 쌓이는 <b>깨달음</b> 1개당 +5%p(최대 95%). 실패하면 그 기회는 사라지고, 성공하면 깨달음은 초기화된다.</li>
       <li>스킬은 <b>전투·생존·성장·재물</b> 네 계열로 나뉜다. 한 계열의 랭크 합이 <b>3</b>과 <b>6</b>이 되면 숙련 보너스가 붙는다. 여러 계열에 흩어 찍으면 숙련에 닿기 어렵다.</li>
-      <li>'전부 직접'과 '중요한 것만'에서는 스킬을 직접 고른다. '완전 자동'에서는 스킬도 자동으로 고른다(테스트 기간 한정). 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
+      <li>스킬은 언제나 직접 고른다. 어떤 계열로 키우느냐에 따라 같은 용사도 도달 거리가 크게 달라진다.</li>
     </ul>
     <div class="tblWrap"><table id="helpSkills"></table></div>
     <h3>조합</h3>
@@ -1812,7 +1812,7 @@ function gdReset(){GD={done:{},seen:{},off:false,runs:0};gdSave();showToast&&sho
 function obDeathHtml(){if(OB.full||!run||!hero)return '';const v=chron.h[chKey(hero)]||0;const nx=[null,'지상계 정복','공허의 옥좌 정복','끝없는 전장 100층'][Math.min(3,v)];
   return `<div class="obNext">📜 <b>${esc(hero.hidden?hero.hidden.title:hero.race.name+' '+hero.wealth.name)}</b>이(가) 용사 연대기에 ${v?'★'.repeat(v)+'로 기록되었다':'오르지 못했다(첫 지역을 넘겨야 기록된다)'}.<br>${nx?`다음 목표: 이 조합으로 <b>${nx}</b>. `:''}새 용사를 뽑아 다른 칸도 채워 보자. 위의 「랜덤 영웅 뽑기」를 누른다.</div>`;}
 let unlocked=store.get('unlocked',0), best=store.get('best',{}), hist=store.get('hist',[]), conq=store.get('conq',{});
-let stage=0, hero=null, run=null, mode=(m=>m==='manual'||m==='auto'?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
+let stage=0, hero=null, run=null, mode=(m=>m==='manual'?m:'key')(store.get('mode2','key')), autoT=null, lastOut=null, prevStats=null;
 
 const dist={};
 // 상위 % 분포: 자동 판 2000개. 한 번에 돌리면 3~5초 멈추므로 출정 중 백그라운드에서 조금씩 만들고, 버전별로 저장해 둔다
@@ -2239,14 +2239,14 @@ function monsterPixel(name,st,boss){
   }
   return `<svg viewBox="0 0 ${W+2} ${H+2}" shape-rendering="crispEdges" style="filter:hue-rotate(${hue}deg)" role="img" aria-label="${name}">${rects}</svg>`;
 }
-const SPEEDS=[1,2,4,8,16]; // 16배속·완전 자동은 테스트 기간 임시
+const SPEEDS=[1,2,4,8];
 // 기본 8배속. 예전 기본값(1배속)이 저장된 사람도 한 번은 8배속으로 옮긴다. 이후 고른 속도는 그대로 기억한다.
 let speed=(v=>SPEEDS.includes(v)?v:8)(store.get('spd8')?store.get('speed',8):8), paused=false; store.set('spd8',1);
 store.set('speed',speed); store.set('mode2',mode); // 예전 설정(16배속, 전부 자동, 지배자만)을 새 설정으로 옮긴다
 function stepMs(n){const base=n.type==='battle'?(n.boss?9000:7000):n.type==='explore'?5000:n.type==='rest'||n.type==='prep'?4000:4500;const sf=[1,1.35,1.8,2,2.6][stage]||1;
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches?300:base*sf/speed;}
 const PHASES={prep:['무기를 손질한다','작전을 세운다','결전의 문 앞에 선다'],battle:['적과 거리를 좁힌다','칼날이 부딪친다','승부가 기울기 시작한다'],explore:['주변을 살핀다','깊숙이 들어간다','무언가가 보인다'],rest:['모닥불을 피운다','밤이 깊어간다','동이 튼다'],event:['다가간다','이야기를 나눈다']};
-const MODES=[['manual','전부 직접'],['key','중요한 것만'],['auto','완전 자동']];
+const MODES=[['manual','전부 직접'],['key','중요한 것만']];
 function modesHtml(){return `<div class="modes"><span>직접 결정:</span>${MODES.map(([k,l])=>`<button class="mode" type="button" data-m="${k}" aria-pressed="${mode===k}">${l}</button>`).join('')}<button class="mode" type="button" data-pause="1" aria-pressed="${paused}" style="${paused?'border-color:var(--ember);color:var(--ember)':''}">${paused?'재개 ▶':'일시정지 ❚❚'}</button><span class="speed">${SPEEDS.map(v=>`<button class="mode" type="button" data-sp="${v}" aria-pressed="${speed===v}">${v}×</button>`).join('')}</span></div>`;}
 function bindModes(){document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{mode=b.dataset.m;store.set('mode2',mode);clearTimeout(autoT);renderStage();});
   document.querySelectorAll('[data-pause]').forEach(b=>b.onclick=togglePause);
