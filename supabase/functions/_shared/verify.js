@@ -25,12 +25,13 @@ import './engine_1_10_0.js';
 import './engine_1_10_1.js';
 import './engine_1_10_2.js';
 import './engine_1_11_0.js';
+import './engine_1_12_0.js';
 import './engine_1_11_1.js';
 import './engine.js';
 
 const E = globalThis.FateEngine;
 const ENGINES = { [E.ENGINE_VERSION]: E };
-for (const old of [globalThis.FateEngine_1_11_1, globalThis.FateEngine_1_11_0, globalThis.FateEngine_1_10_2, globalThis.FateEngine_1_10_1, globalThis.FateEngine_1_10_0, globalThis.FateEngine_1_9_7, globalThis.FateEngine_1_9_6, globalThis.FateEngine_1_9_5, globalThis.FateEngine_1_9_4, globalThis.FateEngine_1_9_3, globalThis.FateEngine_1_9_2, globalThis.FateEngine_1_9_1, globalThis.FateEngine_1_9_0, globalThis.FateEngine_1_8_0, globalThis.FateEngine_1_7_1, globalThis.FateEngine_1_7_0, globalThis.FateEngine_1_6_0, globalThis.FateEngine_1_5_9, globalThis.FateEngine_1_5_8, globalThis.FateEngine_1_5_7, globalThis.FateEngine_1_5_6, globalThis.FateEngine_1_5_5, globalThis.FateEngine_1_5_4, globalThis.FateEngine_1_5_3, globalThis.FateEngine_1_5_2]) if (old && !ENGINES[old.ENGINE_VERSION]) ENGINES[old.ENGINE_VERSION] = old;
+for (const old of [globalThis.FateEngine_1_12_0, globalThis.FateEngine_1_11_1, globalThis.FateEngine_1_11_0, globalThis.FateEngine_1_10_2, globalThis.FateEngine_1_10_1, globalThis.FateEngine_1_10_0, globalThis.FateEngine_1_9_7, globalThis.FateEngine_1_9_6, globalThis.FateEngine_1_9_5, globalThis.FateEngine_1_9_4, globalThis.FateEngine_1_9_3, globalThis.FateEngine_1_9_2, globalThis.FateEngine_1_9_1, globalThis.FateEngine_1_9_0, globalThis.FateEngine_1_8_0, globalThis.FateEngine_1_7_1, globalThis.FateEngine_1_7_0, globalThis.FateEngine_1_6_0, globalThis.FateEngine_1_5_9, globalThis.FateEngine_1_5_8, globalThis.FateEngine_1_5_7, globalThis.FateEngine_1_5_6, globalThis.FateEngine_1_5_5, globalThis.FateEngine_1_5_4, globalThis.FateEngine_1_5_3, globalThis.FateEngine_1_5_2]) if (old && !ENGINES[old.ENGINE_VERSION]) ENGINES[old.ENGINE_VERSION] = old;
 export const ACCEPT_VERSIONS = Object.keys(ENGINES);
 export const ENGINE_VERSION = E.ENGINE_VERSION;
 
@@ -50,7 +51,7 @@ function toHex(buf) {
 }
 // 서명에 들어간 버전 표시는 발급 당시 서버 버전이다. 서버가 업데이트되는 사이에 발급된 용사도 인정하도록 이전 버전 표시도 받아 준다.
 // (서명 자체는 비밀 키로만 만들 수 있으므로 버전 표시를 넓혀도 위조 위험은 늘지 않는다)
-export const SIGN_VERSIONS = [ENGINE_VERSION, '1.11.1', '1.11.0', '1.10.2', '1.10.1', '1.10.0', '1.9.7', '1.9.6', '1.9.5', '1.9.4', '1.9.3', '1.9.2', '1.9.1', '1.9.0', '1.8.0', '1.7.1', '1.7.0', '1.6.0', '1.5.9', '1.5.8', '1.5.7', '1.5.6', '1.5.5', '1.5.4', '1.5.3', '1.5.2', '1.5.1', '1.5.0'].filter((v, i, a) => a.indexOf(v) === i);
+export const SIGN_VERSIONS = [ENGINE_VERSION, '1.12.0', '1.11.1', '1.11.0', '1.10.2', '1.10.1', '1.10.0', '1.9.7', '1.9.6', '1.9.5', '1.9.4', '1.9.3', '1.9.2', '1.9.1', '1.9.0', '1.8.0', '1.7.1', '1.7.0', '1.6.0', '1.5.9', '1.5.8', '1.5.7', '1.5.6', '1.5.5', '1.5.4', '1.5.3', '1.5.2', '1.5.1', '1.5.0'].filter((v, i, a) => a.indexOf(v) === i);
 export async function signRun(secret, seed, ts, ver = ENGINE_VERSION) {
   const key = await hmacKey(secret);
   return toHex(await crypto.subtle.sign('HMAC', key, enc.encode(`fate-hero|${ver}|${seed >>> 0}|${ts}`)));
@@ -109,7 +110,8 @@ function stepOp(EV, s, a, snap) {
   let ok = true;
   if (op === 'b') ok = !!EV.buy(s, a[1] | 0); else if (op === 's') ok = !!EV.sell(s, a[1] | 0); else if (op === 'e') ok = !!EV.enhanceSync(s, a[1] | 0, snap);
   else if (op === 'M') ok = !!EV.mythFuseSync(s, snap); else if (op === 'T') ok = EV.travelHunt(s, a[1] | 0); else if (op === 'n') ok = EV.advanceStage(s);
-  else if (op === 'h') ok = EV.enterHunt(s); else if (op === 'l') ok = EV.leaveHunt(s); else return `알 수 없는 행동 ${op}`;
+  else if (op === 'h') ok = EV.enterHunt(s); else if (op === 'l') ok = EV.leaveHunt(s);
+  else if (op === 'w') ok = !!(EV.wearSpare && EV.wearSpare(s, a[1] | 0)); else if (op === 'u') ok = !!(EV.unpinItem && EV.unpinItem(s, a[1] | 0)); else return `알 수 없는 행동 ${op}`;
   return ok ? null : `${op} 실행 불가`;
 }
 export function replayMixed(log, order) {
@@ -141,7 +143,7 @@ export function replayMixed(log, order) {
   return null;
 }
 
-const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L', 'M', 'T', 'W', 'G', 'H']);
+const OPS = new Set(['c', 'b', 's', 'e', 'n', 'h', 'l', 'S', 'L', 'M', 'T', 'W', 'G', 'H', 'w', 'u']);
 
 // 요청 본문을 검사하고 기록을 재생한다. 성공하면 { row, summary }, 실패하면 Error를 던진다.
 export async function verifySubmission(body, secret, now = Date.now()) {

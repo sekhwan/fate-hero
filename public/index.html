@@ -929,6 +929,7 @@ section.gear{margin-top:0;background:none;border:0;padding:0}
 .gtabs+.gearBody .zone{margin-top:8px}
 .gearBody{gap:16px}
 .shopWide{background:none;border:0;padding:0}
+.irow button.wear{border-color:rgba(79,220,242,.55);color:#7fe8f7} .irow button.wear.pin{border-color:rgba(240,200,90,.6);color:var(--brass)} .aff{color:#7fe3a0} .aff i{font-style:normal;color:var(--muted);margin:0 3px} .pinTag{margin-left:4px;font-size:11px}
 .irow button.enh{border-color:color-mix(in srgb,var(--zg) 70%,transparent);color:var(--zg)}
 
 /* 소지품·상점 한 줄형 */
@@ -1682,6 +1683,8 @@ const GD_GOALS=[
   when:()=>run&&!run.dead&&!run.over&&!!gdBuyBtn(),el:()=>gdBuyBtn(),tab:'shop',act:'buy',done:()=>!!GD.done.shop},
  {id:'enh',ic:'🔨',head:'아이템 강화가 중요해요',text:()=>`영웅님, 같은 장비라도 강화하면 훨씬 강해집니다. <b>+0 장비의 강화 버튼을 눌러 +1강을 해 보세요.</b> +0→+1은 성공 ${gdPct(ENH_RATE[0])}%이고 실패해도 잃는 것이 없습니다. (+1부터는 실패하면 장비가 부서지니, 초반에는 +2 정도까지만 노리세요.)`,
   when:()=>run&&!run.dead&&!run.over&&!!gdEnhBtn(),el:()=>gdEnhBtn(),tab:'inv',act:'enh',done:()=>!!GD.done.enh},
+ {id:'wear',ic:'🌟',head:'전설의 추가 옵션을 골라 끼세요',text:()=>'전설 장비에는 기본 능력치 말고도 <b>무작위 추가 옵션이 1~2개</b> 붙습니다(경험치·금화·명성 획득, 지배자전 승률, 회유·도망, 강화 성공률, 전설 발견, 스킬 공격, 패배 피해 감소). 추가 옵션은 <b>착용 중일 때만</b> 효과가 있습니다. 수치가 조금 낮아도 옵션이 마음에 들면 <b>착용</b> 버튼으로 직접 끼고 📌 고정할 수 있습니다. <b>예비 전설의 착용 버튼을 눌러 보세요.</b>',
+  when:()=>run&&!run.dead&&!run.over&&!!gdWearBtn(),el:()=>gdWearBtn(),tab:'inv',act:'wear',done:()=>!!GD.done.wear},
  {id:'hunt',ic:'🏹',head:'다음 세계로 가기 전에 사냥터에 들르세요',text:()=>'영웅님, 세계를 정복했습니다. 하지만 다음 세계의 적은 <b>훨씬 강합니다</b>. 바로 넘어가지 말고 이 세계의 <b>사냥터</b>에서 경험치와 장비를 모으세요. 층마다 수문장을 쓰러뜨리면 장비가 확정으로 나오고, 충분히 강해지면 언제든 다음 세계로 떠날 수 있습니다. 세계를 하나 넘을 때마다 꼭 들르세요. <b>사냥터 버튼을 눌러 보세요.</b>',
   when:()=>!!$('huntBtn'),el:()=>$('huntBtn'),act:'hunt',done:()=>!!(run&&STAGES[run.stage]&&STAGES[run.stage].hunt!=null),repeat:true},
  {id:'rank',ic:'🏆',head:'기록을 랭킹에 올리세요',text:()=>'영웅님의 여정이 끝났습니다. 서버가 모든 행동을 처음부터 다시 재생해 검증한 뒤 랭킹에 올립니다. 닉네임을 적고 <b>등록 버튼을 눌러 보세요</b>.',
@@ -1706,6 +1709,7 @@ function gdLegEl(){const i=gdLegIdx();if(i<0)return null;const b=document.queryS
 function gdLegBtn(){const i=gdLegIdx();if(i<0)return null;const b=document.querySelector(`#shop [data-buy="${i}"]`);return b&&!b.disabled?b:null;}
 function gdWbBtn(){const w=$('wbBar');if(!w||w.hidden)return null;const b=w.querySelector('.wbAtk');return b&&b.offsetParent!==null?b:null;}
 function gdLegacyBtn(){for(const m of ['houseModal','chronModal']){const M=$(m);if(M&&!M.hidden){const b=M.querySelector('[data-buy]:not([disabled])');if(b&&b.offsetParent!==null)return b;}}return null;}
+function gdWearBtn(){return document.querySelector('#hItems [data-wear]');}
 function gdVis(el){return !!(el&&el.offsetParent!==null&&!el.disabled);}
 function gdBuyBtn(){const bs=[...document.querySelectorAll('#shop .ware')];for(const w of bs){if(!w.querySelector('.wt.up'))continue;const b=w.querySelector('[data-buy]');if(b&&!b.disabled)return b;}return null;}
 function gdEnhBtn(){const bs=[...document.querySelectorAll('#hItems [data-enh]:not([disabled])')];return bs.find(b=>{const it=run&&run.items[+b.dataset.enh];return it&&!(it.plus||0);})||null;}
@@ -1873,10 +1877,12 @@ function renderHero(){
      const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmtS(cost)} = 강화비 ${fmtS(cp.base)} + 보유 금화 10% ${fmtS(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmtS(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmtS(cost)}</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
-     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}><i class="ic">${itemIcon(i)}</i>${itemName(i)}</span>${i.spare?'<span class="spTag" title="효과 없음 · 강화해서 신화 합성 재료로 쓰거나, 착용품보다 강해지면 자동으로 바꿔 낀다">예비</span>':''}${qTag(i)}<span class="iv">${itemDesc(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
+     return `<div class="irow"><div class="in"><span class="nm g${i.grade||0} tipt"${tipAttr(itemName(i),[tip,itemDesc(i),canEnhance(i)?`강화 +${i.plus||0}→+${(i.plus||0)+1}: 성공 ${Math.round((run?enhRate(run,i.plus||0).rate:ENH_RATE[i.plus||0])*100)}%`+((i.plus||0)>=1?', 실패하면 파괴(수호 각인으로 일부 방지)':', 실패해도 그대로'):''])}><i class="ic">${itemIcon(i)}</i>${itemName(i)}</span>${i.spare?'<span class="spTag" title="효과 없음 · 착용 버튼으로 직접 바꿔 낄 수 있다. 강화해서 신화 합성 재료로도 쓴다">예비</span>':''}${i.pin&&!i.spare?'<span class="pinTag" title="직접 착용해 고정했다. 더 높은 수치가 들어와도 자동으로 바꾸지 않는다">📌</span>':''}${qTag(i)}<span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${i.spare&&(i.grade||0)===3?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다. 지금 착용품은 예비로 돌아간다(전설이 아니면 판매)">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀면 수치가 가장 높은 장비로 다시 자동 착용한다">📌 해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div><div class="is">${i.src?`<span class="src ${srcCls(i.src)}">${esc(i.src)}</span>${i.where?esc(i.where):''}`:''}</div>${canEnhance(i)?`<div class="ip">강화 시 <b>${itemDescAt(i,pl+1)}</b>${pp?` · 전투력 ${fmt(pp[0])}→<b>${fmt(pp[1])}</b>`:''} · ${pl>=1?'<span class="br">실패하면 파괴</span>':'실패해도 그대로'}</div>`:''}</div>`;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
+  $('hItems').querySelectorAll('[data-wear]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.wear;const nm=run.items[ix]&&run.items[ix].name;if(wearSpare(run,ix)){gdAct('wear');logAct(['w',ix]);enhMsg=`📌 ${esc(nm||'')}을(를) 착용하고 고정했다`;prevStats=null;renderAll();}});
+  $('hItems').querySelectorAll('[data-unpin]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.unpin;if(unpinItem(run,ix)){logAct(['u',ix]);enhMsg='고정을 풀었다. 수치가 가장 높은 장비로 다시 착용한다';prevStats=null;renderAll();}});
   renderMyth();
   $('hItems').querySelectorAll('[data-sell]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.sell;const r=sell(run,ix);if(r){logAct(['s',ix]);logSell(r);prevStats=null;renderAll();}});
   $('hPower').textContent=fmt(power(tmp)/tmp.stageCarry*10);
@@ -2132,6 +2138,7 @@ function riskHtml(n){if(typeof lossRisk!=='function')return '';const k=lossRisk(
   const dmg=k.lo===k.hi?`${k.lo}`:`${k.lo}~${k.hi}`;
   const tail=k.fall<=0?'버틸 수 있다':k.save?`쓰러지면 <span class="rk">${k.save}</span> 소모 (${pctTxt(k.fall)}%)`:`<span class="rd">사망 위험 ${pctTxt(k.death)}%</span>`;
   return `<div class="risk">패배 시 생명력 -${dmg} (현재 ${k.hp}) · ${tail}</div>`;}
+function affHtml(it){return it&&it.aff&&it.aff.length?it.aff.map(x=>`<i>·</i><span class="aff">${affTxt1(x)}</span>`).join(''):'';}
 function pctTxt(p){return p<0.1?(p*100).toFixed(1):Math.round(p*100);}
 function renderStage(){
   const box=$('stage');if(typeof gdSoon==='function')gdSoon();
