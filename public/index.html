@@ -652,10 +652,9 @@ header.hb .helpBtn:hover{background-image:url('art/ui_button_hover.webp')!import
 body.ob-combo #cmbBox,body.ob-skill .skills,body.ob-comp .party,body.ob-merc #mercBox,body.ob-inv .pInv,body.ob-inv .gt[data-gt="inv"],body.ob-end .pvpBox,body.ob-end [data-rk="world"]{display:none!important}
 body.ob-inv .gearBody .pShop{display:block!important}
 #gdDim{position:fixed;inset:0;z-index:94;background:rgba(4,10,20,.66);display:none}#gdDim.on{display:block}
-#gdPop{--gd:#4fdcf2;--gd2:#1b8fb0;position:fixed;left:50%;bottom:22px;transform:translate(-50%,16px);z-index:96;width:min(480px,calc(100vw - 32px));padding:16px 16px 12px;border-radius:14px;background:linear-gradient(180deg,#0f2a3a,#0b1c28);border:2px solid var(--gd);box-shadow:0 0 0 1px rgba(79,220,242,.25),0 0 28px rgba(79,220,242,.35),0 14px 40px rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;font-family:inherit}
+#gdPop{--gd:#4fdcf2;--gd2:#1b8fb0;position:fixed;left:50%;top:40%;transform:translate(-50%,10px) scale(.97);z-index:96;width:min(480px,calc(100vw - 32px));padding:16px 16px 12px;border-radius:14px;background:linear-gradient(180deg,#0f2a3a,#0b1c28);border:2px solid var(--gd);box-shadow:0 0 0 1px rgba(79,220,242,.25),0 0 28px rgba(79,220,242,.35),0 14px 40px rgba(0,0,0,.75);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s,top .2s;font-family:inherit}
 #gdPop::before{content:'💡 안내';position:absolute;top:-12px;left:14px;padding:2px 10px;border-radius:99px;background:var(--gd);color:#062030;font-size:11.5px;font-weight:800;letter-spacing:.5px}
-#gdPop.top{bottom:auto;top:22px;transform:translate(-50%,-16px)}
-#gdPop.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#gdPop.on{opacity:1;transform:translate(-50%,0) scale(1);pointer-events:auto}
 #gdPop .gdH{display:flex;align-items:center;gap:8px;margin:4px 0 6px}#gdPop .gdI{font-size:22px}#gdPop .gdH b{color:#e8fbff;font-size:15.5px}#gdPop .gdH em{margin-left:auto;font-style:normal;font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid var(--gd);color:var(--gd)}
 #gdPop .gdT{font-size:13.5px;line-height:1.65;color:#cfe6ee}#gdPop .gdT b{color:var(--gd);font-weight:700}
 #gdPop .gdB{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
@@ -1655,7 +1654,7 @@ function obSave(){store.set('ob',OB);}
 let obT=null,obQ=[],obBusy=false;
 // 안내가 겹치면 차례로 하나씩 보여 준다
 function obShow(ic,head,text){obQ.push([ic,head,text]);if(!obBusy)obNext();}
-function obNext(){const t=obQ.shift();if(!t){obBusy=false;return;}obBusy=true;let el=$('obTip');
+function obNext(){if(typeof gdCur!=='undefined'&&gdCur){setTimeout(obNext,800);return;}const t=obQ.shift();if(!t){obBusy=false;return;}obBusy=true;let el=$('obTip');
   if(!el){el=document.createElement('div');el.id='obTip';el.setAttribute('role','status');el.onclick=()=>{clearTimeout(obT);el.classList.remove('on');setTimeout(obNext,300);};document.body.appendChild(el);}
   el.innerHTML=`<span class="oi">${t[0]}</span><div><b>${esc(t[1])}</b><span>${esc(t[2])}</span><small>누르면 닫힌다${obQ.length?` · 안내 ${obQ.length}개 더`:''}</small></div>`;el.classList.add('on');clearTimeout(obT);obT=setTimeout(()=>{el.classList.remove('on');setTimeout(obNext,300);},5200);}
 function obTip(key,ic,head,text){if(OB.full||OB.tips[key])return;OB.tips[key]=1;obSave();setTimeout(()=>obShow(ic,head,text),400);}
@@ -1751,23 +1750,27 @@ function gdEl(){let o=$('gdPop');if(!o){const d=document.createElement('div');d.
   o=document.createElement('div');o.id='gdPop';o.setAttribute('role','dialog');document.body.appendChild(o);
   const a=document.createElement('div');a.id='gdArrow';a.textContent='▼';document.body.appendChild(a);const r=document.createElement('div');r.id='gdRing';document.body.appendChild(r);}return o;}
 // 화면을 어둡게 덮고, 눌러야 할 버튼만 구멍을 뚫어 둔다 (리니지M식 강제 유도)
+// 기본은 화면 정중앙. 눌러야 할 곳을 가리면 그 위나 아래로 비켜 선다
+function gdPlace(p,b){if(!p)return;const h=p.offsetHeight||200,H=innerHeight,m=12;let top=(H-h)/2;
+  if(b){const t0=b.top-40,t1=b.bottom+10;if(top<t1&&top+h>t0){const below=t1+m,above=t0-m-h;top=(H-below>=h+m)?below:(above>=m?above:(b.top+b.height/2>H/2?m:H-h-m));}}
+  p.style.top=Math.max(m,Math.round(top))+'px';}
 function gdPos(){const a=$('gdArrow'),r=$('gdRing'),d=$('gdDim'),p=$('gdPop');if(!gdCur){return;}
   let el=gdCur.el;
   if(gdCur.tour&&(!el||!document.body.contains(el))){el=document.querySelector(`#stage .decide .opts .opt[data-id="${gdCur.optId}"]`);if(!el){gdClose(true);return;}gdCur.el=el;}
   if(gdCur.goal&&(!el||!document.body.contains(el)||el.offsetParent===null||el.disabled)){const g=GD_GOALS.find(x=>x.id===gdCur.id);let ok=false;try{ok=g.when();}catch(e){}el=ok?g.el():null;
     if(!el){gdClose(false);return;}gdCur.el=el;}
-  if(!gdCur.el){a.classList.remove('on');r.classList.remove('on');d.classList.remove('on');}
+  if(!gdCur.el){a.classList.remove('on');r.classList.remove('on');d.classList.remove('on');gdPlace(p,null);}
   else{const b=el.getBoundingClientRect(),x0=b.left-6,y0=b.top-6,x1=b.right+6,y1=b.bottom+6;
     r.style.cssText=`left:${x0}px;top:${y0}px;width:${x1-x0}px;height:${y1-y0}px`;r.classList.add('on');
     a.style.left=(b.left+b.width/2)+'px';a.style.top=(b.top-34)+'px';a.classList.add('on');
     if(gdCur.block){let h0=x0,v0=y0,h1=x1,v1=y1;if(gdCur.holeEl&&document.body.contains(gdCur.holeEl)){const q=gdCur.holeEl.getBoundingClientRect();h0=q.left-6;v0=q.top-6;h1=q.right+6;v1=q.bottom+6;}d.style.clipPath=`polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${h0}px ${v0}px,${h0}px ${v1}px,${h1}px ${v1}px,${h1}px ${v0}px,${h0}px ${v0}px)`;d.classList.add('on');}else d.classList.remove('on');
-    if(p)p.classList.toggle('top',b.top+b.height/2>innerHeight*0.5);}
+    gdPlace(p,gdCur.holeEl&&document.body.contains(gdCur.holeEl)?gdCur.holeEl.getBoundingClientRect():b);}
   gdRaf=requestAnimationFrame(gdPos);}
 function gdOpen(t){gdCur=t;const o=gdEl();const needAct=!!t.act;t.block=needAct||!!t.tour;
   if(!needAct&&run&&!run.dead&&!run.over&&!paused){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
   o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${t.next?`<button type="button" class="btn" id="gdNext">다음 ▶</button>`:needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span>`:`<button type="button" class="btn" id="gdOk">알겠다</button>`}</div>`;
   o.classList.add('on');{const k=$('gdOk');if(k)k.onclick=()=>gdClose(true);const nx=$('gdNext');if(nx)nx.onclick=()=>t.next();}
-  if(t.el&&t.el.scrollIntoView){try{t.el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}}
+  if(t.el){try{const b=t.el.getBoundingClientRect(),want=innerHeight*0.2;if(!t.el.closest('.modalBg')&&getComputedStyle(t.el).position!=='fixed'&&!t.el.closest('#wbBar'))scrollBy({top:b.top-want,behavior:'smooth'});else t.el.scrollIntoView({block:'nearest'});}catch(e){}}
   cancelAnimationFrame(gdRaf);gdPos();}
 function gdClose(ok){const o=$('gdPop');if(o)o.classList.remove('on');cancelAnimationFrame(gdRaf);['gdArrow','gdRing','gdDim'].forEach(k=>{const e=$(k);if(e)e.classList.remove('on');});
   const was=gdCur;gdCur=null;
