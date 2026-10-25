@@ -1713,6 +1713,7 @@ const GD_TOUR=[
  ['talk','🤝','회유한다',()=>`<b>매력·지능·명성</b>이 높을수록 잘 통합니다. 성공하면 싸움 없이 적을 <b>용병</b>으로 삼습니다(1명당 전투력 +${+(MERC_K*4).toFixed(1)}%, 최대 ${MERC_CAP}명). 실패하면 분노한 적과 불리하게 싸웁니다.`],
  ['wk','❔','약점 공략',()=>`몬스터마다 약점(${WK.map(w=>WK_NAME[w]).join("·")})이 하나씩 있고, 그에 맞는 내 능력치가 높을수록 유리합니다. 처음엔 약점을 몰라 <b>효과가 절반</b>이고 이득인지 손해인지 해 봐야 압니다. <b>같은 몬스터를 3번 쓰러뜨리면 약점이 밝혀져</b> 효과가 온전히 적용됩니다. 지배자는 따로 단서를 보고 약점을 추리합니다.`]
 ];
+function gdWant(c){if(typeof gdCur!=='undefined'&&gdCur&&gdCur.tour)return true;return !!(typeof GD!=='undefined'&&!GD.off&&!GD.seen.tourB&&c&&c.node&&c.node.type==='battle'&&(c.options||[]).some(o=>o.id==='fight'));}
 function gdTour(i){const op=document.querySelector('#stage .decide .opts');if(!op){gdClose(true);return;}
   const steps=GD_TOUR.filter(t=>op.querySelector(`.opt[data-id="${t[0]}"]`));if(i>=steps.length){gdClose(true);return;}
   const [id,ic,head,tx]=steps[i];const el=op.querySelector(`.opt[data-id="${id}"]`);const last=i===steps.length-1;
@@ -1763,9 +1764,10 @@ function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.cla
     const key='g:'+g.id+(g.repeat&&run?':'+run.stage:'');if(GD.seen[key])continue;
     gdTabFor(g);const el=g.el();if(!el)continue;GD.seen[key]=1;gdSave();gdOpen({goal:true,id:g.id,key,act:g.act,ic:g.ic,head:g.head,text:g.text(),el});return;}
   // 처음 보는 사건
+  if(run&&!run.dead&&!run.over){const c0=current(run);if(gdWant(c0)&&document.querySelector('#stage .decide .opts .opt[data-id="fight"]')){GD.seen.tourB=1;GD.seen.battle=1;gdSave();gdTour(0);return;}}
   if(run&&!run.dead&&!run.over){const c=current(run);let k=gdEvKeys(c).find(x=>!GD.seen[x])||null;
     if(!k&&STAGES[run.stage]){const st=STAGES[run.stage];if(st.hunt!=null&&st.hunt!==5&&!GD.seen.hunt)k='hunt';else if(st.endless&&st.hunt==null&&!GD.seen.endless)k='endless';}
-    if(k&&!GD.seen[k]){const ks=gdEvKeys(c);GD.seen[k]=1;gdSave();if(k==='battle'&&document.querySelector('#stage .decide .opts .opt[data-id="fight"]')){gdTour(0);return;}const [ic,head,text]=GD_EV[k];const op=document.querySelector('#stage .decide .opts');
+    if(k&&!GD.seen[k]){const ks=gdEvKeys(c);GD.seen[k]=1;gdSave();const [ic,head,text]=GD_EV[k];const op=document.querySelector('#stage .decide .opts');
       if(op&&ks.includes(k)){const more=ks.filter(x=>x!==k&&!GD.seen[x]);if(more.length){gdOpen({ic,head,text,el:null});return;}gdOpen({ic,head,text:text+' <b>아래 선택지 중 하나를 직접 골라 보세요.</b>',el:op,act:'opt'});}else gdOpen({ic,head,text,el:null});return;}}
 }
 function gdMark(id){gdAct(id);}
@@ -2105,7 +2107,7 @@ function renderStage(){
   if(!run){box.innerHTML=`<div class="intro"><b>${hero.name}</b>은(는) 아직 출정하지 않았다. 출정하면 길목마다 결정을 내려야 한다. 전투, 탐험, 휴식이 번갈아 이어진다. 불리한 싸움일수록 이겼을 때 좋은 등급의 아이템이 나온다. 무난한 선택은 자동으로 넘어가고, 중요한 순간에만 멈춘다. 운이 좋으면 히로인, 친구, 펫을 만나고, 명성이 쌓이면 의뢰와 혼담이 들어온다.${ckptButton()}</div>`+modesHtml();bindModes();{bindCk();}return;}
   if(run.dead||run.over){box.innerHTML=(lastOut?outcomeHtml(lastOut):'')+verdictHtml+(run.dead?obDeathHtml():'')+rankBoxHtml();bindRankBox();const nb=$('nextStageBtn');if(nb)nb.onclick=nextStage;const hb2=$('huntBtn');if(hb2)hb2.onclick=startHunt;const lb=$('leaveHuntBtn');if(lb)lb.onclick=leaveHuntNow;bindCk();return;}
   const c=current(run); const n=c.node; const s=STAGES[stage];
-  if(!isImportant(run,c,mode)){
+  if(!(isImportant(run,c,mode)||gdWant(c))){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
     const body=`<div><b>${label} · ${c.title}</b><div class="phase" id="phase">${(PHASES[n.type]||PHASES.event)[0]}…</div><div style="font-size:13px;margin-top:4px">자동 선택: ${pick.label}${n.type==='battle'?` (승리확률 ${pctTxt(n.p)}%)`:''}</div></div>`;
@@ -2225,7 +2227,7 @@ function togglePause(){if(!run||run.dead||run.over)return;paused=!paused;clearTi
 function syncPause(){const b=$('pauseBtn');if(!b)return;const busy=run&&!run.dead&&!run.over;b.disabled=!busy;b.classList.toggle('on',paused&&busy);b.textContent=paused&&busy?'재개 ▶':'일시정지 ❚❚';}
 function tickAuto(ms){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];if(paused)return;
   const c0=run&&current(run); if(c0){const ph=PHASES[c0.node.type]||PHASES.event; ph.forEach((t,i)=>{if(i)phaseT.push(setTimeout(()=>{const el=$('phase');if(el)el.textContent=t+'…';},ms*i/ph.length));});}
-  autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if(isImportant(run,c,mode)){renderStage();return;}
+  autoT=setTimeout(()=>{if(!run||run.dead||run.over)return;const c=current(run);if((isImportant(run,c,mode)||gdWant(c))){renderStage();return;}
     if(c.node.type==='rest'){const b=autoShop(run);if(b.length)logBuy(b.map(x=>x.it),b[0].why);}
     decide(autoChoice(run,c),true);},ms||1000);}
 // 쓰러질 뻔한 순간: 화면 연출 + 기록 강조
