@@ -1706,8 +1706,19 @@ const GD_EV={
  hunt:['🏹','사냥터','층마다 적이 강해지고, 수문장을 쓰러뜨리면 장비가 확정으로 나옵니다. 충분히 강해졌다 싶으면 언제든 다음 세계로 떠나세요.'],
  endless:['🌌','끝없는 전장','층마다 적이 강해지고, 수문장에게 두 번 지거나 쓰러지면 여정이 끝납니다. 5층마다 자동 저장되고, 신화 합성과 월드랭킹이 열립니다.']
 };
+// 첫 전투: 선택지 하나씩 짚어 주기 (누르면 실행되므로 '다음'으로 넘긴다)
+const GD_TOUR=[
+ ['fight','⚔️','기본 공격',()=>`표시된 승리확률로 정면으로 싸웁니다. 이기면 무리를 섬멸하고 경험치·금화·장비를 얻습니다. <b>불리한 싸움을 이길수록 좋은 장비</b>가 나옵니다. 지면 큰 부상을 입고 용병을 잃을 수 있습니다. 바로 옆 <b>스킬 공격</b>은 전투 스킬을 익히면 열리고, 승률을 더 올려 주지만 지역마다 ${SK_USES}번만 쓸 수 있습니다.`],
+ ['flee','🏃','도망간다',()=>'<b>민첩</b>이 높을수록 잘 도망칩니다. 성공하면 싸움을 피해 지나가지만, 도망칠 때마다 <b>사기 저하로 전투력 -10%</b>가 쌓입니다(지배자를 쓰러뜨리면 풀림). 실패하면 붙잡혀 부상을 입습니다. 이길 가망이 없을 때만 쓰세요.'],
+ ['talk','🤝','회유한다',()=>`<b>매력·지능·명성</b>이 높을수록 잘 통합니다. 성공하면 싸움 없이 적을 <b>용병</b>으로 삼습니다(1명당 전투력 +${+(MERC_K*4).toFixed(1)}%, 최대 ${MERC_CAP}명). 실패하면 분노한 적과 불리하게 싸웁니다.`],
+ ['wk','❔','약점 공략',()=>`몬스터마다 약점(${WK.map(w=>WK_NAME[w]).join("·")})이 하나씩 있고, 그에 맞는 내 능력치가 높을수록 유리합니다. 처음엔 약점을 몰라 <b>효과가 절반</b>이고 이득인지 손해인지 해 봐야 압니다. <b>같은 몬스터를 3번 쓰러뜨리면 약점이 밝혀져</b> 효과가 온전히 적용됩니다. 지배자는 따로 단서를 보고 약점을 추리합니다.`]
+];
+function gdTour(i){const op=document.querySelector('#stage .decide .opts');if(!op){gdClose(true);return;}
+  const steps=GD_TOUR.filter(t=>op.querySelector(`.opt[data-id="${t[0]}"]`));if(i>=steps.length){gdClose(true);return;}
+  const [id,ic,head,tx]=steps[i];const el=op.querySelector(`.opt[data-id="${id}"]`);const last=i===steps.length-1;
+  gdOpen({ic,head:`${head} (${i+1}/${steps.length})`,text:tx()+(last?' <b>이제 밝아진 선택지 중 하나를 직접 골라 보세요.</b>':''),el,holeEl:last?op:null,optId:id,tour:true,next:last?null:()=>gdTour(i+1),act:last?'opt':null,fixEl:true});}
 function gdEvKeys(c){const n=c&&c.node;if(!n)return [];
-  if(n.type==='battle'){if(n.boss)return n.clues?['boss','weak']:['boss'];if(!GD.seen.battle)return ['battle'];return (c.options||[]).some(o=>o.id==='talk')?['talk']:[];}
+  if(n.type==='battle'){if(n.boss)return n.clues?['boss','weak']:['boss'];return ['battle'];}
   if(n.type==='skill')return ['skill']; if(n.type==='prep')return ['prep'];
   if(n.type==='event'){const k=n.kind;if(k==='friend'||k==='pet')return ['heroine'];return GD_EV[k]?[k]:[];}
   return [];}
@@ -1718,19 +1729,20 @@ function gdEl(){let o=$('gdPop');if(!o){const d=document.createElement('div');d.
 // 화면을 어둡게 덮고, 눌러야 할 버튼만 구멍을 뚫어 둔다 (리니지M식 강제 유도)
 function gdPos(){const a=$('gdArrow'),r=$('gdRing'),d=$('gdDim'),p=$('gdPop');if(!gdCur){return;}
   let el=gdCur.el;
+  if(gdCur.tour&&(!el||!document.body.contains(el))){el=document.querySelector(`#stage .decide .opts .opt[data-id="${gdCur.optId}"]`);if(!el){gdClose(true);return;}gdCur.el=el;}
   if(gdCur.goal&&(!el||!document.body.contains(el)||el.offsetParent===null||el.disabled)){const g=GD_GOALS.find(x=>x.id===gdCur.id);let ok=false;try{ok=g.when();}catch(e){}el=ok?g.el():null;
     if(!el){gdClose(false);return;}gdCur.el=el;}
   if(!gdCur.el){a.classList.remove('on');r.classList.remove('on');d.classList.remove('on');}
   else{const b=el.getBoundingClientRect(),x0=b.left-6,y0=b.top-6,x1=b.right+6,y1=b.bottom+6;
     r.style.cssText=`left:${x0}px;top:${y0}px;width:${x1-x0}px;height:${y1-y0}px`;r.classList.add('on');
     a.style.left=(b.left+b.width/2)+'px';a.style.top=(b.top-34)+'px';a.classList.add('on');
-    if(gdCur.block){d.style.clipPath=`polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${x0}px ${y0}px,${x0}px ${y1}px,${x1}px ${y1}px,${x1}px ${y0}px,${x0}px ${y0}px)`;d.classList.add('on');}else d.classList.remove('on');
+    if(gdCur.block){let h0=x0,v0=y0,h1=x1,v1=y1;if(gdCur.holeEl&&document.body.contains(gdCur.holeEl)){const q=gdCur.holeEl.getBoundingClientRect();h0=q.left-6;v0=q.top-6;h1=q.right+6;v1=q.bottom+6;}d.style.clipPath=`polygon(evenodd,0 0,100% 0,100% 100%,0 100%,0 0,${h0}px ${v0}px,${h0}px ${v1}px,${h1}px ${v1}px,${h1}px ${v0}px,${h0}px ${v0}px)`;d.classList.add('on');}else d.classList.remove('on');
     if(p)p.classList.toggle('top',b.top+b.height/2>innerHeight*0.5);}
   gdRaf=requestAnimationFrame(gdPos);}
-function gdOpen(t){gdCur=t;const o=gdEl();const needAct=!!t.act;t.block=needAct;
+function gdOpen(t){gdCur=t;const o=gdEl();const needAct=!!t.act;t.block=needAct||!!t.tour;
   if(!needAct&&run&&!run.dead&&!run.over&&!paused){gdPausedIt=true;paused=true;clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];syncPause&&syncPause();}
-  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:`<button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`}</div>`;
-  o.classList.add('on');{const k=$('gdOk');if(k)k.onclick=()=>gdClose(true);}
+  o.innerHTML=`<div class="gdH"><span class="gdI">${t.ic}</span><b>${esc(t.head)}</b>${t.goal?'<em>목표</em>':''}</div><div class="gdT">${t.text}</div><div class="gdB">${t.next?`<button type="button" class="btn" id="gdNext">다음 ▶</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:needAct?`<span class="gdNeed">👆 빛나는 곳을 직접 눌러야 넘어간다</span><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`:`<button type="button" class="btn" id="gdOk">알겠다</button><button type="button" class="gdSkip" id="gdOff">안내 끄기</button>`}</div>`;
+  o.classList.add('on');{const k=$('gdOk');if(k)k.onclick=()=>gdClose(true);const nx=$('gdNext');if(nx)nx.onclick=()=>t.next();}
   $('gdOff').onclick=()=>{GD.off=true;gdSave();gdClose(false);showToast&&showToast('안내','안내를 껐다. 상단 「안내 다시 보기」로 다시 켤 수 있다.','ok',2600);};
   if(t.el&&t.el.scrollIntoView){try{t.el.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}}
   cancelAnimationFrame(gdRaf);gdPos();}
@@ -1753,7 +1765,7 @@ function gdCheck(){if(GD.off||gdCur)return;{const hi=$('houseInv');if(hi&&hi.cla
   // 처음 보는 사건
   if(run&&!run.dead&&!run.over){const c=current(run);let k=gdEvKeys(c).find(x=>!GD.seen[x])||null;
     if(!k&&STAGES[run.stage]){const st=STAGES[run.stage];if(st.hunt!=null&&st.hunt!==5&&!GD.seen.hunt)k='hunt';else if(st.endless&&st.hunt==null&&!GD.seen.endless)k='endless';}
-    if(k&&!GD.seen[k]){const ks=gdEvKeys(c);GD.seen[k]=1;gdSave();const [ic,head,text]=GD_EV[k];const op=document.querySelector('#stage .decide .opts');
+    if(k&&!GD.seen[k]){const ks=gdEvKeys(c);GD.seen[k]=1;gdSave();if(k==='battle'&&document.querySelector('#stage .decide .opts .opt[data-id="fight"]')){gdTour(0);return;}const [ic,head,text]=GD_EV[k];const op=document.querySelector('#stage .decide .opts');
       if(op&&ks.includes(k)){const more=ks.filter(x=>x!==k&&!GD.seen[x]);if(more.length){gdOpen({ic,head,text,el:null});return;}gdOpen({ic,head,text:text+' <b>아래 선택지 중 하나를 직접 골라 보세요.</b>',el:op,act:'opt'});}else gdOpen({ic,head,text,el:null});return;}}
 }
 function gdMark(id){gdAct(id);}
