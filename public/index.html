@@ -1251,6 +1251,11 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
 .cmdbar img.oimg{width:26px!important;height:26px!important;object-fit:contain;filter:drop-shadow(0 1px 3px #000)}
 @media (min-width:901px){.cmdbar .opt{grid-template-columns:28px minmax(0,1fr) auto!important}}
 .cmdbar .opt[disabled] img.oimg{filter:grayscale(1) brightness(.6)}
+.fHero.full .fBody{height:clamp(180px,31vh,340px)!important;width:clamp(120px,20.7vh,227px)!important}
+.arena.compact .fHero.full .fBody{height:150px!important;width:100px!important}
+@media (max-height:980px) and (min-width:641px){.arena.boss .fHero.full .fBody{height:25vh!important;width:16.7vh!important}}
+@media (max-height:800px) and (min-width:641px){.fHero.full .fBody{height:25vh!important;width:16.7vh!important}.arena.boss .fHero.full .fBody{height:22vh!important;width:14.7vh!important}}
+@media (max-width:640px){.fHero.full .fBody{height:clamp(150px,22vh,200px)!important;width:clamp(100px,14.7vh,133px)!important}}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -2466,12 +2471,17 @@ const OPT_IC={fight:'<path d="M14.5 3H21v6.5L10 20.5l-2-2L19 7.5V5h-2.5L5.5 16l-
   wk:'<path d="M10 3a7 7 0 1 0 4.2 12.6l5.6 5.6 1.4-1.4-5.6-5.6A7 7 0 0 0 10 3zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/>'};
 const OPT_IMG={fight:'fight',skill:'skill',flee:'flee',talk:'talk',wk:'weak'};
 function optIcon(id){const k=String(id).startsWith('wk')?'wk':id;const f=OPT_IMG[k];if(f)return `<img class="oic oimg" src="art/cmd/icon_${f}.webp" alt="" aria-hidden="true">`;const d=OPT_IC[k];return d?`<svg class="oic" viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`:'';}
-function heroFigure(){const k=hero?portraitKey(hero):null;return k?`<img src="hero/${k}.webp" alt="" decoding="async" onerror="this.remove()">`:`<span class="pfb">${SIL}</span>`;}
+// 전신 그림(hero_full)이 있는 종족은 전투 화면에서 전신으로, 없으면 상반신 초상화로
+const FULL_RACES=new Set(['human','elf','dwarf','orc','halfling','goblin']);
+function heroFull(){const k=hero?portraitKey(hero):null;return !!(k&&FULL_RACES.has(k.split('_')[0]));}
+function heroFigure(){const k=hero?portraitKey(hero):null;if(!k)return `<span class="pfb">${SIL}</span>`;
+  if(FULL_RACES.has(k.split('_')[0]))return `<img src="hero_full/${k}.webp" alt="" decoding="async" onerror="this.onerror=null;this.src='hero/${k}.webp';this.closest('.fHero').classList.remove('full')">`;
+  return `<img src="hero/${k}.webp" alt="" decoding="async" onerror="this.remove()">`;}
 function arenaHtml(n,c,compact){const P=power(run),E=n.E||1,share=Math.max(0.06,Math.min(0.94,P/(P+E)));const hpP=Math.max(0,Math.min(1,run.hp/Math.max(1,run.maxHp)));
   const nm=String(c.title||'').replace(/\s+/g,' ');
   return `<div class="arena${n.boss?' boss':''}${compact?' compact':''}">
     <div class="aStage"><div class="aGround" style="background-image:url('art/ground/ground_${worldBgIx(run)}.webp')"></div>
-      <div class="fighter fHero"><div class="fTag"><b>${esc(hero.name)}</b><span>Lv ${run.lvl||1}</span></div><div class="hpBar"><i style="width:${(hpP*100).toFixed(1)}%"></i><em>${fmt(run.hp)} / ${fmt(run.maxHp)}</em></div><div class="fBody">${heroFigure()}</div></div>
+      <div class="fighter fHero${heroFull()?' full':''}"><div class="fTag"><b>${esc(hero.name)}</b><span>Lv ${run.lvl||1}</span></div><div class="hpBar"><i style="width:${(hpP*100).toFixed(1)}%"></i><em>${fmt(run.hp)} / ${fmt(run.maxHp)}</em></div><div class="fBody">${heroFigure()}</div></div>
       <div class="aVs"><span class="vsT">VS</span><b class="${probCls(n.p)}">${pctTxt(n.p)}%</b><small>승리확률</small></div>
       <div class="fighter fMon"><div class="fTag"><b>${esc(n.name)}</b>${n.count>1?`<span>×${fmtK(n.count)}</span>`:n.boss?'<span>지배자</span>':''}</div><div class="hpBar mon"><i style="width:100%"></i><em>${n.boss?'👑 ':''}${esc(n.place||'')}</em></div><div class="fBody art ${n.boss?'boss':''}">${monsterArt(n.name,stage,n.boss)}</div></div>
     </div>
