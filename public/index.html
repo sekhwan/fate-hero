@@ -1413,6 +1413,34 @@ body.inRun .hbTab b{color:#ff9a6a;font-weight:700}
 body.inRun .hbHold>header.hb{position:absolute;top:0;left:0;right:0;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .18s,transform .18s;box-shadow:0 12px 30px rgba(0,0,0,.75)!important}
 body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun .hbHold:focus-within>header.hb{opacity:1;pointer-events:auto;transform:none}
 .pInv .zone.zg>.zh{display:none!important}.pInv .zone.zg>.zbody{padding-top:8px!important}
+/* 신화 합성: 무지개 마법 봉인 띠 (정비 줄과 확실히 다르게) */
+.myD{position:relative;border:0!important;border-radius:999px!important;padding:6px 14px 6px 46px!important;margin:10px 0 2px!important;background:radial-gradient(ellipse at 10% 50%,rgba(180,120,255,.35),transparent 55%),linear-gradient(90deg,#1a0f2e,#2a1440 50%,#12203a)!important;box-shadow:0 0 0 1.5px transparent,0 0 14px rgba(150,100,255,.35);overflow:visible}
+.myD::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(90deg,#ff8a8a,#ffe08a,#8affc8,#8ad6ff,#d08aff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.myD>summary{min-height:24px}
+.myD>summary b{font-size:14px;background:linear-gradient(90deg,#ffb0b0,#ffe9a0,#a0ffd8,#a0dcff,#e0b0ff);-webkit-background-clip:text;background-clip:text;color:transparent!important}
+.myD>summary b::before{content:"✦";position:absolute;left:12px;top:50%;transform:translateY(-50%);width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:15px;color:#fff;background:radial-gradient(circle,#b46bff,#4a1a8a);box-shadow:0 0 10px #b46bff;-webkit-text-fill-color:#fff}
+.myD>summary .mySum{color:#cdbbe8}
+.myD[open]{border-radius:14px!important}
+.myD.ready{animation:myReady 1.6s ease-in-out infinite}@keyframes myReady{50%{box-shadow:0 0 0 1.5px transparent,0 0 26px rgba(255,200,120,.75)}}
+/* 신화 합성 세로 띠 */
+.lbRow{display:flex;gap:6px;align-items:stretch}.lbRow>.lbBoard{flex:1;min-width:0}
+.myRib{position:relative;flex:none;width:42px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0;border:0;border-radius:21px;cursor:pointer;font:inherit;color:#fff;background:linear-gradient(180deg,#2a1440,#1a0f2e 50%,#12203a);box-shadow:0 0 12px rgba(150,100,255,.35)}
+.myRib::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.5px;background:linear-gradient(180deg,#ff8a8a,#ffe08a,#8affc8,#8ad6ff,#d08aff);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.mrT{writing-mode:vertical-rl;text-orientation:upright;font-size:12px;font-weight:800;letter-spacing:.05em;line-height:1;color:#f0d8ff;text-shadow:0 0 6px #b46bff;flex:none;padding:2px 0}
+.mrS{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle,#3a2a5a,#120a20);border:1px solid #5a4a7a;opacity:.4;filter:grayscale(1)}
+.mrS.on{opacity:1;filter:none;border-color:#e0b0ff;box-shadow:0 0 8px #b46bff}
+.mrS img{width:26px;height:26px;object-fit:contain}
+.mrN{margin-top:auto;font-size:11px;font-weight:700;color:#cdbbe8}
+.mrGo{position:absolute;top:-6px;right:-4px;width:18px;height:18px;border-radius:50%;background:#ffb43a;color:#1a0d00;font-size:12px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 8px #ffb43a}
+.myRib.ready{animation:myReady 1.5s ease-in-out infinite}@keyframes myReady{50%{box-shadow:0 0 26px rgba(255,200,120,.85)}}
+.myRib.on{box-shadow:0 0 0 2px #fff,0 0 16px rgba(180,120,255,.7)}
+.myRib:hover{filter:brightness(1.15)}
+/* 합성 판을 장비판 위에 겹쳐 연다 */
+.pInv .zbody{position:relative}
+#mythBox.ov{position:absolute;left:10px;right:10px;top:84px;z-index:8}
+#mythBox.ov .myD{border-radius:14px!important;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 16px rgba(150,100,255,.4)!important;margin:0!important}
+#mythBox.ov .myD>summary::after{content:'✕ 닫기';font-size:11px;color:#cdbbe8}
+#mythBox:not(.ov){display:none}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -1539,7 +1567,7 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
       <div class="gtabs" role="tablist"><button type="button" class="gt gtShop" data-gt="shop" aria-pressed="false"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<em id="shopBadge"></em></button><button type="button" class="gt gtInv" data-gt="inv" aria-pressed="true"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비</button></div>
       <div class="gearBody" data-tab="shop">
         <div class="pane pShop"><div class="zone zs stall"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h18l-1.5 5H4.5z" fill="currentColor"/><path d="M5 10h14v10H5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M10 20v-5h4v5" fill="currentColor"/></svg>상점<small id="shopTitle">지역 상인</small><span class="zr">금화 <b id="sGold">0</b> · 명성 <b id="gFame" class="fm">0</b></span></div><div class="shopSign" id="shopSign" hidden><img class="smImg" id="smImg" alt=""><div class="smTalk"><b id="smName"></b><span id="smLine"></span></div></div><div class="zbody"><div class="shop"><div id="shop"></div></div></div></div></div>
-        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div id="mythBox"></div><div class="items"><div id="hItems"></div></div></div></div></div>
+        <div class="pane pInv"><div class="zone zg"><div class="zh"><svg class="zi" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21l9.5-9.5 2 2L5 23z" fill="currentColor"/><path d="M11 6l4-4 7 7-4 4-2-2-3 3-4-4 3-3z" fill="currentColor" opacity=".9"/></svg>정비<small>장비 강화 · 판매</small><span class="zr">금화 <b id="gGold">0</b></span></div><div class="zbody"><div class="items"><div id="hItems"></div></div><div id="mythBox"></div></div></div></div>
       </div>
     </section>
     <div class="logWrap"><h4>토벌 일지</h4><ul class="log" id="log"><li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li></ul></div>
@@ -2160,11 +2188,11 @@ function gdLegEl(){const i=gdLegIdx();if(i<0)return null;const b=document.queryS
 function gdLegBtn(){const i=gdLegIdx();if(i<0)return null;const b=document.querySelector(`#shop [data-buy="${i}"]`);return b&&!b.disabled?b:null;}
 function gdWbBtn(){const w=$('wbBar');if(!w||w.hidden)return null;const b=w.querySelector('.wbAtk');return b&&b.offsetParent!==null?b:null;}
 function gdLegacyBtn(){for(const m of ['houseModal','chronModal']){const M=$(m);if(M&&!M.hidden){const b=M.querySelector('[data-buy]:not([disabled])');if(b&&b.offsetParent!==null)return b;}}return null;}
-function gdWearBtn(){let b=document.querySelector('#hItems [data-wear]');if(b||!run)return b;const ix=run.items.findIndex(it=>it.spare&&(it.grade||0)===3);if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;renderHero();return document.querySelector('#hItems [data-wear]');}
+function gdWearBtn(){let b=document.querySelector('#hItems [data-wear]');if(b||!run)return b;const ix=run.items.findIndex(it=>it.spare&&(it.grade||0)===3);if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;gearCard=true;renderHero();return document.querySelector('#hItems [data-wear]');}
 function gdVis(el){return !!(el&&el.offsetParent!==null&&!el.disabled);}
 function gdBuyBtn(){const bs=[...document.querySelectorAll('#shop .ware')];for(const w of bs){if(!w.querySelector('.wt.up'))continue;const b=w.querySelector('[data-buy]');if(b&&!b.disabled)return b;}return null;}
 function gdEnhBtn(){const q=()=>[...document.querySelectorAll('#hItems [data-enh]:not([disabled])')].find(b=>{const it=run&&run.items[+b.dataset.enh];return it&&!(it.plus||0);})||null;let b=q();if(b||!run)return b;
-  const ix=run.items.findIndex(it=>!it.spare&&canEnhance(it)&&!(it.plus||0)&&run.gold>=enhCost(run,it));if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;renderHero();return q();}
+  const ix=run.items.findIndex(it=>!it.spare&&canEnhance(it)&&!(it.plus||0)&&run.gold>=enhCost(run,it));if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;gearCard=true;renderHero();return q();}
 // 처음 만나는 사건
 const GD_EV={
  battle:['⚔️','전투','고를 수 있는 길은 넷입니다. <b>기본 공격</b>은 표시된 승리확률로 싸우고, <b>스킬 공격</b>은 전투 스킬만큼 승률이 오르지만 지역마다 '+SK_USES+'번만 쓸 수 있습니다. <b>도망</b>은 민첩, <b>회유</b>는 매력·지능·명성에 달려 있습니다. 불리한 싸움을 이길수록 좋은 장비가 나옵니다. 위의 <b>패배 시</b> 줄에서 지면 잃을 생명력을 미리 확인하세요.'],
@@ -2302,12 +2330,17 @@ async function newHero(first){enhMsg='';store.set('rolls',store.get('rolls',0)+1
 // ===== 장비창 인형 (가죽 장비판): 영웅 몸 위치에 칸, 칸 아래 능력치 띠, 아래 가방 줄과 정보 줄 =====
 // [부위키, 부위 이름, 능력치 이름, x, y]  (판 크기 372×340 기준 좌표, 칸 48px)
 const DOLL=[['int','머리','지능',96,6],['cha','목걸이','매력',228,40],['con','갑옷','체력',162,104],['str','무기','힘',10,82],['mult','인장','전투력',10,160],['flee','망토','도망',10,238],['win','깃발','승률',314,104],['luk','부적','행운',314,182],['agi','신발','민첩',162,272]];
-let gearSel=null,bagOff=0;
+let gearSel=null,bagOff=0,gearCard=false;
 // 붉은 망토를 두른 영웅 실루엣 (직접 그린 도형)
 const LB_SIL=`<svg class="lbSil" viewBox="0 0 200 330" aria-hidden="true"><defs><linearGradient id="lbCl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3161a"/><stop offset=".6" stop-color="#7a0d10"/><stop offset="1" stop-color="#4a0608"/></linearGradient></defs>
 <path d="M100 18c13 0 23 10 23 24 0 10-5 18-12 22l1 8c18 4 32 12 40 24l14 40c4 12-2 18-10 16l-12-30 4 60 22 110c2 10-4 16-14 14l-40-6-16 4-16-4-40 6c-10 2-16-4-14-14l22-110 4-60-12 30c-8 2-14-4-10-16l14-40c8-12 22-20 40-24l1-8c-7-4-12-12-12-22 0-14 10-24 23-24z" fill="url(#lbCl)" stroke="#d8a84a" stroke-width="2.5" stroke-linejoin="round"/>
 <path d="M78 92c8 30 8 70 2 120M122 92c-8 30-8 70-2 120" fill="none" stroke="#3a0406" stroke-width="2" opacity=".6"/></svg>`;
 function stShort(it){return itemDesc0(it).replace('승리확률','승률').replace('도망 확률','도망').replace('전투력','전투').replace(/\s+/g,'');}
+// 신화 합성 세로 띠: 장비판 오른쪽. 누르면 합성 판이 장비판 위에 겹쳐 열린다
+let mythOpen=false;
+function mythOnNow(){if(!run)return false;const st=STAGES[run.stage];return !!((st&&st.endless&&st.hunt==null)||(run.mythics||[]).length);}
+function mythRibbon(){if(!mythOnNow())return '';const c=mythCheck(run);const own=run.mythics||[];
+  return `<button type="button" class="myRib${c.ok?' ready':''}${mythOpen?' on':''}" id="myRib" title="신화 합성 · 누르면 열린다"><span class="mrT">신화 합성</span>${MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mrS${has?' on':''}"><img src="art/myth/myth_${m.id}.webp" alt="" onerror="this.remove()"></span>`;}).join('')}<span class="mrN">${Math.min(4,c.mats.length)}/4</span>${c.ok?'<span class="mrGo">!</span>':''}</button>`;}
 function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spare)sp.push({it,idx});else on[slotOf(it)]={it,idx};});
   if(gearSel==null||!rowOf[gearSel]){const f=DOLL.map(d=>on[d[0]]).find(Boolean);gearSel=f?f.idx:(sp[0]?sp[0].idx:null);}
   const k=hero?portraitKey(hero):null;const full=k&&FULL_RACES.has(k.split('_')[0]);
@@ -2318,7 +2351,7 @@ function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spar
   const per=5,maxOff=Math.max(0,sp.length-per);bagOff=Math.min(bagOff,maxOff);
   const bag=`<div class="lbBag"><button type="button" class="lbArr" data-bag="-1" ${bagOff<=0?'disabled':''}>◀</button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g3${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''}>▶</button></div>`;
   const selRow=gearSel!=null&&rowOf[gearSel]?rowOf[gearSel].h:'';
-  return `<div class="lbInfo top">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div><div class="lbBoard">${LB_SIL}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div><div class="lbBagL">예비 전설 ${sp.length}/${SPARE_MAX}</div>${bag}`;}
+  return `<div class="lbInfo top">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div><div class="lbRow"><div class="lbBoard">${LB_SIL}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div>${mythRibbon()}</div><div class="lbBagL">예비 전설 ${sp.length}/${SPARE_MAX}</div>${bag}`;}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name;{const L=[...h.name].length;$('hName').classList.toggle('n4',L===4);$('hName').classList.toggle('n5',L>=5);} $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
@@ -2424,20 +2457,21 @@ function renderShop(t){
 let enhMsg='';
 function shownPower(){return Math.round(power(run)/run.stageCarry*10);}
 function previewPower(it){if(!(it.mult||['str','int','agi','con'].includes(it.stat)))return null;const r=previewPowerAt(run,run.items.indexOf(it));return r&&[Math.round(r[0]/run.stageCarry*10),Math.round(r[1]/run.stageCarry*10)];}
-function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHTML='';return;}
+function renderMyth(){const box=$('mythBox');if(!box)return;if(!run){box.innerHTML='';return;}box.classList.toggle('ov',mythOpen&&mythOnNow());if(!mythOpen){box.innerHTML='';const rb=$('myRib');if(rb)rb.onclick=()=>{mythOpen=true;renderHero();};return;}
   const st=STAGES[run.stage];const c=mythCheck(run);const own=run.mythics||[];
   if(!(st.endless&&st.hunt==null)&&!own.length){box.innerHTML='';return;}
   const slots=MYTHS.map(m=>{const has=own.includes(m.id);return `<span class="mys ${has?'on':''}" data-myth="${m.id}" tabindex="0"><i>${m.slot}${has?` · PvP ${PVP_NAME[m.pvp]} +${(run.mythV||{})[m.id]||20}`:''}</i>${has?`<b class="myName">${esc(m.name)}</b>`:'비어 있음'}</span>`;}).join('');
   const matNames=c.mats.map(i=>itemName(run.items[i]));
   const req=[[c.where,'끝없는 전장에서만 합성할 수 있다'],[c.mats.length>=4,`서로 다른 계열의 +${MYTH_PLUS} 이상 전설 장비 4개 (${c.mats.length}/4${matNames.length?': '+matNames.join(', '):''})`],[c.fame,`명성 ${fmt(MYTH_FAME)} (보유 ${fmt(run.fame)})`]];
-  const opn=c.ok||store.get('mythOpen',false);
-  box.innerHTML=`<details class="myth myD${c.ok?' ready':''}"${opn?' open':''}><summary><b>🌈 신화 합성</b><span class="mySum">재료 ${Math.min(4,c.mats.length)}/4 · 명성 ${c.fame?'✓':'✗'} · 보유 신화 ${own.length}/4</span>${c.ok?'<em class="myReady">합성 가능!</em>':''}</summary><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
+  const opn=true;
+  box.innerHTML=`<details class="myth myD${c.ok?' ready':''}"${opn?' open':''}><summary><b>신화 합성</b><span class="mySum">재료 ${Math.min(4,c.mats.length)}/4 · 명성 ${c.fame?'✓':'✗'} · 보유 신화 ${own.length}/4</span>${c.ok?'<em class="myReady">합성 가능!</em>':''}</summary><h4>신화 합성 <span>성공 ${Math.round(MYTH_RATE*100)}% · 실패하면 재료 소멸</span></h4><div class="mysl">${slots}</div>
     <ul class="myreq">${req.map(([ok,t])=>`<li class="${ok?'ok':''}">${ok?'✓':'○'} ${esc(t)}</li>`).join('')}</ul>
     <button type="button" class="mybtn" id="mythBtn" ${c.ok?'':'disabled'}>신화 합성 시도</button><p class="myn">성공하면 4종 중 하나가 PvP 스탯 +10~20으로 무작위로 나온다. 이미 가진 종류가 더 높은 수치로 나오면 교체되고, 낮으면 가진 신화가 +1 단련된다(최대 20). 신화는 강화할 수 없다.</p></details>`;
   {const d=box.querySelector('details');if(d)d.ontoggle=()=>{if(!c.ok)store.set('mythOpen',d.open);};}
   box.querySelectorAll('[data-myth]').forEach(el=>{const m=MYTH_BY[el.dataset.myth];const v=own.includes(m.id)?((run.mythV||{})[m.id]||20):0;
     el.onmouseenter=el.onfocus=()=>mythCardShow(el,m,v);el.onmouseleave=el.onblur=mythCardHide;el.onclick=()=>{const c=$('mythCard');if(c&&c.classList.contains('on'))mythCardHide();else mythCardShow(el,m,v);};});
-  const b=$('mythBtn');if(b)b.onclick=doMyth;}
+  const b=$('mythBtn');if(b)b.onclick=doMyth;
+  {const rb=$('myRib');if(rb)rb.onclick=()=>{mythOpen=!mythOpen;renderHero();};const sm=box.querySelector('summary');if(sm)sm.onclick=e=>{e.preventDefault();mythOpen=false;renderHero();};}}
 // 신화 합성 전체 화면 연출: 의식(재료 4개가 마법진으로 빨려 듦) → 성공은 무지개 폭발, 실패는 금이 가며 산산조각
 const MYTH_ICON={'월계관':'🌿','목걸이':'📿','반지':'💍','귀걸이':'✨'};
 // 신화 아이템 입체 그림: 본체(art/myth/myth_id.webp)와 후광(myth_id_aura.webp) 두 겹 + 코드 효과(기울기·광택·회전 문양·입자·부유).
