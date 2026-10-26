@@ -2175,7 +2175,7 @@ const GD_GOALS=[
  {id:'ck',ic:'💾',head:'저장된 용사 이어하기',text:()=>`끝없는 전장에 들어선 용사는 <b>5층마다 자동 저장</b>됩니다. 쓰러져도 여기서 마지막 저장 지점부터 <b>이어할 수 있습니다</b>(최대 ${CK_MAX}명). 단, 강화와 신화 합성 결과는 저장에도 바로 반영돼 되돌릴 수 없습니다. <b>이어하기 버튼을 눌러 보세요.</b>`,
   when:()=>!run&&!!document.querySelector('#stage [data-ck]'),el:()=>document.querySelector('#stage [data-ck]'),act:'ck',done:()=>!!GD.done.ck},
  {id:'myth',ic:'🌈',head:'신화 합성',text:()=>`끝없는 전장에서는 <b>신화 아이템</b>을 빚을 수 있습니다. 재료는 서로 다른 계열의 <b>+${MYTH_PLUS} 이상 전설 장비 4개</b>와 <b>명성 ${fmt(MYTH_FAME)}</b>입니다. 성공 확률은 ${gdPct(MYTH_RATE)}%이고, <b>실패하면 재료가 모두 사라집니다</b>. 성공하면 PvP 스탯 +10~20이 붙은 신화가 나옵니다. 지금부터 전설 장비를 버리지 말고 +${MYTH_PLUS}까지 키우세요.`,
-  when:()=>inEndless()&&!!GD.seen.endless&&!!gdVisEl($('mythBox')),el:()=>$('mythBox'),tab:'inv',done:()=>!!GD.done.myth},
+  when:()=>inEndless()&&!!GD.seen.endless&&!!gdVisEl($('myRib')),el:()=>$('myRib'),tab:'inv',done:()=>!!GD.done.myth},
  {id:'pvp',ic:'⚔️',head:'월드랭킹 대전',text:()=>'끝없는 전장 <b>5층마다 대전 1회</b>가 쌓입니다. 등록하면 서버가 기록을 검증한 뒤 다른 유저의 용사와 겨뤄 <b>점수(Elo)</b>가 오르내립니다. 승패는 체급(전투력·생명력)과 <b>PvP 스탯 상성</b>(암살 › 부활 › 축복 › 저주 › 암살), 종족 상성으로 갈립니다. <b>대전 버튼을 눌러 보세요.</b>',
   when:()=>inEndless()&&!!GD.seen.endless&&(run.maxFloorE||0)>=5&&!!gdVisEl($('pvpBtn')),el:()=>$('pvpBtn'),act:'duel',done:()=>!!GD.done.pvp},
  {id:'legacy',ic:'🏛️',head:'가문 유산을 사세요',modal:true,text:()=>'<b>가문 점수</b>로 유산을 살 수 있습니다. 가문 점수는 가문원 모두의 용사가 간 거리만큼 쌓이고, 유산은 <b>가문원 모두가 출정할 때</b> 효과가 붙습니다. 가주·원로만 살 수 있습니다. <b>살 수 있는 유산의 구매 버튼을 눌러 보세요.</b>',
