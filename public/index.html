@@ -1441,6 +1441,29 @@ body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun 
 #mythBox.ov .myD{border-radius:14px!important;box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 16px rgba(150,100,255,.4)!important;margin:0!important}
 #mythBox.ov .myD>summary::after{content:'✕ 닫기';font-size:11px;color:#cdbbe8}
 #mythBox:not(.ov){display:none}
+/* 정비 패널 틀 최소화 */
+@media (min-width:641px){
+.pInv .zone.zg{border-width:8px!important;border-image-width:8px!important;margin-top:6px!important;background:rgba(14,10,8,.6)!important}
+.pInv .zone.zg>.zbody{padding:6px 6px 6px!important}
+.pInv .items,.pInv #hItems{padding:0!important;margin:0!important}
+.lbInfo.top{margin:0 0 6px!important}
+.lbBagL{margin-top:2px!important}
+.pShop .zone.zs{margin-bottom:0!important}
+}
+/* 신화 메인 색: 보라(영웅)와 겹치지 않게 '별빛 백금 + 무지개' 로 */
+.myRib{background:radial-gradient(ellipse at 50% 10%,rgba(255,240,200,.18),transparent 60%),linear-gradient(180deg,#0e1a24,#0a1118 55%,#141008)!important;box-shadow:0 0 12px rgba(255,236,180,.28)!important}
+.mrT{color:#fff6dc!important;text-shadow:0 0 6px #ffd98a,0 0 2px #fff!important}
+.mrS{background:radial-gradient(circle,#24303a,#0a0e12)!important;border-color:#4a5866!important}
+.mrS.on{border-color:#fff2c8!important;box-shadow:0 0 8px #ffe7a8,0 0 14px rgba(140,220,255,.5)!important}
+.mrN{color:#e8dcc0!important}
+.myRib.on{box-shadow:0 0 0 2px #fff,0 0 16px rgba(255,236,180,.6)!important}
+.myD{background:radial-gradient(ellipse at 10% 50%,rgba(255,236,180,.2),transparent 55%),linear-gradient(90deg,#0e1a24,#0a1118 50%,#141008)!important;box-shadow:0 0 14px rgba(255,236,180,.3)!important}
+.myD>summary b::before{background:radial-gradient(circle,#fff6dc,#c9a35a 60%,#5a4010)!important;box-shadow:0 0 10px #ffe7a8!important;color:#3a2a08!important;-webkit-text-fill-color:#3a2a08!important}
+.myD>summary .mySum{color:#e8dcc0!important}
+#mythBox.ov .myD{box-shadow:0 12px 30px rgba(0,0,0,.8),0 0 16px rgba(255,236,180,.35)!important}
+#mythBox.ov .myD>summary::after{color:#e8dcc0!important}
+.myth h4{color:#fff0c8!important}.mys{border-color:#4a5866!important}.mys.on{box-shadow:0 0 8px rgba(255,236,180,.45)!important}
+.mybtn{border-color:#e8d08a!important;background:linear-gradient(180deg,rgba(255,236,180,.25),rgba(140,220,255,.12))!important;color:#fff6dc!important}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
