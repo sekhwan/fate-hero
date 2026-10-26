@@ -1266,6 +1266,70 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
 .irow .in .iv{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;font-size:11.5px!important}
 .irow .ib{flex-wrap:nowrap!important}
 .irow .ib button{padding:3px 7px!important;font-size:11.5px!important;white-space:nowrap}
+/* 정비 v2 */.irow button.enh.boosted::after{content:none}.irow button.enh.boosted{box-shadow:inset 0 0 0 1px var(--g2)}
+/* 정비 v2: 큰 그림 + 잘리지 않는 이름·옵션 + 두 글자 버튼 */
+.irow{grid-template-columns:44px minmax(0,1fr) auto!important;gap:0 10px!important;padding:6px 2px!important;align-items:center}
+.irow .iic{width:44px!important;height:44px!important;font-size:26px!important;border-radius:8px;background:radial-gradient(circle at 50% 55%,rgba(255,255,255,.07),transparent 70%)}
+.irow .iic img{width:44px!important;height:44px!important}
+.irow .in>.nm{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:13.5px!important;line-height:1.3}
+.irow .in .iv{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;font-size:12px!important;line-height:1.35}
+.irow .ib{flex-direction:row;gap:4px!important}
+.irow .ib button{padding:5px 0!important;width:42px;text-align:center;font-size:12px!important}
+/* 장비창 인형 */
+.doll{display:grid;grid-template-columns:58px minmax(0,1fr) 58px;gap:6px;align-items:stretch;margin:4px 0 6px}
+.dCol{display:flex;flex-direction:column;gap:6px}
+.dSlot{position:relative;width:58px;height:58px;padding:0;border-radius:8px;border:2px solid #4a4050;background:radial-gradient(circle at 50% 40%,#2e2836,#16121c);display:grid;place-items:center;cursor:pointer;font:inherit;color:inherit}
+.dSlot .dIc{font-size:24px;line-height:1}.dSlot .dIc img{width:44px;height:44px;object-fit:contain}
+.dSlot small{position:absolute;bottom:1px;left:0;right:0;text-align:center;font-size:9px;color:#a89a88;text-shadow:0 1px 2px #000}
+.dSlot.empty{opacity:.45;cursor:default;border-style:dashed}.dSlot.empty .dIc{filter:grayscale(1)}
+.dSlot.g1{border-color:var(--g1)}.dSlot.g2{border-color:var(--g2)}.dSlot.g3{border-color:var(--g3);box-shadow:0 0 10px color-mix(in srgb,var(--g3) 45%,transparent)}
+.dSlot.sel{outline:2px solid #fff;outline-offset:1px}
+.dPl{position:absolute;top:1px;right:3px;font-size:11px;color:#ffe08a;text-shadow:0 1px 2px #000}
+.dPin{position:absolute;top:0;left:2px;font-size:10px;font-style:normal}
+.dFig{position:relative;display:flex;align-items:flex-end;justify-content:center;min-height:300px;border-radius:10px;background:radial-gradient(ellipse at 50% 80%,rgba(255,211,107,.12),transparent 60%),linear-gradient(180deg,#1a1520,#100c14);overflow:hidden}
+.dFig img{max-width:100%;max-height:310px;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 6px 10px #000)}
+.dFig:not(.full) img{max-height:220px}
+.dPw{margin-top:auto;text-align:center;line-height:1.1}.dPw small{display:block;font-size:9.5px;color:#a89a88}.dPw b{font-size:12px;color:var(--pw)}
+.dBag{display:flex;flex-wrap:wrap;gap:4px;align-items:center;margin:2px 0 6px}.dBagL{width:100%;font-size:11px;color:var(--muted)}
+.dSlot.sm{width:40px;height:40px;border-radius:6px}.dSlot.sm .dIc img{width:32px;height:32px}
+.dSel .irow{border-bottom:0;background:rgba(255,255,255,.04);border-radius:8px;padding:6px 8px!important}
+.dHint{font-size:12px;color:var(--muted)}
+/* 인형 v2: 칸마다 이름·능력치 */
+.doll{grid-template-columns:minmax(0,1fr) 92px minmax(0,1fr)!important;gap:5px!important}
+.dCard{display:flex;align-items:center;gap:5px;width:100%;min-height:54px;padding:3px;border:1px solid transparent;border-radius:8px;background:rgba(255,255,255,.03);font:inherit;color:inherit;text-align:left;cursor:pointer;min-width:0}
+.dCol:last-child .dCard{flex-direction:row-reverse;text-align:right}
+.dCard .dSlot{width:44px;height:44px;flex:none;cursor:inherit}.dCard .dSlot .dIc img{width:36px;height:36px}.dCard .dSlot .dIc{font-size:20px}
+.dCard.sel{border-color:#fff;background:rgba(255,255,255,.08)}
+.dCard.empty{opacity:.5;cursor:default}
+.dTx{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.dTx .nm{font-size:11.5px;font-weight:600;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;word-break:keep-all}
+.dCard.empty .dTx b{font-size:11.5px;color:#a89a88}
+.dSt{font-size:11.5px;color:#f0e2c8;font-weight:600;white-space:nowrap}
+.dAf{display:block;font-style:normal;font-size:10px;color:#7fe3a0}
+.dFig{min-height:0!important}.dFig img{max-height:100%!important;width:100%;height:100%;object-fit:contain}
+.dPw{padding:2px 0}
+/* ===== 가죽 장비판 ===== */
+.lbS.r em{left:auto;right:0;text-align:right}.lbS.l em{left:0;right:auto;text-align:left}
+.lbBoard{position:relative;height:340px;margin:2px 0 6px;border-radius:6px;border:3px solid #5a3a1c;box-shadow:inset 0 0 0 1px #c9a35a,inset 0 0 40px rgba(0,0,0,.6),0 3px 8px rgba(0,0,0,.6);background:radial-gradient(ellipse at 50% 45%,rgba(120,70,30,.15),transparent 70%),linear-gradient(rgba(74,42,20,.82),rgba(46,26,12,.9)),url('art/ui_parchment.webp') center/360px;overflow:hidden}
+.lbHalo{position:absolute;left:50%;top:30px;width:170px;height:290px;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 55%,rgba(160,20,10,.55),rgba(120,10,6,.25) 45%,transparent 70%);filter:blur(4px)}
+.lbFig{position:absolute;left:50%;bottom:6px;height:326px;transform:translateX(-50%);object-fit:contain;filter:drop-shadow(0 0 2px #c9a35a) drop-shadow(0 6px 10px #000)}
+.lbFig.bust{height:210px;bottom:50px}
+.lbS{position:absolute;width:48px;height:48px;padding:0;border-radius:3px;border:2px solid #2a160a;background:linear-gradient(145deg,#4a2a18,#24120a);box-shadow:inset 1px 1px 0 rgba(255,220,160,.25),inset -1px -1px 0 rgba(0,0,0,.6),0 2px 4px rgba(0,0,0,.6);display:grid;place-items:center;cursor:pointer;font:inherit;color:inherit;z-index:2}
+.lbS .lbI{font-size:24px;line-height:1}.lbS .lbI img{width:40px;height:40px;object-fit:contain;filter:drop-shadow(0 1px 2px #000)}
+.lbS em{position:absolute;left:-10px;right:-10px;top:100%;margin-top:2px;font-style:normal;font-size:10.5px;font-weight:700;text-align:center;white-space:nowrap;color:#ffe9b8;text-shadow:0 1px 2px #000,0 0 3px #000}
+.lbS.empty{opacity:.55;cursor:default}.lbS.empty .lbI{filter:grayscale(1) brightness(.7)}.lbS.empty em{color:#bfa888;font-weight:400}
+.lbS.g1{border-color:#3a6aa8}.lbS.g2{border-color:#c9a020}.lbS.g3{border-color:#ffb43a;box-shadow:inset 1px 1px 0 rgba(255,220,160,.3),0 0 10px rgba(255,180,60,.6)}
+.lbS.sel{outline:2px solid #fff;outline-offset:1px}
+.lbP{position:absolute;top:0;right:2px;font-size:11px;color:#ffe08a;text-shadow:0 1px 2px #000}
+.lbA{position:absolute;bottom:1px;right:2px;font-size:10px;font-style:normal;color:#7fe3a0;text-shadow:0 1px 2px #000}
+.lbPin{position:absolute;top:0;left:2px;font-size:10px;font-style:normal}
+.lbPw{position:absolute;right:10px;bottom:10px;text-align:center;padding:4px 8px;border-radius:4px;background:rgba(20,10,4,.7);border:1px solid #6b4a20;line-height:1.1}.lbPw small{display:block;font-size:10px;color:#c9b089}.lbPw b{font-size:14px;color:#ffb26b}
+.lbBagL{font-size:11px;color:var(--muted);margin:0 0 2px}
+.lbBag{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.lbBag .lbS{position:relative;width:auto;flex:1;aspect-ratio:1;height:auto}.lbBag .lbS .lbI img{width:80%;height:80%}
+.lbArr{width:24px;align-self:stretch;border:2px solid #2a160a;border-radius:3px;background:linear-gradient(145deg,#6b4a20,#3a2410);color:#ffd36b;cursor:pointer;font-size:12px}.lbArr[disabled]{opacity:.35;cursor:default}
+.lbInfo .irow{border:1px solid #6b4a20!important;border-radius:6px;background:linear-gradient(rgba(74,42,20,.55),rgba(46,26,12,.7)),url('art/ui_parchment.webp') center/300px;padding:6px 8px!important}
+.lbInfo .irow .in .iv{white-space:normal!important}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -2012,10 +2076,11 @@ function gdLegEl(){const i=gdLegIdx();if(i<0)return null;const b=document.queryS
 function gdLegBtn(){const i=gdLegIdx();if(i<0)return null;const b=document.querySelector(`#shop [data-buy="${i}"]`);return b&&!b.disabled?b:null;}
 function gdWbBtn(){const w=$('wbBar');if(!w||w.hidden)return null;const b=w.querySelector('.wbAtk');return b&&b.offsetParent!==null?b:null;}
 function gdLegacyBtn(){for(const m of ['houseModal','chronModal']){const M=$(m);if(M&&!M.hidden){const b=M.querySelector('[data-buy]:not([disabled])');if(b&&b.offsetParent!==null)return b;}}return null;}
-function gdWearBtn(){return document.querySelector('#hItems [data-wear]');}
+function gdWearBtn(){let b=document.querySelector('#hItems [data-wear]');if(b||!run)return b;const ix=run.items.findIndex(it=>it.spare&&(it.grade||0)===3);if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;renderHero();return document.querySelector('#hItems [data-wear]');}
 function gdVis(el){return !!(el&&el.offsetParent!==null&&!el.disabled);}
 function gdBuyBtn(){const bs=[...document.querySelectorAll('#shop .ware')];for(const w of bs){if(!w.querySelector('.wt.up'))continue;const b=w.querySelector('[data-buy]');if(b&&!b.disabled)return b;}return null;}
-function gdEnhBtn(){const bs=[...document.querySelectorAll('#hItems [data-enh]:not([disabled])')];return bs.find(b=>{const it=run&&run.items[+b.dataset.enh];return it&&!(it.plus||0);})||null;}
+function gdEnhBtn(){const q=()=>[...document.querySelectorAll('#hItems [data-enh]:not([disabled])')].find(b=>{const it=run&&run.items[+b.dataset.enh];return it&&!(it.plus||0);})||null;let b=q();if(b||!run)return b;
+  const ix=run.items.findIndex(it=>!it.spare&&canEnhance(it)&&!(it.plus||0)&&run.gold>=enhCost(run,it));if(ix<0||typeof gearSel==='undefined')return null;gearSel=ix;renderHero();return q();}
 // 처음 만나는 사건
 const GD_EV={
  battle:['⚔️','전투','고를 수 있는 길은 넷입니다. <b>기본 공격</b>은 표시된 승리확률로 싸우고, <b>스킬 공격</b>은 전투 스킬만큼 승률이 오르지만 지역마다 '+SK_USES+'번만 쓸 수 있습니다. <b>도망</b>은 민첩, <b>회유</b>는 매력·지능·명성에 달려 있습니다. 불리한 싸움을 이길수록 좋은 장비가 나옵니다. 위의 <b>패배 시</b> 줄에서 지면 잃을 생명력을 미리 확인하세요.'],
@@ -2150,6 +2215,22 @@ function renderStages(){
     b.onclick=()=>{stage=i;store.set('stage',i);run=null;renderAll();};nav.appendChild(b);});
 }
 async function newHero(first){enhMsg='';store.set('rolls',store.get('rolls',0)+1);if(typeof chron!=='undefined'){chron.st.rolls=(chron.st.rolls||0)+1;chSave();}TRACK.st.heroes++;setTimeout(()=>TRACK.ev('hero',{race:hero&&hero.race.name,traits:hero&&hero.traits.map(t=>t.name).join(',')}),1200);clearTimeout(autoT);stage=0;store.set('stage',0);phaseT.forEach(clearTimeout);$('rollBtn').disabled=true;$('rollBtn2').disabled=true;$('goBtn').disabled=true;const [g]=await Promise.all([issueSeed(),first===true?null:rollDieAnim()]);heroSeed=g.seed;runToken=g.token;hero=makeHero(heroSeed);runLog=null;run=null;lastOut=null;prevStats=null;$('log').innerHTML='<li class="empty">출정하면 모든 결정과 결과가 여기에 남는다.</li>';renderAll();showDice(hero,first!==true);if(first!==true)heroReveal(hero);}
+// ===== 장비창 인형 (가죽 장비판): 영웅 몸 위치에 칸, 칸 아래 능력치 띠, 아래 가방 줄과 정보 줄 =====
+// [부위키, 부위 이름, 능력치 이름, x, y]  (판 크기 372×340 기준 좌표, 칸 48px)
+const DOLL=[['int','머리','지능',96,6],['cha','목걸이','매력',228,40],['con','갑옷','체력',162,104],['str','무기','힘',10,82],['mult','인장','전투력',10,160],['flee','망토','도망',10,238],['win','깃발','승률',314,104],['luk','부적','행운',314,182],['agi','신발','민첩',162,272]];
+let gearSel=null,bagOff=0;
+function stShort(it){return itemDesc0(it).replace('승리확률','승률').replace('도망 확률','도망').replace('전투력','전투').replace(/\s+/g,'');}
+function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spare)sp.push({it,idx});else on[slotOf(it)]={it,idx};});
+  if(gearSel==null||!rowOf[gearSel]){const f=DOLL.map(d=>on[d[0]]).find(Boolean);gearSel=f?f.idx:(sp[0]?sp[0].idx:null);}
+  const k=hero?portraitKey(hero):null;const full=k&&FULL_RACES.has(k.split('_')[0]);
+  const fig=k?`<img class="lbFig${full?'':' bust'}" src="${full?'hero_full':'hero'}/${k}.webp" alt="">`:'';
+  const slot=d=>{const x=on[d[0]];const pos=d[3]>280?`right:${Math.max(0,(372-d[3]-48))/372*100}%;top:${d[4]}px`:`left:${d[3]/372*100}%;top:${d[4]}px`;const sd=d[3]>280?' r':d[3]<40?' l':'';
+    if(!x)return `<div class="lbS empty${sd}" style="${pos}" title="${d[1]} · ${d[2]} (비어 있음)"><span class="lbI">${ITEM_ICON[d[0]]||''}</span><em>${d[1]}</em></div>`;
+    const r=rowOf[x.idx];return `<button type="button" class="lbS${sd} g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" style="${pos}" data-gs="${x.idx}"${tipAttr(itemName(x.it),r?r.tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}${x.it.aff&&x.it.aff.length?'<i class="lbA">✦</i>':''}${x.it.pin?'<i class="lbPin">📌</i>':''}<em>${stShort(x.it)}</em></button>`;};
+  const per=5,maxOff=Math.max(0,sp.length-per);bagOff=Math.min(bagOff,maxOff);
+  const bag=`<div class="lbBag"><button type="button" class="lbArr" data-bag="-1" ${bagOff<=0?'disabled':''}>◀</button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g3${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''}>▶</button></div>`;
+  const selRow=gearSel!=null&&rowOf[gearSel]?rowOf[gearSel].h:'';
+  return `<div class="lbBoard"><div class="lbHalo"></div>${fig}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div><div class="lbBagL">예비 전설 ${sp.length}/${SPARE_MAX}</div>${bag}<div class="lbInfo">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div>`;}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name;{const L=[...h.name].length;$('hName').classList.toggle('n4',L===4);$('hName').classList.toggle('n5',L>=5);} $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
@@ -2189,16 +2270,19 @@ function renderHero(){
   {const SO=['mult','str','agi','int','con','win','flee','luk','cha'];
    const eq=its.map((it,idx)=>({it,idx})).filter(x=>slotOf(x.it)).sort((a,b)=>((b.it.grade||0)-(a.it.grade||0))||(SO.indexOf(slotOf(a.it))-SO.indexOf(slotOf(b.it)))||((a.it.spare?1:0)-(b.it.spare?1:0))||(a.idx-b.idx));
    const cons={};its.forEach((it,idx)=>{if(slotOf(it))return;const k=it.heal?'성수':it.revive?'부활의 깃털':it.name;(cons[k]=cons[k]||[]).push(idx);});
-   const rows=eq.map(({it:i,idx})=>{const ce=canSell&&canEnhance(i);const pl=i.plus||0;const cost=ce?enhCost(run,i):0;
+   const rowOf={};const rows=eq.map(({it:i,idx})=>{const ce=canSell&&canEnhance(i);const pl=i.plus||0;const cost=ce?enhCost(run,i):0;
      const er=run?enhRate(run,pl):{rate:ENH_RATE[pl],parts:[['기본',ENH_RATE[pl]]]};const erTxt=er.parts.map(([k,v],j)=>j?`${k} +${Math.round(v*100)}%p`:`${k} ${Math.round(v*100)}%`).join(' + ')+(er.capped?' (최대 95%)':'');
-     const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmtS(cost)} = 강화비 ${fmtS(cp.base)} + 보유 금화 10% ${fmtS(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmtS(cost)}`];})()])}>강화 ${Math.round(er.rate*100)}%·${fmtS(cost)}</button>`:'';
+     const enh=canEnhance(i)?`<button type="button" class="enh${er.parts.length>1?' boosted':''}" data-enh="${idx}" ${ce&&run.gold>=cost?'':'disabled'}${tipAttr(`강화 +${pl}→+${pl+1} · 성공 ${Math.round(er.rate*100)}%`,[erTxt,pl>=1?'실패하면 파괴 (수호 각인으로 일부 방지)':'실패해도 그대로',...(()=>{const cp=ce?enhCostParts(run,i):null;return cp&&cp.tax?[`비용 금화 ${fmtS(cost)} = 강화비 ${fmtS(cp.base)} + 보유 금화 10% ${fmtS(cp.tax)}`,'전설 장비 강화는 보유 금화의 10%가 추가로 든다']:[`비용 금화 ${fmtS(cost)}`];})()])}>강화</button>`:'';
      const pp=ce?previewPower(i):null;
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
      const ipTxt=canEnhance(i)?`강화 시 ${itemDescAt(i,pl+1)}${pp?` · 전투력 ${fmt(pp[0])}→${fmt(pp[1])}`:''} · ${pl>=1?'실패하면 파괴':'실패해도 그대로'}`:'';
      const tl=[tip,`${itemDesc0(i)}${i.aff&&i.aff.length?' · '+affTxt(i):''}`,ipTxt,canEnhance(i)?`강화 성공 ${Math.round(er.rate*100)}%${ce?` · 비용 금화 ${fmtS(cost)}`:''}`:'',i.spare?'예비: 착용 중이 아니라 효과 없음 (착용 버튼으로 바꿔 낄 수 있다)':'',i.pin&&!i.spare?'📌 직접 착용해 고정했다':'',`판매 금화 ${fmt(sellPrice(run,i))}`];
-     return `<div class="irow tipt"${tipAttr(itemName(i),tl)}><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${i.spare&&(i.grade||0)===3?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀고 다시 자동 착용">📌 해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매 ${fmtS(sellPrice(run,i))}</button></div></div>`;}).join('');
+     const rowH=`<div class="irow tipt"${tipAttr(itemName(i),tl)}><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${i.spare&&(i.grade||0)===3?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀고 다시 자동 착용">해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매</button></div></div>`;
+     rowOf[idx]={h:rowH,tl,i};return rowH;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
-   $('hItems').innerHTML=(its.length?rows+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
+   $('hItems').innerHTML=(its.length?dollHtml(eq,rowOf)+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
+  $('hItems').querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{gearSel=+b.dataset.gs;renderHero();});
+  $('hItems').querySelectorAll('[data-bag]').forEach(b=>b.onclick=()=>{bagOff=Math.max(0,bagOff+(+b.dataset.bag)*5);renderHero();});
   $('hItems').querySelectorAll('[data-enh]').forEach(b=>b.onclick=()=>doEnhance(+b.dataset.enh));
   $('hItems').querySelectorAll('[data-wear]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.wear;const nm=run.items[ix]&&run.items[ix].name;if(wearSpare(run,ix)){gdAct('wear');logAct(['w',ix]);enhMsg=`📌 ${esc(nm||'')}을(를) 착용하고 고정했다`;prevStats=null;renderAll();}});
   $('hItems').querySelectorAll('[data-unpin]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.unpin;if(unpinItem(run,ix)){logAct(['u',ix]);enhMsg='고정을 풀었다. 수치가 가장 높은 장비로 다시 착용한다';prevStats=null;renderAll();}});
