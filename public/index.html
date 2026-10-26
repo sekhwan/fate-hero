@@ -21,7 +21,7 @@
   --bg:#14121a; --panel:#1c1922; --panel2:#221e29; --line:#3a3340;
   --fg:#ece4d4; --muted:#9d93a3;
   --brass:#d2a64e; --ember:#d8533b; --holy:#8fc2b4; --violet:#b69be0;
-  --pw:#f08a3e; --fm:#c8a2ff; --g0:#e6e1d8; --g1:#6ea8ff; --g2:#f0d44a; --g3:#e8a93a;
+  --pw:#f08a3e; --fm:#c8a2ff; --g0:#e6e1d8; --g1:#6ea8ff; --g2:#b46bff; --g3:#e8a93a;
   --display:"Song Myung","Nanum Myeongjo",serif;
   --body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -1330,6 +1330,88 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
 .lbArr{width:24px;align-self:stretch;border:2px solid #2a160a;border-radius:3px;background:linear-gradient(145deg,#6b4a20,#3a2410);color:#ffd36b;cursor:pointer;font-size:12px}.lbArr[disabled]{opacity:.35;cursor:default}
 .lbInfo .irow{border:1px solid #6b4a20!important;border-radius:6px;background:linear-gradient(rgba(74,42,20,.55),rgba(46,26,12,.7)),url('art/ui_parchment.webp') center/300px;padding:6px 8px!important}
 .lbInfo .irow .in .iv{white-space:normal!important}
+/* 가죽 장비판 v2: 어두운 바탕 + 붉은 실루엣 + 등급색 대비 */
+.lbBoard{background:radial-gradient(ellipse at 50% 45%,rgba(90,40,20,.25),transparent 70%),linear-gradient(rgba(36,20,10,.9),rgba(22,12,6,.95)),url('art/ui_parchment.webp') center/360px!important;border-color:#3a2410!important;box-shadow:inset 0 0 0 1px #8a6a3a,inset 0 0 50px rgba(0,0,0,.75),0 3px 8px rgba(0,0,0,.6)!important}
+.lbSil{position:absolute;left:50%;top:8px;height:324px;width:auto;transform:translateX(-50%);filter:drop-shadow(0 4px 8px rgba(0,0,0,.7));opacity:.95;z-index:1}
+.lbS{background:linear-gradient(145deg,#2a1a12,#120a06)!important;border-width:3px!important}
+.lbS.g0{border-color:#8a8278!important}
+.lbS.g1{border-color:#4a8cff!important;box-shadow:0 0 8px rgba(74,140,255,.45)!important}
+.lbS.g2{border-color:#b06cff!important;box-shadow:0 0 8px rgba(176,108,255,.5)!important}
+.lbS.g3{border-color:#ff8a1a!important;box-shadow:0 0 12px rgba(255,138,26,.75),inset 0 0 6px rgba(255,138,26,.35)!important}
+.lbS.empty{border-color:#4a3a2a!important;border-style:dashed!important;opacity:.7}
+.lbS em{background:rgba(0,0,0,.72);border-radius:3px;padding:0 4px;left:50%!important;right:auto!important;transform:translateX(-50%);color:#fff!important;font-size:11px!important;text-shadow:none!important;line-height:15px}
+.lbS.r em{left:auto!important;right:0!important;transform:none}.lbS.l em{left:0!important;transform:none}
+.lbS.empty em{color:#bfae98!important}
+.lbS.sel{outline:2px solid #fff!important;outline-offset:2px}
+.lbPw{background:rgba(0,0,0,.75)!important;border-color:#8a6a3a!important}
+.lbBag .lbS{background:linear-gradient(145deg,#2a1a12,#120a06)!important}
+.lbInfo .irow{background:rgba(20,12,6,.85)!important;border-color:#5a3a1c!important}
+.lbInfo.top{margin:0 0 6px;min-height:58px}
+/* ===== 용사 명부 압축 ===== */
+.roster .mini,.roster dl.facts:not(.top){display:none!important}
+.roster .portrait{width:96px!important;height:96px!important}
+.roster .hname{font-size:26px!important}
+.roster .hhead{margin-bottom:4px}
+.roster .cmbBox{margin:4px 0 6px!important;padding:4px 8px!important}.roster .cmbBox h4{margin:0!important;font-size:13px!important}
+.roster .hp,.roster .xp{margin:0 0 4px!important}.roster .hp .row,.roster .xp .row{font-size:12px!important;margin-bottom:2px}
+.roster .core{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;margin:6px 0 6px!important}
+.roster .core>div{padding:4px 5px!important;min-width:0;overflow:hidden}
+.roster .core>div>span,.roster .core>div>small{font-size:10px!important;display:block;line-height:1.1}
+.roster .core b{font-size:15px!important;line-height:1.2;white-space:nowrap}
+.roster .core em{display:none!important}
+.roster .core .rIco,.roster .core img{width:15px!important;height:15px!important}
+.roster .merc{margin:0 0 6px!important;padding:4px 8px!important;gap:6px}.roster .merc b{font-size:15px}.roster .merc em{font-size:11px}
+.roster .stats{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px 8px!important;margin-bottom:6px}
+.roster .stat{grid-template-columns:auto 1fr!important;gap:2px 6px!important;font-size:12px!important;align-items:baseline}
+.roster .stat .bar{grid-column:1/-1;grid-row:2;height:3px!important}
+.roster .stat b{text-align:right;font-size:13px}
+.roster .skills h4{margin:4px 0 3px!important;font-size:12px}
+.roster .skills .role{padding:3px 6px!important;gap:6px!important;font-size:12px!important;margin-bottom:3px}
+.roster .skills .role .sks{display:flex;flex-wrap:wrap;gap:2px}
+.roster .skills .role .sks em{font-size:10.5px!important;padding:0 4px!important;line-height:16px}
+.roster .party h4,.roster .pvpBox h4{margin:6px 0 3px!important;font-size:12px}
+.roster .core b{font-size:13px!important;letter-spacing:-.02em}
+.roster .merc{align-items:center}.roster .merc em{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;margin-left:auto}
+.roster .pchips{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px!important}.roster .pchips .pc{padding:3px 4px!important;font-size:11px!important;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.roster .pvpRow{gap:4px!important}.roster .pvpRow>*{padding:3px 2px!important}.roster .pvpRow img{width:30px!important;height:30px!important}
+.roster .pvRace{font-size:11px!important;margin:4px 0!important}
+.roster .pvpBox button{padding:4px!important;font-size:12px}
+.roster .core .rIco,.roster .core img,.roster .core svg{display:none!important}
+.roster .pvpRow>*{display:flex!important;flex-direction:row!important;align-items:center;justify-content:center;gap:3px;min-height:0!important}.roster .pvpRow img{width:22px!important;height:22px!important}.roster .pvpRow small,.roster .pvpRow span{font-size:11px!important}.roster .pvpRow b{font-size:13px!important}.roster .pvpRow *{white-space:nowrap;writing-mode:horizontal-tb}.roster .pvpRow img{width:18px!important;height:18px!important}
+/* ===== 상점: 상품 4개를 가로 한 줄 세로 카드로 ===== */
+@media (min-width:1061px){
+.shopSign{height:64px!important;gap:8px!important;align-items:center!important}
+.shopSign .smImg{width:64px!important;height:64px!important;align-self:flex-end}
+.shopSign .smTalk{padding:4px 10px!important;font-size:11.5px!important;line-height:1.35!important;max-height:52px;overflow:hidden}
+.shopSign .smTalk b{display:inline!important;margin-right:6px}
+.wares{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important}
+.ware{padding:6px 7px!important;gap:0!important}
+.ware .wtop{position:absolute;top:5px;left:7px;right:7px;pointer-events:none}
+.ware .gb{font-size:9.5px!important;padding:0 5px!important}
+.ware .wt{font-size:10px!important}
+.ware .wbody{margin-top:16px!important;gap:7px!important}
+.ware .wico{width:40px!important;height:40px!important;font-size:24px!important}.ware .wico img.iI{width:36px!important;height:36px!important}
+.ware .wn{font-size:13px!important;line-height:1.2!important}.ware .wd{font-size:11px!important}
+.ware .buy{margin-top:5px!important;padding:3px 8px!important;font-size:11.5px!important}
+.ware .wneed{font-size:10.5px!important;margin-top:1px}
+.autoNote{font-size:11px!important;padding:3px 8px!important;margin-top:4px!important}
+}
+@media (min-width:1061px){
+.zone.stall{position:relative}
+.stall:has(.shopSign:not([hidden]))>.zh{position:absolute!important;top:0;left:0;right:0;z-index:3;padding:5px 10px!important;background:linear-gradient(180deg,rgba(10,6,3,.82),rgba(10,6,3,.45) 70%,transparent)!important;border:0!important;box-shadow:none!important;font-size:13px}
+.stall:has(.shopSign:not([hidden]))>.zh small{display:none}
+.shopSign{height:86px!important;align-items:flex-end!important;padding-bottom:6px!important}
+.shopSign .smImg{width:80px!important;height:80px!important;align-self:flex-end;margin-bottom:-6px}
+.shopSign .smTalk{align-self:flex-end!important}
+}
+/* ===== 출정 중 머리말 자동 숨김: 얇은 손잡이만 남기고, 마우스를 올리면 위에 겹쳐 펼친다 ===== */
+.hbHold{position:relative}
+.hbTab{display:none}
+body.inRun .hbHold{height:22px;z-index:60}
+body.inRun .hbTab{display:flex;align-items:center;gap:6px;height:22px;padding:0 12px;border:1px solid #6b4a1a;border-radius:6px;background:linear-gradient(180deg,#2a1c0c,#160e06);color:#c9a35a;font-size:11.5px;cursor:pointer;user-select:none}
+body.inRun .hbTab b{color:#ff9a6a;font-weight:700}
+body.inRun .hbHold>header.hb{position:absolute;top:0;left:0;right:0;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .18s,transform .18s;box-shadow:0 12px 30px rgba(0,0,0,.75)!important}
+body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun .hbHold:focus-within>header.hb{opacity:1;pointer-events:auto;transform:none}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -1374,6 +1456,7 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
 <body>
 
 <div class="wrap">
+  <div class="hbHold"><div class="hbTab" aria-hidden="true">▾ 운명의 용사 · 가문 · 랭킹 · 처치한 악마 <b id="hbTabKill"></b></div>
   <header class="hb">
 <svg class="hbArt" viewBox="0 0 1600 220" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
   <defs>
@@ -1405,7 +1488,7 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
     </div>
     <div class="hbSide"><div class="counter hbCounter"><span id="cLabel">처치한 악마</span><b id="demonCount">0</b></div>
       <div class="hbChips"><button class="hbChip" type="button" id="acctBtn" hidden>👤 가입 · 로그인</button><button class="hbChip" type="button" id="bgmBtn" aria-pressed="false" title="배경음 켜기">♪</button></div></div>
-  </header>
+  </header></div>
   <div class="topRow"><div class="wbBar" id="wbBar" hidden></div>
   <nav class="stages" id="stages" aria-label="스테이지"></nav></div>
 
@@ -2219,6 +2302,10 @@ async function newHero(first){enhMsg='';store.set('rolls',store.get('rolls',0)+1
 // [부위키, 부위 이름, 능력치 이름, x, y]  (판 크기 372×340 기준 좌표, 칸 48px)
 const DOLL=[['int','머리','지능',96,6],['cha','목걸이','매력',228,40],['con','갑옷','체력',162,104],['str','무기','힘',10,82],['mult','인장','전투력',10,160],['flee','망토','도망',10,238],['win','깃발','승률',314,104],['luk','부적','행운',314,182],['agi','신발','민첩',162,272]];
 let gearSel=null,bagOff=0;
+// 붉은 망토를 두른 영웅 실루엣 (직접 그린 도형)
+const LB_SIL=`<svg class="lbSil" viewBox="0 0 200 330" aria-hidden="true"><defs><linearGradient id="lbCl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3161a"/><stop offset=".6" stop-color="#7a0d10"/><stop offset="1" stop-color="#4a0608"/></linearGradient></defs>
+<path d="M100 18c13 0 23 10 23 24 0 10-5 18-12 22l1 8c18 4 32 12 40 24l14 40c4 12-2 18-10 16l-12-30 4 60 22 110c2 10-4 16-14 14l-40-6-16 4-16-4-40 6c-10 2-16-4-14-14l22-110 4-60-12 30c-8 2-14-4-10-16l14-40c8-12 22-20 40-24l1-8c-7-4-12-12-12-22 0-14 10-24 23-24z" fill="url(#lbCl)" stroke="#d8a84a" stroke-width="2.5" stroke-linejoin="round"/>
+<path d="M78 92c8 30 8 70 2 120M122 92c-8 30-8 70-2 120" fill="none" stroke="#3a0406" stroke-width="2" opacity=".6"/></svg>`;
 function stShort(it){return itemDesc0(it).replace('승리확률','승률').replace('도망 확률','도망').replace('전투력','전투').replace(/\s+/g,'');}
 function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spare)sp.push({it,idx});else on[slotOf(it)]={it,idx};});
   if(gearSel==null||!rowOf[gearSel]){const f=DOLL.map(d=>on[d[0]]).find(Boolean);gearSel=f?f.idx:(sp[0]?sp[0].idx:null);}
@@ -2230,7 +2317,7 @@ function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spar
   const per=5,maxOff=Math.max(0,sp.length-per);bagOff=Math.min(bagOff,maxOff);
   const bag=`<div class="lbBag"><button type="button" class="lbArr" data-bag="-1" ${bagOff<=0?'disabled':''}>◀</button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g3${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''}>▶</button></div>`;
   const selRow=gearSel!=null&&rowOf[gearSel]?rowOf[gearSel].h:'';
-  return `<div class="lbBoard"><div class="lbHalo"></div>${fig}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div><div class="lbBagL">예비 전설 ${sp.length}/${SPARE_MAX}</div>${bag}<div class="lbInfo">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div>`;}
+  return `<div class="lbInfo top">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div><div class="lbBoard">${LB_SIL}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div><div class="lbBagL">예비 전설 ${sp.length}/${SPARE_MAX}</div>${bag}`;}
 function renderHero(){
   const h=hero, st=run?run.stats:h.stats;
   document.querySelector('.roster').classList.toggle('hidden',!!h.hidden); renderPortrait(h); $('hName').textContent=h.name;{const L=[...h.name].length;$('hName').classList.toggle('n4',L===4);$('hName').classList.toggle('n5',L>=5);} $('hSub').textContent=`${h.race.name} ${h.job} · ${h.gender==='f'?'여':'남'}`;
@@ -3077,7 +3164,7 @@ function nextStage(){
 }
 function renderHist(){$('hist').innerHTML=hist.length?hist.map(h=>`<tr><td>${h.n}${h.d?` <small style="color:var(--muted)">· ${h.d}번째 주사위</small>`:''}</td><td>${h.r}</td><td>${h.w}</td><td>${h.s}</td><td>${h.e}</td><td class="n">${h.f?h.f+'층':pfmt(h.p)+'%'}</td><td class="n">${h.f?'-':(h.t<1?h.t.toFixed(2):h.t.toFixed(1))+'%'}</td></tr>`).join(''):`<tr><td colspan="7" style="color:var(--muted)">첫 용사가 쓰러지면 여기에 기록된다.</td></tr>`;}
 function renderAll(){
-  document.body.classList.toggle('inRun',!!(run&&!run.dead&&!run.over));lvlUnlockCheck();
+  document.body.classList.toggle('inRun',!!(run&&!run.dead&&!run.over));setTimeout(()=>{const k=$('hbTabKill'),d=$('demonCount');if(k&&d)k.textContent=d.textContent;},0);lvlUnlockCheck();
   if(typeof obCheck==='function')obCheck();if(typeof gdSoon==='function')gdSoon();
   applyWorldBg();
   {const d=$('hDeals');if(d){const a=[];if(run&&!run.dead&&!run.over){if(run.oath)a.push(`<span class="dg" title="치료해 준 기사가 약속한 지배자전에 달려온다">🛡️ 맹세: ${run.oath.left}지역 뒤 기사 합류</span>`);if(run.oathBoss)a.push(`<span class="dg">🛡️ 기사 합류 중: 이번 지배자전 +${Math.round(OATH_BOSS*100)}%p</span>`);
@@ -3147,6 +3234,7 @@ document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key
  window.addEventListener('scroll',()=>{if(cur&&document.contains(cur))show(cur);else if(cur)hide();},{passive:true});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&cur)hide();});}
 $('pauseBtn').onclick=togglePause;
+{const t=document.querySelector('.hbTab');if(t)t.onclick=()=>t.parentElement.classList.toggle('open');document.addEventListener('click',e=>{const h=document.querySelector('.hbHold.open');if(h&&!h.contains(e.target))h.classList.remove('open');});}
 let gearTab=store.get('gearTab','shop');function setGearTab(t){gearTab=t;store.set('gearTab',t);document.querySelector('.gearBody').dataset.tab=t;document.querySelectorAll('[data-gt]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gt===t));}
 document.querySelectorAll('[data-gt]').forEach(b=>b.onclick=()=>setGearTab(b.dataset.gt));setGearTab(gearTab);
 
