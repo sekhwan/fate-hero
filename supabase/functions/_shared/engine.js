@@ -178,7 +178,7 @@ const STAT_NAMES={str:'힘',int:'지능',con:'체력',agi:'민첩',cha:'매력',
 const GRADES=[
   {id:0,name:'일반',cls:'g0',stat:2,mult:1.04,gold:40,fame:0},
   {id:1,name:'희귀',cls:'g1',stat:5,mult:1.10,gold:130,fame:25},
-  {id:2,name:'영웅',cls:'g2',stat:11,mult:1.25,gold:420,fame:70},
+  {id:2,name:'영웅',cls:'g2',stat:20,mult:1.50,gold:420,fame:70},
   {id:3,name:'전설',cls:'g3',stat:30,mult:1.75,gold:1400,fame:180}, // 기본은 영웅의 약 2.7~3배, +7은 +6의 약 1.8배
 ];
 const ITEM_NAMES={
@@ -209,12 +209,12 @@ const AFF=[['boss','지배자전 승률',0.02,0.05,'%p',0.15],['xp','경험치',
   ['talk','회유 확률',0.03,0.08,'%p',0.2],['flee','도망 확률',0.04,0.10,'%p',0.25],['enh','강화 성공률',0.02,0.05,'%p',0.1],['leg','전설 발견',0.10,0.25,'%',0.75],
   ['sk','스킬 공격',0.02,0.05,'%p',0.12],['dmg','패배 피해 감소',0.05,0.12,'%',0.3]];
 const AFF_BY={};AFF.forEach(a=>AFF_BY[a[0]]=a);
-function rollAff(r){const n=r()<0.5?1:2;const pool=AFF.map(a=>a[0]);const out=[];for(let i=0;i<n;i++){const k=pool.splice(Math.floor(r()*pool.length),1)[0];const a=AFF_BY[k];const v=Math.round((a[2]+(a[3]-a[2])*r())*1000)/1000;out.push({k,v});}return out;}
+function rollAff(r,grade){if(grade===2){if(r()>=0.6)return [];const a=AFF[Math.floor(r()*AFF.length)];const v=Math.round((a[2]+(a[3]-a[2])*r())*2*1000)/1000;return [{k:a[0],v}];}const n=r()<0.5?1:2;const pool=AFF.map(a=>a[0]);const out=[];for(let i=0;i<n;i++){const k=pool.splice(Math.floor(r()*pool.length),1)[0];const a=AFF_BY[k];const v=Math.round((a[2]+(a[3]-a[2])*r())*1000)/1000;out.push({k,v});}return out;}
 function affTxt1(x){const a=AFF_BY[x.k];if(!a)return '';const pv=x.v*100;return `${a[1]} ${x.k==='dmg'?'-':'+'}${pv<10?pv.toFixed(1).replace(/\.0$/,''):Math.round(pv)}${a[4]}`;}
 function affTxt(it){return it&&it.aff&&it.aff.length?it.aff.map(affTxt1).join(' · '):'';}
 // 착용 중인(예비 아닌) 전설의 추가 옵션 합계(상한 적용)
 function affSum(s,k){if(!s||!s.items)return 0;let v=0;for(const it of s.items){if(it.spare||!it.aff)continue;for(const x of it.aff)if(x.k===k)v+=x.v;}const a=AFF_BY[k];return a?Math.min(v,a[5]):v;}
-function makeItem(r,grade,kind,tier){const it=makeItem0(r,grade,kind,tier);if((it.grade||0)===3&&slotOf(it))it.aff=rollAff(r);return it;}
+function makeItem(r,grade,kind,tier){const it=makeItem0(r,grade,kind,tier);if((it.grade||0)>=2&&slotOf(it)){const a=rollAff(r,it.grade||0);if(a.length)it.aff=a;}return it;}
 function makeItem0(r,grade,kind,tier){
   tier=tier||0; const g=GRADES[grade];
   if(kind==='heal') return {name:'성수 한 병',grade:0,heal:1,d:'쓰러질 때 생명력 40% 회복'};
@@ -223,9 +223,9 @@ function makeItem0(r,grade,kind,tier){
   const k=kind||keys[Math.floor(r()*keys.length)];
   const base={grade,tier}; const q=grade>=2?Math.round((0.8+r()*0.4)*100)/100:1; if(q!==1)base.q=q;
   if(k==='mult'){const m=1+(g.mult-1)*(1+0.45*tier)*q;return Object.assign(base,{name:itemNameOf('mult',grade,tier),mult:m,d:`전투력 +${pctTxt((m-1)*ITEM_MULT)}%`});}
-  if(k==='win'){const v=[0.02,0.04,0.06,0.10][grade]*q;return Object.assign(base,{name:itemNameOf('win',grade,tier),win:v,d:`승리확률 +${Math.round(v*100)}%p`});}
-  if(k==='flee'){const v=[0.05,0.12,0.22,0.40][grade]*q;return Object.assign(base,{name:itemNameOf('flee',grade,tier),flee:v,d:`도망 확률 +${Math.round(v*100)}%p`});}
-  const sv=Math.max(1,Math.round(((k==='cha'||k==='luk')?[1,3,6,11][grade]:g.stat*TIER_STAT[tier])*q));
+  if(k==='win'){const v=[0.02,0.04,0.067,0.10][grade]*q;return Object.assign(base,{name:itemNameOf('win',grade,tier),win:v,d:`승리확률 +${Math.round(v*100)}%p`});}
+  if(k==='flee'){const v=[0.05,0.12,0.27,0.40][grade]*q;return Object.assign(base,{name:itemNameOf('flee',grade,tier),flee:v,d:`도망 확률 +${Math.round(v*100)}%p`});}
+  const sv=Math.max(1,Math.round(((k==='cha'||k==='luk')?[1,3,7,11][grade]:g.stat*TIER_STAT[tier])*q));
   return Object.assign(base,{name:itemNameOf(k,grade,tier),stat:k,v:sv,d:`${STAT_NAMES[k]} +${sv}`});
 }
 function rollGrade(r,bonus,lm){const b=clamp(bonus||0,0,1);const w=[70*(1-0.5*b),26+6*b,GW[0]+GW[1]*b,(GW[2]+GW[3]*b)*(1+(lm||0))];let v=r()*w.reduce((a,c)=>a+c,0);for(let i=0;i<4;i++){if((v-=w[i])<=0)return i;}return 0;}
@@ -250,9 +250,9 @@ const ENH_BONUS=[0,0.15,0.35,1.5,3,5,8,12,18,26,40];
 const ENH_BONUS_LEG=[0,0.33,0.67,1.17,1.67,2.33,3.33,8.67,11.67,14.67,20.67]; // +7은 +6의 약 1.8배
 const ENH_RATE=[0.9,0.8,0.7,0.6,0.5,0.4,0.33,0.26,0.2,0.15];
 const ENH_BREAK={1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1};
-const GRADE_ENH=[0.15,0.35,0.7,1.0]; // 등급별 강화 효율: 일반 15%, 희귀 35%, 영웅 70%, 전설 100%
+const GRADE_ENH=[0.15,0.35,0.85,1.0]; // 등급별 강화 효율: 일반 15%, 희귀 35%, 영웅 85%, 전설 100%
 let ENH_SCALE=0.3;
-function enhB(it){return ((it.grade||0)===3?ENH_BONUS_LEG:ENH_BONUS)[it.plus||0]*GRADE_ENH[it.grade||0]*ENH_SCALE;}
+function enhB(it){return ((it.grade||0)>=2?ENH_BONUS_LEG:ENH_BONUS)[it.plus||0]*GRADE_ENH[it.grade||0]*ENH_SCALE;}
 function enhF(it){return 1+enhB(it);}
 function effV(it){const b=it.boost||1;if(b!==1&&it.v){const r=effVRaw(it);return Math.max(r,Math.round(r*b));}return effVRaw(it);}
 function effVRaw(it){if(!it.v)return 0;const pl=it.plus||0,soft=it.stat==='cha'||it.stat==='luk';return Math.max(it.v+pl,Math.round(it.v*(soft?1+enhB(it)*0.2:enhF(it))));} // 강화 1단계마다 최소 +1
@@ -302,7 +302,8 @@ function applyItem(s,it,sign){ if(it.spare) return; // 예비 전설은 효과 �
 function wouldUpgrade(s,it){const slot=slotOf(it);if(!slot)return true;it.boost=1+SKV.mItem[mastery(s,'재물')];const old=s.items.find(x=>slotOf(x)===slot&&!x.spare);return !old||(!old.pin&&itemVal(it)>itemVal(old));}
 // 전설은 착용품보다 약하거나 같은 부위가 있어도 예비로 보관한다 (신화 합성 재료로 모을 수 있게)
 const SPARE_MAX=12;function spareCount(s){return s.items.filter(x=>x.spare).length;}
-function canKeepSpare(s,it){return (it.grade||0)===3&&!!slotOf(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce||!!s.buyKeep);}
+function keepable(it){return !!slotOf(it)&&((it.grade||0)===3||((it.grade||0)===2&&!!(it.aff&&it.aff.length)));}
+function canKeepSpare(s,it){return keepable(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce||!!s.buyKeep);}
 // 상점의 전설 장비는 보유품과 예비 칸 수에 관계없이 언제나 살 수 있다(사면 예비로 보관된다)
 function shopLegend(it){return (it.grade||0)===3&&!!slotOf(it);}
 // 같은 부위에서 가장 좋은 것을 착용하고 나머지 전설은 예비로 둔다
@@ -314,20 +315,20 @@ function equip(s,it){
   if((it.heal&&s.items.some(x=>x.heal))||(it.revive&&revives(s)>=REVIVE_MAX)){const g=sellPrice(s,it);s.gold+=g;s.lastEquipNote=`${it.name}은(는) 더 지닐 수 없어 금화 ${g}에 팔았다`;return false;} const slot=slotOf(it); if(slot) it.boost=1+SKV.mItem[mastery(s,'재물')];
   if(slot){ const idx=s.items.findIndex(x=>slotOf(x)===slot&&!x.spare);
     if(idx>=0){ const old=s.items[idx];
-      if(old.pin||itemVal(it)<=itemVal(old)){ if(canKeepSpare(s,it)){it.spare=true;s.items.push(it);s.lastEquipNote=old.pin?`📌 고정한 ${old.name}을(를) 착용 중이라 ${it.name}은(는) 예비 전설로 보관했다`:`${it.name}은(는) 착용품보다 약해 예비 전설로 보관했다 (신화 합성 재료)`;return true;}
-        if((it.grade||0)===3&&slotOf(it)){const sw=spareSwap(s,it);if(sw)return true;const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=`예비 전설 칸 ${SPARE_MAX}개가 가득 찼고 ${it.name}이(가) 그중 가장 약해 금화 ${g}에 팔았다`; return false;}
+      if(old.pin||itemVal(it)<=itemVal(old)){ if(canKeepSpare(s,it)){it.spare=true;s.items.push(it);s.lastEquipNote=old.pin?`📌 고정한 ${old.name}을(를) 착용 중이라 ${it.name}은(는) 예비로 보관했다`:`${it.name}은(는) 착용품보다 약해 예비로 보관했다 (신화 합성 재료)`;return true;}
+        if(keepable(it)){const sw=spareSwap(s,it);if(sw)return true;const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=`예비 칸 ${SPARE_MAX}개가 가득 찼고 ${it.name}이(가) 그중 가장 약해 금화 ${g}에 팔았다`; return false;}
         const g=sellPrice(s,it); s.gold+=g; s.lastEquipNote=old.pin?`📌 고정한 ${old.name}을(를) 착용 중이라 ${it.name}은(는) 금화 ${g}에 팔았다`:`이미 더 좋은 ${old.name}을(를) 착용 중이라 금화 ${g}에 팔았다`; return false; }
-      if(canKeepSpare(s,old)){ applyItem(s,old,-1); old.spare=true; s.lastEquipNote=`${old.name}을(를) 예비 전설로 돌리고 새 장비를 착용했다`; }
+      if(canKeepSpare(s,old)){ applyItem(s,old,-1); old.spare=true; s.lastEquipNote=`${old.name}을(를) 예비로 돌리고 새 장비를 착용했다`; }
       else { applyItem(s,old,-1); s.items.splice(idx,1); const g=sellPrice(s,old); s.gold+=g; s.lastEquipNote=`${old.name}을(를) 교체하고 금화 ${g}에 팔았다`; } } }
   applyItem(s,it,1); s.items.push(it); return true;
 }
-// 예비 전설 칸이 가득 찼을 때: 새 전설이 가장 약한 예비보다 좋으면(강화 수치 우선) 그 예비를 팔고 새 전설을 보관한다
-function spareSwap(s,it){const sp=s.items.filter(x=>x.spare);if(!sp.length)return false;const key=x=>(x.plus||0)*1e6+itemVal(x);let w=sp[0];for(const x of sp)if(key(x)<key(w))w=x;if(key(it)<=key(w))return false;
-  s.items.splice(s.items.indexOf(w),1);const g=sellPrice(s,w);s.gold+=g;it.spare=true;s.items.push(it);s.lastEquipNote=`예비 전설 칸이 가득 차 가장 약한 ${w.name}(+${w.plus||0})을(를) 금화 ${g}에 팔고 ${it.name}을(를) 예비로 보관했다`;return true;}
+// 예비 칸이 가득 찼을 때: 새 전설이 가장 약한 예비보다 좋으면(강화 수치 우선) 그 예비를 팔고 새 전설을 보관한다
+function spareSwap(s,it){const sp=s.items.filter(x=>x.spare);if(!sp.length)return false;const key=x=>(x.grade||0)*1e9+(x.plus||0)*1e6+itemVal(x);let w=sp[0];for(const x of sp)if(key(x)<key(w))w=x;if(key(it)<=key(w))return false;
+  s.items.splice(s.items.indexOf(w),1);const g=sellPrice(s,w);s.gold+=g;it.spare=true;s.items.push(it);s.lastEquipNote=`예비 칸이 가득 차 가장 약한 ${w.name}(+${w.plus||0})을(를) 금화 ${g}에 팔고 ${it.name}을(를) 예비로 보관했다`;return true;}
 // 예비 전설을 직접 착용한다(📌 고정: 더 높은 수치가 들어와도 자동 교체하지 않는다)
-function wearSpare(s,idx){const it=s.items[idx];if(!it||!it.spare||(it.grade||0)!==3)return false;const sl=slotOf(it);if(!sl)return false;
+function wearSpare(s,idx){const it=s.items[idx];if(!it||!it.spare||!keepable(it))return false;const sl=slotOf(it);if(!sl)return false;
   const cur=s.items.find(x=>slotOf(x)===sl&&!x.spare);
-  if(cur){applyItem(s,cur,-1);cur.pin=0;if((cur.grade||0)===3){cur.spare=true;}else{s.items.splice(s.items.indexOf(cur),1);s.gold+=sellPrice(s,cur);}}
+  if(cur){applyItem(s,cur,-1);cur.pin=0;if(keepable(cur)){cur.spare=true;}else{s.items.splice(s.items.indexOf(cur),1);s.gold+=sellPrice(s,cur);}}
   it.spare=false;it.pin=1;applyItem(s,it,1);return true;}
 // 고정을 푼다: 같은 부위에서 수치가 가장 높은 것으로 다시 자동 착용한다
 function unpinItem(s,idx){const it=s.items[idx];if(!it||!it.pin||it.spare)return false;it.pin=0;normSlots(s,applyItem);return true;}
@@ -353,18 +354,18 @@ const MINIONS=[
   ['되살아난 임프 군단','망령 기사단','죄악의 화신','공허 포식자 무리','원초의 그림자','거울 속의 나','지옥견 떼','타락한 성기사단'],
 ];
 const STAGES = [
-  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.18, regions:[
+  {name:'지상계', sub:'인간 세상에 숨어든 악마들', total:6660000, base:32, growth:1.185, regions:[
     ['동네 뒷산','임프 대장'],['시골 마을','타락한 촌장'],['항구 도시','바다 마귀'],['동아시아','구미호'],['동남아시아','정글의 락샤사'],
     ['남아시아','라바나의 후예'],['중동 사막','이프리트'],['북아프리카','모래 골렘왕'],['동유럽','흡혈 백작'],['서유럽','타락한 성기사장'],
     ['북유럽','서리 거인'],['시베리아','설원의 마왕'],['아메리카 대륙','웬디고'],['남극 빙하 아래','고대 악마'],['지옥문','케르베로스']]},
-  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.068, regions:[
+  {name:'지하 세계', sub:'지옥문 너머, 죽은 자의 땅', total:13320000, base:30, growth:1.092, regions:[
     ['망각의 강','뱃사공의 망령'],['비명의 숲','자살나무 정령'],['재의 평원','재의 기사'],['불타는 도시 디스','이단 심문관'],['얼음 호수','배신자들의 군주'],
     ['피의 강','켄타우로스 왕'],['역병의 늪','파리 대왕'],['거짓의 골짜기','기만의 대공'],['탐욕의 금고','금고지기'],['분노의 투기장','지옥 검투사'],
     ['교만의 첨탑','루시퍼의 그림자'],['지하 세계 왕좌','하데스의 섭정']]},
-  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.045, regions:[
+  {name:'마계', sub:'악마들이 태어나는 근원', total:26640000, base:30, growth:1.07, regions:[
     ['마계 1층 · 색욕','아스모데우스'],['마계 2층 · 탐식','벨제붑'],['마계 3층 · 탐욕','맘몬'],['마계 4층 · 나태','벨페고르'],
     ['마계 5층 · 질투','레비아탄'],['마계 6층 · 분노','사탄'],['마계 7층 · 교만','루시퍼'],['마계 핵','칠대죄의 합일체']]},
-  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.05, regions:[
+  {name:'심연', sub:'이름조차 없는 것들이 사는 곳', total:66600000, base:30, growth:1.07, regions:[
     ['무저갱의 가장자리','이름 없는 자'],['끝없는 낙하','공허 포식자'],['시간이 멈춘 곳','종말의 시계공'],['별이 꺼진 하늘','별을 삼킨 자'],
     ['심연의 눈','바라보는 자'],['원초의 혼돈','태초의 악']]},
   {name:'공허의 옥좌', sub:'모든 악의 시작과 끝', total:666000000, base:36, growth:1.15, regions:[
@@ -1196,7 +1197,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.13.0';
+const ENGINE_VERSION='1.14.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
@@ -1224,7 +1225,7 @@ function wbReward(s,arg){const m=WB_REWARD_RE.exec(String(arg));if(!m||s.dead||s
 // 저장 지점에도 즉시 반영한다 (불러와도 보상이 사라지지 않게)
 function wbRewardSync(s,arg,snap){const r=wbReward(s,arg);if(!r||!snap)return r;
   for(const g of r.got){if(g.it&&g.kept){const c=JSON.parse(JSON.stringify(g.it));c.spare=true;(snap.items=snap.items||[]).push(c);}}
-  normSlots(snap,snapApply);snap.items=snap.items.filter(x=>!(x.spare&&(x.grade||0)<3));
+  normSlots(snap,snapApply);snap.items=snap.items.filter(x=>!(x.spare&&!keepable(x)));
   snap.mythics=(s.mythics||[]).slice();snap.mythV=Object.assign({},s.mythV||{});snap.uidN=s.uidN;snap.wbGot=(s.wbGot||[]).slice();return r;}
 // 가문 유산: 출정할 때 한 번만 받는다 (기록 두 번째 줄 ['G','v3a2b2t2n1']). 서버는 그 계정이 산 유산 단계를 넘지 않는지 확인한다.
 const LEG_KEYS=['vault','arms','bless','train','name'];
