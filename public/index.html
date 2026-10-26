@@ -732,12 +732,12 @@ body.ob-inv .gearBody .pShop{display:block!important}
 .hrv.r0 .hrvRays{display:none}.hrv.r1.flip .hrvRays{opacity:.35}
 @keyframes hrSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
 .hrv.rH.flip .hrvRays{background:repeating-conic-gradient(#ff8a8a55 0 5deg,transparent 5deg 12deg,#ffe08a55 12deg 17deg,transparent 17deg 24deg,#8affc855 24deg 29deg,transparent 29deg 36deg,#8ad6ff55 36deg 41deg,transparent 41deg 48deg)}
-.hrvCard{position:relative;width:min(300px,78vw);aspect-ratio:3/4.9;perspective:1200px;transform:translateY(-60vh) rotate(-8deg);transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+.hrvCard{position:relative;width:min(300px,78vw);aspect-ratio:3/4.9;perspective:1200px;transform:translateY(-60vh) rotate(-8deg);transition:transform .25s cubic-bezier(.2,1.4,.4,1)}
 .hrv.in .hrvCard{transform:none}
 .hrv.shake:not(.flip) .hrvCard{animation:hrShake .12s linear infinite}
 .hrv.r3.shake:not(.flip) .hrvCard,.hrv.r4.shake:not(.flip) .hrvCard,.hrv.rH.shake:not(.flip) .hrvCard{animation-duration:.08s;filter:drop-shadow(0 0 22px var(--c1))}
 @keyframes hrShake{25%{transform:translateX(-3px) rotate(-1deg)}75%{transform:translateX(3px) rotate(1deg)}}
-.hcIn{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.3,.8,.3,1)}
+.hcIn{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .26s cubic-bezier(.3,.8,.3,1)}
 .hrv.flip .hcIn{transform:rotateY(180deg)}
 .hcBack,.hcFront{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;border:3px solid var(--c1);box-shadow:0 0 0 2px #0008,0 0 28px color-mix(in srgb,var(--c1) 60%,transparent),0 18px 40px #000c}
 .hcBack{background:repeating-linear-gradient(45deg,#2a1f34 0 10px,#231a2c 10px 20px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
@@ -1867,7 +1867,7 @@ async function issueSeed(){
   return {seed:(Math.random()*2**32)>>>0,token:null};
 }
 // 실제 주사위처럼 눈이 바뀌며 구르는 모션 (약 0.36초). 결과는 모션이 끝난 뒤 보여 준다.
-const DIE_ROLL_MS=360;
+const DIE_ROLL_MS=180;
 const PIPS={1:[[12,12]],2:[[7.5,7.5],[16.5,16.5]],3:[[7,7],[12,12],[17,17]],4:[[7.5,7.5],[16.5,7.5],[7.5,16.5],[16.5,16.5]],5:[[7,7],[17,7],[12,12],[7,17],[17,17]],6:[[7.5,6.5],[16.5,6.5],[7.5,12],[16.5,12],[7.5,17.5],[16.5,17.5]]};
 function dieInner(n){return `<rect x="2" y="2" width="20" height="20" rx="4.5" fill="#fff8e6" stroke="#f4b42c" stroke-width="1.6"/>${PIPS[n].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="${n===1?2.6:1.8}" fill="#2a1a00"/>`).join('')}`;}
 // 용사 초상: 그림은 종족 × 직업, 출신은 액자 색과 장식(문장·왕관)으로 표현. 히든 영웅은 개별 그림. 그림이 없으면 실루엣.
@@ -1920,9 +1920,9 @@ function heroReveal(h){const R=heroRarity(h);let o=$('hrv');if(!o){o=document.cr
    <div class="hrvBtns"><button type="button" class="btn" id="hrvGo">이 운명으로 출정</button><button type="button" class="btn ghost" id="hrvRe">🎲 다시 뽑기</button><button type="button" class="btn ghost" id="hrvOk">확인</button></div>
    <div class="hrvSkip">누르면 바로 넘어간다</div>`;
   o.hidden=false;void o.offsetWidth;o.classList.add('in');
-  const shake=R.k==='hid'||R.k>=3?900:R.k>=1?650:450;
-  const flip=()=>{if(o.classList.contains('flip'))return;o.classList.add('flip');hrvT.push(setTimeout(()=>o.classList.add('done'),520));};
-  hrvT.push(setTimeout(()=>o.classList.add('shake'),280));hrvT.push(setTimeout(flip,280+shake));
+  const shake=R.k==='hid'||R.k>=3?450:R.k>=1?320:220;
+  const flip=()=>{if(o.classList.contains('flip'))return;o.classList.add('flip');hrvT.push(setTimeout(()=>o.classList.add('done'),270));};
+  hrvT.push(setTimeout(()=>o.classList.add('shake'),150));hrvT.push(setTimeout(flip,150+shake));
   o.onclick=e=>{if(e.target.closest('button'))return;if(!o.classList.contains('flip')){hrvT.forEach(clearTimeout);hrvT=[];flip();}else if(o.classList.contains('done'))hrvClose();};
   $('hrvOk').onclick=()=>hrvClose();
   $('hrvRe').onclick=()=>{const rb=$('rollBtn2');if(rb&&rb.disabled)return;$('hrvRe').disabled=true;const ov=$('hrv');hrvT.forEach(clearTimeout);hrvT=[];ov.hidden=true;ov.className='hrv';ov.innerHTML='';newHero();};
