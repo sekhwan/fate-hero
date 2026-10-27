@@ -1209,7 +1209,7 @@ body.inRun .progStrip{padding-top:4px;padding-bottom:4px}
 body.inRun .topRow{display:flex;align-items:center;gap:8px;margin:6px 0 0}
 body.inRun .topRow .stages{order:1;flex:0 1 auto;margin:0!important;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:4px}
 body.inRun .topRow .stages::-webkit-scrollbar{display:none}
-body.inRun .topRow .stages>*{padding:4px 10px!important;font-size:12px!important;white-space:nowrap;flex:none}
+body.inRun .topRow .stages>*{padding:6px 12px!important;min-width:84px;font-size:12px!important;white-space:nowrap;flex:none}
 body.inRun .topRow .stages>* small{display:none}
 body.inRun .topRow .stages>*[aria-pressed="true"] small{display:inline;font-size:10.5px}
 body.inRun .topRow .wbBar{order:2;flex:1 1 280px;min-width:0;margin:0!important;padding:2px 6px!important;gap:6px}
@@ -1479,6 +1479,65 @@ body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun 
 .lbS.r em.lbPl{align-items:flex-end}.lbS.l em.lbPl{align-items:flex-start}
 .lbS.g3 em.lbPl{border-color:#c07a2a}.lbS.g2 em.lbPl{border-color:#7a4ab0}.lbS.g1 em.lbPl{border-color:#3a6aa8}
 .lbS{z-index:2}
+/* ================= UI 그림 적용 (10·11·12차) ================= */
+/* --- 장비판 --- */
+.lbBoard{background:url('art/ui2/gear_board_bg.webp') center/100% 100% no-repeat!important;border:0!important;box-shadow:0 3px 10px rgba(0,0,0,.6)!important}
+.lbSil{position:absolute;left:50%;top:14px;height:350px!important;width:auto;transform:translateX(-50%);opacity:.95;z-index:1;filter:drop-shadow(0 6px 10px rgba(0,0,0,.7));pointer-events:none}
+.lbS{border:0!important;border-radius:4px!important;background:url('art/ui2/gear_slot.webp') center/100% 100% no-repeat!important;box-shadow:none!important}
+.lbS.empty{background-image:url('art/ui2/gear_slot_empty.webp')!important;border:0!important;opacity:.85}
+.lbS .lbI img{width:34px!important;height:34px!important}
+.lbS.g1{box-shadow:0 0 0 2px rgba(74,140,255,.85)!important}
+.lbS.g2{box-shadow:0 0 0 2px rgba(180,107,255,.9),0 0 8px rgba(180,107,255,.55)!important}
+.lbS.g3{box-shadow:0 0 0 2px rgba(255,150,40,.95),0 0 12px rgba(255,150,40,.7)!important}
+.lbS.sel{outline:2px solid #fff!important;outline-offset:2px}
+.lbS em.lbPl{background:url('art/ui2/gear_plaque.webp') center/100% 100% no-repeat!important;border:0!important;box-shadow:0 2px 4px rgba(0,0,0,.6)!important;padding:3px 10px 4px!important;border-radius:0!important;margin-top:1px!important}
+.lbBag{background:url('art/ui2/gear_bag_bar.webp') center/100% 100% no-repeat;padding:6px 6px;gap:6px!important}
+.lbBag .lbS{background-image:url('art/ui2/gear_slot.webp')!important}.lbBag .lbS.empty{background-image:url('art/ui2/gear_slot_empty.webp')!important}
+.lbArr{width:22px!important;border:0!important;background:url('art/ui2/gear_arrow.webp') center/contain no-repeat!important;font-size:0}
+.lbArr.l{transform:scaleX(-1)}
+/* 강화·판매·착용 버튼 */
+.irow .ib button.enh,.irow .ib button.sell,.irow .ib button.wear{position:relative;min-width:82px;height:34px;padding:0 10px 0 34px!important;border:0!important;background:url('art/ui2/btn_sell.webp') center/100% 100% no-repeat!important;color:#f3e2c0!important;font-weight:800;font-size:12.5px!important;text-shadow:0 1px 2px #000;box-shadow:none!important;width:auto!important}
+.irow .ib button.enh{background-image:url('art/ui2/btn_enhance.webp')!important;color:#fff3dc!important}
+.irow .ib button.enh:not([disabled]):hover{background-image:url('art/ui2/btn_enhance_hover.webp')!important}
+.irow .ib button.wear{background-image:url('art/ui2/btn_wear.webp')!important}
+.irow .ib button[disabled]{filter:grayscale(.8) brightness(.6);opacity:1!important}
+.irow .ib button:not([disabled]):hover{filter:brightness(1.15)}
+.irow .ib button.enh.boosted{box-shadow:none!important}.irow .ib button.enh.boosted::before{content:"";position:absolute;inset:2px;border-radius:6px;box-shadow:0 0 8px rgba(120,230,140,.6);pointer-events:none}
+/* --- 용사 명부 --- */
+.roster{background:url('art/ui2/roster_bg.webp') center top/100% auto repeat-y!important}
+.roster .portrait{position:relative;overflow:visible!important}
+.roster .portrait .pFrame{position:absolute;inset:-6px -6px -2px;width:calc(100% + 12px)!important;height:calc(100% + 8px)!important;z-index:3;object-fit:fill!important;-webkit-mask-image:none!important;mask-image:none!important;pointer-events:none}
+.roster .portrait .ptag{z-index:4}
+.roster .core>div,.roster .merc,.roster .skills .role{border:0!important;background:url('art/ui2/roster_plate.webp') center/100% 100% no-repeat!important}
+.roster .core>div{padding:5px 8px!important}
+.roster .pwIc{width:15px!important;height:15px!important;display:inline-block!important;vertical-align:-3px;margin-right:2px}
+.roster .stat span{display:flex;align-items:center;gap:3px}.stIc{width:18px;height:18px;object-fit:contain;flex:none}
+.rlIc{width:20px;height:20px;object-fit:contain;vertical-align:-5px;margin-right:4px}
+.roster .skills .role>span{display:flex;align-items:center;white-space:nowrap}
+.mst{display:inline-flex;gap:0;margin-left:3px}.mst img{width:13px;height:13px}
+.cbIc{width:18px;height:18px;vertical-align:-4px;margin-right:4px}
+#cmbHead{white-space:nowrap;display:flex;align-items:center;gap:4px}#cmbHead .cmbHint{margin-left:auto}
+.roster .cmbBox{border:0!important;background:url('art/ui2/roster_plate.webp') center/100% 100% no-repeat!important}
+.roster .hp .bar,.roster .xp .bar{position:relative;background:#0d0a08!important;border:0!important;height:9px!important;border-radius:4px}
+.roster .hp .bar::after,.roster .xp .bar::after{content:"";position:absolute;inset:-4px -6px;background:url('art/ui2/bar_frame.webp') center/100% 100% no-repeat;pointer-events:none}
+.roster .skills h4,.roster .party h4,.roster .pvpBox h4{padding-top:8px;background:url('art/ui2/roster_divider.webp') center top/100% 8px no-repeat}
+.roster .pchips .pc{position:relative;height:74px;display:flex!important;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 2px 4px!important;border:0!important;background:url('art/ui2/comp_empty.webp') center/100% 100% no-repeat!important;color:#a89a88!important;text-align:center;white-space:normal!important;font-size:10px!important;line-height:1.1}
+.roster .pchips .pc.on{background:linear-gradient(transparent 58%,rgba(0,0,0,.6) 80%),url('art/ui2/comp_slot.webp') center/100% 100% no-repeat,var(--ci,none) center 30%/72% auto no-repeat,#140e08!important;color:#fff2d8!important}
+.roster .pchips .pc i{font-style:normal;font-size:9px;color:#c9b089}
+/* --- 상단 띠: 세계 탭 --- */
+.stages .stage[data-w]{position:relative;border:0!important;min-height:34px;padding:6px 12px!important;background:url('art/ui2/tab_frame.webp') center/100% 100% no-repeat,linear-gradient(90deg,rgba(0,0,0,.55),rgba(0,0,0,.1) 70%),var(--tw) center/cover no-repeat!important;text-shadow:0 1px 3px #000,0 0 4px #000,0 0 8px #000}
+.stages .stage[data-w="1"]{--tw:url('art/ui2/tab_world1.webp')}.stages .stage[data-w="2"]{--tw:url('art/ui2/tab_world2.webp')}.stages .stage[data-w="3"]{--tw:url('art/ui2/tab_world3.webp')}.stages .stage[data-w="4"]{--tw:url('art/ui2/tab_world4.webp')}.stages .stage[data-w="5"]{--tw:url('art/ui2/tab_world5.webp')}.stages .stage[data-w="6"]{--tw:url('art/ui2/tab_world6.webp')}
+.stages .stage[data-w][aria-pressed="true"]{background:url('art/ui2/tab_frame_on.webp') center/100% 100% no-repeat,linear-gradient(90deg,rgba(0,0,0,.4),transparent 70%),var(--tw) center/cover no-repeat!important;box-shadow:0 0 10px rgba(255,200,90,.45)}
+.stages .stage[data-w]>b{color:#fff2d8!important}.stages .stage[data-w] small{color:#e8dcc0!important}
+.stages .stage[data-w]:disabled:not([aria-pressed="true"]){filter:grayscale(.75) brightness(.8)}
+/* --- 월드 보스 줄 --- */
+.wbBar{background:linear-gradient(90deg,rgba(30,8,6,.85),rgba(16,10,12,.85))!important;border:0!important}
+.wbHp{height:16px!important;border:0!important;background:#120606!important;overflow:visible!important;border-radius:3px}
+.wbHp i{background:url('art/ui2/wb_bar_fill.webp') left center/auto 100% repeat-x!important;border-radius:3px}
+.wbHp::after{content:"";position:absolute;inset:-6px -10px;background:url('art/ui2/wb_bar_frame.webp') center/100% 100% no-repeat;pointer-events:none;z-index:2}
+.wbAtk{border:0!important;background:url('art/ui2/btn_attack.webp') center/100% 100% no-repeat!important;padding:0 14px 0 40px!important;min-width:104px;height:32px;color:#fff3dc!important;text-shadow:0 1px 2px #000;animation:none!important}
+.wbAtk:hover{background-image:url('art/ui2/btn_attack_hover.webp')!important;filter:none!important}
+.wbAtk.cd{filter:grayscale(.8) brightness(.7)}
 /* ===== 한 화면 레이아웃: 출정 중에는 머리말과 전투 화면을 압축해 선택지가 스크롤 없이 보이게 ===== */
 body.inRun header.hb{min-height:0!important;padding:10px 18px 10px!important}
 body.inRun header.hb h1{font-size:clamp(24px,2.6vw,32px)!important;line-height:1.05}
@@ -1569,10 +1628,10 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
         <dt>출신</dt><dd id="hWealth"></dd>
       </dl><div class="deals" id="hDeals"></div></div><div class="portrait" id="hPortrait" aria-hidden="true"></div></div>
       <div id="hTraits" hidden></div>
-      <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
+      <div class="cmbBox" id="cmbBox"><h4 tabindex="0" id="cmbHead"><img class="cbIc" src="art/ui2/ic_combo.webp" alt="">조합 <span id="cmbSum"></span><span class="cmbHint">마우스를 올리면 펼침 ▾</span></h4><div id="hCombo"></div></div>
       <div class="hp"><div class="row"><span>생명력</span><b id="hpTxt"></b></div><div class="bar"><i id="hpBar"></i></div></div>
       <div class="xp"><div class="row"><span>레벨 <b id="xpLv">1</b></span><em id="xpTxt"></em></div><div class="bar"><i id="xpBar"></i></div></div>
-      <div class="core"><div class="pw"><span>전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><div class="ic"><img class="rIco" src="art/res_fame.webp" alt=""><b id="fameNum">0</b></div><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><img class="rIco" src="art/res_gold.webp" alt=""><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><img class="rIco" src="art/res_revive.webp" alt=""><b id="mRev">0</b></div></div></div>
+      <div class="core"><div class="pw"><span><img class="pwIc" src="art/ui2/ic_power.webp" alt="">전투력</span><b id="hPower">0</b></div><div class="fm"><span>명성</span><div class="ic"><img class="rIco" src="art/res_fame.webp" alt=""><b id="fameNum">0</b></div><em id="fameTitle">무명</em></div><div class="gd"><span>금화</span><div class="ic"><img class="rIco" src="art/res_gold.webp" alt=""><b id="mGold">0</b></div></div><div class="rv" id="rvBox"><span>남은 부활</span><div class="ic"><img class="rIco" src="art/res_revive.webp" alt=""><b id="mRev">0</b></div></div></div>
       <div class="merc" id="mercBox"><img class="rIco" src="art/res_merc.webp" alt=""><span>용병</span><b id="mAlly">0</b><em id="mercTxt"></em></div>
       <div class="stats" id="hStats"></div>
       <div class="skills"><h4>스킬 <span style="float:right;font-weight:400">계열 랭크 3·6에서 숙련 ★</span></h4><div id="skillBox"></div></div>
@@ -2111,7 +2170,7 @@ function renderPortrait(h){const el=$('hPortrait');if(!el)return;const k=portrai
   el.className='portrait t'+t+(h.hidden?' hid':'');el.title=`${h.race.name} ${h.job} · ${h.wealth.name}`;
   if(el.dataset.k===String(k))return;el.dataset.k=String(k);
   const cr=h.hidden?'✦':PORTRAIT_CREST[t];
-  el.innerHTML=(k?`<img src="hero/${k}.webp" alt="" decoding="async" onerror="this.remove()">`:'')+`<span class="pfb">${SIL}</span>${cr?`<span class="pcrest">${cr}</span>`:''}<span class="ptag">${esc(h.wealth.name)}</span>`;
+  el.innerHTML='<img class="pFrame" src="art/ui2/portrait_frame.webp" alt="">'+(k?`<img src="hero/${k}.webp" alt="" decoding="async" onerror="this.remove()">`:'')+`<span class="pfb">${SIL}</span>${cr?`<span class="pcrest">${cr}</span>`:''}<span class="ptag">${esc(h.wealth.name)}</span>`;
   const im=el.querySelector('img');if(im)im.onload=()=>{const f=el.querySelector('.pfb');if(f)f.remove();};}
 function dieSvg(n){return `<svg class="die" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">${dieInner(n)}</svg>`;}
 // 주사위 1개가 구르다 무작위 눈으로 멈춘다 (영웅 능력치와는 무관한 연출)
@@ -2356,7 +2415,7 @@ const WCOL=['#78c27a','#4fb3c8','#e0644f','#a47be0','#d9d6ea','#e2b04a'];
 
 function renderStages(){
   const nav=$('stages');nav.innerHTML='';const busy=run&&!run.dead&&!run.over;
-  STAGES.forEach((s,i)=>{if(s.hunt!=null)return;if(!OB.full&&(s.endless?!(conq[4]||best[i]):i>unlocked+1))return;const b=document.createElement('button');b.className='stage';b.type='button';b.style.setProperty('--wc',WCOL[i]||'');
+  STAGES.forEach((s,i)=>{if(s.hunt!=null)return;if(!OB.full&&(s.endless?!(conq[4]||best[i]):i>unlocked+1))return;const b=document.createElement('button');b.className='stage';b.type='button';b.dataset.w=s.endless?6:Math.min(5,i+1);b.style.setProperty('--wc',WCOL[i]||'');
     if(s.endless){b.setAttribute('aria-pressed',i===stage);b.disabled=true;b.title='공허의 옥좌를 정복한 용사만 이어서 들어갈 수 있다';
       b.innerHTML=`<b>∞ ${s.name}</b> <small>${best[i]?'최고 '+best[i]+'층':conq[4]?'정복한 용사로 입장':'잠김'}</small>`;nav.appendChild(b);return;}
     b.setAttribute('aria-pressed',i===stage);b.disabled=i!==0||busy;b.title=i===0?'':'새 용사는 지상계에서만 출정한다. 정복한 용사로 이어서 들어갈 수 있다.';
@@ -2370,9 +2429,7 @@ async function newHero(first){enhMsg='';store.set('rolls',store.get('rolls',0)+1
 const DOLL=[['int','머리','지능',96,6],['cha','목걸이','매력',236,40],['con','갑옷','체력',162,118],['str','무기','힘',14,80],['mult','인장','전투력',14,172],['flee','망토','도망',14,264],['win','깃발','승률',310,118],['luk','부적','행운',310,210],['agi','신발','민첩',162,296]];
 let gearSel=null,bagOff=0,gearCard=false;
 // 붉은 망토를 두른 영웅 실루엣 (직접 그린 도형)
-const LB_SIL=`<svg class="lbSil" viewBox="0 0 200 330" aria-hidden="true"><defs><linearGradient id="lbCl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a3161a"/><stop offset=".6" stop-color="#7a0d10"/><stop offset="1" stop-color="#4a0608"/></linearGradient></defs>
-<path d="M100 18c13 0 23 10 23 24 0 10-5 18-12 22l1 8c18 4 32 12 40 24l14 40c4 12-2 18-10 16l-12-30 4 60 22 110c2 10-4 16-14 14l-40-6-16 4-16-4-40 6c-10 2-16-4-14-14l22-110 4-60-12 30c-8 2-14-4-10-16l14-40c8-12 22-20 40-24l1-8c-7-4-12-12-12-22 0-14 10-24 23-24z" fill="url(#lbCl)" stroke="#d8a84a" stroke-width="2.5" stroke-linejoin="round"/>
-<path d="M78 92c8 30 8 70 2 120M122 92c-8 30-8 70-2 120" fill="none" stroke="#3a0406" stroke-width="2" opacity=".6"/></svg>`;
+const LB_SIL=`<img class="lbSil" src="art/ui2/gear_silhouette.webp" alt="" aria-hidden="true">`;
 function nmShort(it){const sl=slotOf(it);if(it.tier&&TIER_NOUN[it.tier]&&TIER_NOUN[it.tier][sl])return TIER_NOUN[it.tier][sl];const w=String(it.name||'').split(' ');return w[w.length-1];}
 function stShort(it){return itemDesc0(it).replace('승리확률','승률').replace('도망 확률','도망').replace('전투력','전투').replace(/\s+/g,'');}
 // 신화 합성 세로 띠: 장비판 오른쪽. 누르면 합성 판이 장비판 위에 겹쳐 열린다
@@ -2388,7 +2445,7 @@ function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spar
     if(!x)return `<div class="lbS empty${sd}" style="${pos}" title="${d[1]} · ${d[2]} (비어 있음)"><span class="lbI">${ITEM_ICON[d[0]]||''}</span><em>${d[1]}</em></div>`;
     const r=rowOf[x.idx];return `<button type="button" class="lbS${sd} g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" style="${pos}" data-gs="${x.idx}"${tipAttr(itemName(x.it),r?r.tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}${x.it.aff&&x.it.aff.length?'<i class="lbA">✦</i>':''}${x.it.pin?'<i class="lbPin">📌</i>':''}<em class="lbPl"><i class="lbNm g${x.it.grade||0}">${esc(x.it.name)}</i><b>${stShort(x.it)}</b></em></button>`;};
   const per=5,maxOff=Math.max(0,sp.length-per);bagOff=Math.min(bagOff,maxOff);
-  const bag=`<div class="lbBag"><button type="button" class="lbArr" data-bag="-1" ${bagOff<=0?'disabled':''}>◀</button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''}>▶</button></div>`;
+  const bag=`<div class="lbBag"><button type="button" class="lbArr l" data-bag="-1" ${bagOff<=0?'disabled':''} aria-label="이전"></button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''} aria-label="다음"></button></div>`;
   const selRow=gearSel!=null&&rowOf[gearSel]?rowOf[gearSel].h:'';
   return `<div class="lbInfo top">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div><div class="lbRow"><div class="lbBoard">${LB_SIL}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div>${mythRibbon()}</div><div class="lbBagL">예비 장비 ${sp.length}/${SPARE_MAX}</div>${bag}`;}
 function renderHero(){
@@ -2411,19 +2468,20 @@ function renderHero(){
    $('xpTxt').textContent=`경험치 ${Math.floor(xp)} / ${need} · 다음 스킬 Lv ${nextPickLevel(lv)}`;}
   {const rr=raceRel(h.race.name);$('hRaceRel').innerHTML=rr?`종족 상성: <b class="s">${esc(rr.strong)}</b>에 강함 · <b class="w">${esc(rr.weak)}</b>에 약함 (약하면 PvP 스탯 -20%)`:'종족 상성 없음';}
   $('hStats').innerHTML=STAT_KEYS.map(k=>{const v=st[k],w=Math.min(100,v/30*100),c=v>=16?'hi':v<=7?'lo':'';const up=prevStats&&v>prevStats[k];
-    return `<div class="stat"><span>${STAT_NAMES[k]}</span><div class="bar"><i class="${c}" style="width:${w}%"></i></div><b class="${up?'up':''}">${v}</b></div>`}).join('');
+    return `<div class="stat"><span><img class="stIc" src="art/ui2/ic_stat_${k}.webp" alt="">${STAT_NAMES[k]}</span><div class="bar"><i class="${c}" style="width:${w}%"></i></div><b class="${up?'up':''}">${v}</b></div>`}).join('');
   const tmp=run||newRun(h,stage,1);
   $('hpTxt').textContent=`${Math.max(0,tmp.hp)} / ${tmp.maxHp}`;
   const hb=$('hpBar');hb.style.width=(Math.max(0,tmp.hp)/tmp.maxHp*100)+'%';hb.className=tmp.hp/tmp.maxHp<0.35?'low':'';
   $('fameNum').textContent=fmt(tmp.fame); $('fameTitle').textContent=fameTitle(tmp.fame);
   const slots=[[hSlot(tmp.hero),'heroine','명성 30 이상일 때만 만날 수 있다'],['친구','friend','길 위에서 우연히 만난다'],['펫','pet','길 위에서 우연히 만난다']];
-  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];return `<span class="pc ${c?'on':''}${c&&c.rare?' rare':''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}${c&&COMP_IMG[c.name]?` data-ti="${COMP_IMG[c.name]}"`:''}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
-    `<span class="pc ${tmp.spouse?'on':''}${tmp.spouseC&&tmp.spouseC.rare?' rare':''}"${tmp.spouse&&COMP_IMG[tmp.spouse]?` data-ti="${COMP_IMG[tmp.spouse]}"`:''}${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
+  $('party').innerHTML=slots.map(([l,k,hint])=>{const c=tmp.comp[k];const ci=c&&COMP_IMG[c.name];return `<span class="pc ${c?'on':''}${c&&c.rare?' rare':''}" style="${ci?`--ci:url('${ci}')`:''}"${tipAttr(c?c.name+' · '+l:l,c?[c.d]:[hint])}${c&&COMP_IMG[c.name]?` data-ti="${COMP_IMG[c.name]}"`:''}><i>${l}</i>${c?esc(c.name):'없음'}</span>`}).join('')+
+    `<span class="pc ${tmp.spouse?'on':''}${tmp.spouseC&&tmp.spouseC.rare?' rare':''}" style="${tmp.spouse&&COMP_IMG[tmp.spouse]?`--ci:url('${COMP_IMG[tmp.spouse]}')`:''}"${tmp.spouse&&COMP_IMG[tmp.spouse]?` data-ti="${COMP_IMG[tmp.spouse]}"`:''}${tipAttr(tmp.spouse?tmp.spouse+' · 배우자':'배우자',[tmp.spouse?(tmp.spouseC?tmp.spouseC.d:'전투력 +15%'):'의뢰를 완수하면 의뢰인이 혼담을 주선할 때가 있다. 배우자 후보는 10명이고 효과가 저마다 다르다'])}><i>배우자</i>${tmp.spouse?esc(tmp.spouse):'없음'}</span>`;
+  const ROLE_IC={'전투':'battle','생존':'survive','성장':'growth','재물':'wealth'};
   $('skillBox').innerHTML=ROLES.map(role=>{const rk=roleRanks(tmp,role),m=mastery(tmp,role);const mine=SKILLS.filter(k=>k.role===role&&sk(tmp,k.id));
     const bar=Array.from({length:SKV.mT2},(_,i)=>`<i class="${i<rk?'f':''}"></i>`).join('');
     const tip=(m?`숙련 ${m}단계: ${MASTERY[role](m)}\n`:'')+(m<2?`다음 숙련(랭크 ${m?SKV.mT2:SKV.mT1}): ${MASTERY[role](m+1)}`:'최고 숙련');
     const chips=mine.map(k=>{const rk2=sk(tmp,k.id);return `<em${tipAttr(`${k.name} ${rk2}랭크 · ${k.role}`,[`현재: ${k.d(rk2)}`,rk2<SK_MAX?`다음 랭크: ${k.d(rk2+1)}`:'최고 랭크'])}>${k.name}${rk2>1?' '+rk2:''}</em>`;}).join('');
-    return `<div class="role ${m?'on':''}"${tipAttr(role+' 계열 숙련',tip.split('\n'))}><span>${role}${m?`<b>★${m}</b>`:''}</span><div class="sks">${mine.length?chips:'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
+    return `<div class="role ${m?'on':''}"${tipAttr(role+' 계열 숙련',tip.split('\n'))}><span><img class="rlIc" src="art/ui2/ic_role_${ROLE_IC[role]||'battle'}.webp" alt="">${role}${m?`<b class="mst">${'<img src="art/ui2/ic_mastery_star.webp" alt="★">'.repeat(m)}</b>`:''}</span><div class="sks">${mine.length?chips:'<small>없음</small>'}</div><span class="cnt">${rk}/${m?SKV.mT2:SKV.mT1}</span></div>`;}).join('');
   $('mLvl').textContent=tmp.lvl; $('mGold').textContent=fmtS(tmp.gold); $('mKill').textContent=fmt(tmp.kills||0); {const rvn=revives(tmp);$('mRev').textContent=rvn+'회';$('rvBox').classList.toggle('zero',!rvn);} $('mAlly').textContent=tmp.allies+' / '+mercCap(tmp);$('mercTxt').textContent=`1명당 전투력 +${Math.round(mercPer(tmp)*100)}% · 지금 +${Math.round(mercPer(tmp)*tmp.allies*100)}%`;
   const its=run?run.items:[]; const rv=tmp.revive;
   const canSell=run&&!run.dead&&!run.over;
