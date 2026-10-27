@@ -206,10 +206,10 @@ function itemNameOf(k,grade,tier){return tier?`${TIER_PRE[tier][grade]} ${TIER_N
 // 전설 추가 옵션: 기본 옵션(주 능력치) 외에 무작위 1~2개. 전투력에 직접 곱해지지 않는 것만 둔다(인플레 방지)
 // [키, 이름, 최소, 최대, 단위('%p' 또는 '%'), 착용 전설 합계 상한]
 const AFF=[['boss','지배자전 승률',0.02,0.05,'%p',0.15],['xp','경험치',0.05,0.15,'%',0.6],['gold','금화 획득',0.08,0.20,'%',0.6],['fame','명성 획득',0.08,0.20,'%',0.6],
-  ['talk','회유 확률',0.03,0.08,'%p',0.2],['flee','도망 확률',0.04,0.10,'%p',0.25],['enh','강화 성공률',0.02,0.05,'%p',0.1],['leg','전설 발견',0.10,0.25,'%',0.75],
+  ['talk','회유 확률',0.03,0.08,'%p',0.2],['flee','도망 확률',0.04,0.10,'%p',0.25],['enh','강화 성공률',0.001,0.01,'%p',Infinity],['leg','전설 발견',0.10,0.25,'%',0.75],
   ['sk','스킬 공격',0.02,0.05,'%p',0.12],['dmg','패배 피해 감소',0.05,0.12,'%',0.3]];
 const AFF_BY={};AFF.forEach(a=>AFF_BY[a[0]]=a);
-function rollAff(r,grade){if(grade===2){if(r()>=0.6)return [];const a=AFF[Math.floor(r()*AFF.length)];const v=Math.round((a[2]+(a[3]-a[2])*r())*2*1000)/1000;return [{k:a[0],v}];}const n=r()<0.5?1:2;const pool=AFF.map(a=>a[0]);const out=[];for(let i=0;i<n;i++){const k=pool.splice(Math.floor(r()*pool.length),1)[0];const a=AFF_BY[k];const v=Math.round((a[2]+(a[3]-a[2])*r())*1000)/1000;out.push({k,v});}return out;}
+function rollAff(r,grade){if(grade===2){if(r()>=0.6)return [];const a=AFF[Math.floor(r()*AFF.length)];const v=Math.round((a[2]+(a[3]-a[2])*r())*(a[0]==='enh'?1:2)*1000)/1000;return [{k:a[0],v}];}const n=r()<0.5?1:2;const pool=AFF.map(a=>a[0]);const out=[];for(let i=0;i<n;i++){const k=pool.splice(Math.floor(r()*pool.length),1)[0];const a=AFF_BY[k];const v=Math.round((a[2]+(a[3]-a[2])*r())*1000)/1000;out.push({k,v});}return out;}
 function affTxt1(x){const a=AFF_BY[x.k];if(!a)return '';const pv=x.v*100;return `${a[1]} ${x.k==='dmg'?'-':'+'}${pv<10?pv.toFixed(1).replace(/\.0$/,''):Math.round(pv)}${a[4]}`;}
 function affTxt(it){return it&&it.aff&&it.aff.length?it.aff.map(affTxt1).join(' · '):'';}
 // 착용 중인(예비 아닌) 전설의 추가 옵션 합계(상한 적용)
@@ -1197,7 +1197,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.14.0';
+const ENGINE_VERSION='1.15.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
