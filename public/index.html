@@ -1524,6 +1524,15 @@ body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun 
 .lbInfo.top .irow{flex-wrap:wrap!important;row-gap:4px!important}.lbInfo.top .irow .iic{flex:none}.lbInfo.top .irow .in{flex:1 1 190px!important}.lbInfo.top .irow .ib{margin-left:auto}
 .lbInfo.top .irow .ib{flex-direction:row!important;gap:4px!important;align-items:center}
 .lbInfo.top .irow .ib button.enh,.lbInfo.top .irow .ib button.sell,.lbInfo.top .irow .ib button.wear{width:72px!important;min-width:72px!important;height:30px!important;padding:0 4px 0 27px!important;font-size:12px!important;letter-spacing:1px;margin:0!important}
+
+/* 상점 칸 크기 고정 (글자 수와 무관) */
+.ware{height:128px;box-sizing:border-box;overflow:hidden}
+.ware .wn{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ware .wd{flex:none!important;height:30px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ware .wbody{flex:1;min-height:0}
+.ware .wneed{height:14px;line-height:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.autoNote{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:26px;box-sizing:border-box;line-height:16px}
+.autoNote.emp{visibility:hidden}
 /* --- 용사 명부 --- */
 .roster{background:url('art/ui2/roster_bg.webp') center top/100% auto repeat-y!important}
 .roster .portrait{position:relative;overflow:visible!important}
@@ -2559,7 +2568,7 @@ function renderShop(t){
   {const hasLeg=run.shop.some(o=>!o.sold&&o.item.grade===3);$('shopTitle').innerHTML=`${esc(STAGES[stage].regions[run.region][0])}의 상인${hasLeg?'<span class="shopLegend">★ 전설 입고</span>':''}`;const gt=document.querySelector('.gtShop');if(gt)gt.classList.toggle('hasLeg',hasLeg);}
   const COIN='<img class="cn rI" src="art/res_gold.webp" alt="">',STAR='<img class="cn rI" src="art/res_fame.webp" alt="">';
   const auto=run.shop.filter(o=>o.item.heal||o.item.revive);
-  const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'';
+  const autoNote=auto.length?`<div class="autoNote">${auto.map(o=>`${itemIcon(o.item)} ${o.item.name} ${o.sold?'<b>자동 구매함</b>':`· ${o.cur==='gold'?'금화':'명성'} ${fmtS(o.price)}, 하나도 없을 때 자동으로 산다`}`).join(' &nbsp;·&nbsp; ')}</div>`:'<div class="autoNote emp">&nbsp;</div>';
   box.innerHTML='<div class="wares">'+run.shop.map((o,i)=>{if(o.item.heal||o.item.revive)return '';const it=o.item,g=GRADES[it.grade||0];const have=o.cur==='gold'?run.gold:run.fame;
     const up0=wouldUpgrade(run,it),spk=!up0&&(canKeepSpare(run,it)||shopLegend(it)),up=up0||spk,full=holdFull(run,it),poor=have<o.price;
     const tag=o.sold?'':full?'<em class="wt no">이미 지님</em>':up0?'<em class="wt up" title="착용품보다 좋음">▲ 더 좋음</em>':spk?'<em class="wt sp" title="예비 전설로 보관">예비 보관</em>':'<em class="wt no" title="보유품이 더 좋음">보유품 우위</em>';
@@ -2567,9 +2576,9 @@ function renderShop(t){
     return `<div class="ware g${it.grade||0} ${o.sold?'sold':''}" title="${esc(g.name+(it.tier?' · '+TIER_NAME[it.tier]:''))}">
       <div class="wtop"><span class="gb">${g.name}</span>${tag}</div>
       <div class="wbody"><div class="wico">${itemIcon(it)}</div><div class="wtx">
-      <div class="wn nm g${it.grade||0}">${it.name}</div><div class="wd">${esc(itemTxt(run,it))}</div></div></div>
+      <div class="wn nm g${it.grade||0}" title="${esc(it.name)}">${it.name}</div><div class="wd">${esc(itemTxt(run,it))}</div></div></div>
       <button type="button" class="buy c-${o.cur}" data-buy="${i}" ${dis?'disabled':''}>${o.sold?'판매 완료':`<span>구매</span><b>${o.cur==='gold'?COIN:STAR}${fmtS(o.price)}</b>`}</button>
-      ${!o.sold&&poor&&up&&!full?`<div class="wneed">${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다</div>`:''}</div>`;}).join('')+'</div>'+autoNote;
+      <div class="wneed">${!o.sold&&poor&&up&&!full?`${o.cur==='gold'?'금화':'명성'}가 ${fmtS(o.price-have)} 모자라다`:''}</div></div>`;}).join('')+'</div>'+autoNote;
   box.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{const ix=+b.dataset.buy;const it=buy(run,ix);if(it){if((it.grade||0)===3){gdAct('buyLeg');GD.done.leg=1;gdSave();}gdAct('buy');logAct(['b',ix]);logBuy([it]);renderAll();flushCombos();}});
 }
 let enhMsg='';
