@@ -21,7 +21,7 @@ jobs:
       SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: latest
       - name: link
@@ -57,7 +57,7 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: latest
       - name: config.js (공개 키를 Supabase에서 직접 받아 넣는다)
@@ -88,7 +88,7 @@ jobs:
       - if: steps.chk.outputs.go == '1'
         uses: actions/checkout@v4
       - if: steps.chk.outputs.go == '1'
-        uses: supabase/setup-cli@v1
+        uses: supabase/setup-cli@v3
         with:
           version: latest
       - if: steps.chk.outputs.go == '1'
@@ -114,7 +114,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - uses: supabase/setup-cli@v1
+      - uses: supabase/setup-cli@v3
         with:
           version: latest
       - name: 실제 서버로 한 판 등록해 보고 지운다
