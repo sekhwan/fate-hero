@@ -1663,6 +1663,28 @@ body.inRun .hbHold:hover .hbTab,body.inRun .hbHold.open .hbTab{visibility:hidden
 .tipBox.et .etP span.add{color:#9fd8ff;border-color:rgba(120,190,255,.35)}
 .tipBox.et .bad{color:#ff8a7a!important;font-weight:700}.tipBox.et .ok{color:#b8c0c8!important}
 .tipBox.et .gold{color:#f1d58a!important;font-weight:700}
+
+/* 아이템 설명 창 */
+.tipBox.it{max-width:min(440px,calc(100vw - 24px))}
+.tipBox.it .tipTx{flex:1}
+.tipBox.it b.tg0,.tipBox.it b.tg1,.tipBox.it b.tg2,.tipBox.it b.tg3{font-size:15px;margin-bottom:1px}
+.tipBox.it .itSub{font-size:11px;color:#8d8578;margin:0 0 6px!important}
+.tipBox.it .etRow{display:grid;grid-template-columns:44px 1fr;gap:8px;align-items:baseline;padding:5px 0;border-top:1px solid rgba(255,255,255,.07);margin:0!important}
+.tipBox.it .etRow em{font-style:normal;font-size:11px;color:#9b8f80}
+.tipBox.it .etRow>span{color:#e8dcc6;font-size:13px}
+.tipBox.it .etRow b{display:inline;margin:0;font-size:13.5px;color:#7fe08f}
+.tipBox.it i{font-style:normal;font-size:9px;opacity:.7;margin:0 2px;vertical-align:1px}
+.tipBox.it small{display:block;font-size:11px;color:#8d8578;margin-top:1px}
+.tipBox.it .itAff{display:flex;flex-wrap:wrap;gap:4px;margin-top:4px}
+.tipBox.it .itAff .aff{font-size:11.5px;padding:0 6px;border-radius:4px;background:rgba(80,200,120,.12);border:1px solid rgba(110,210,140,.35);color:#9fe7ae}
+.tipBox.it .itEn{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tipBox.it .etR{font-size:12px;font-weight:800;padding:0 8px;border-radius:999px;border:1px solid}
+.tipBox.it .etR.hi{color:#8fe39b;border-color:rgba(120,220,140,.5);background:rgba(40,120,60,.25)}
+.tipBox.it .etR.md{color:#ffd56a;border-color:rgba(255,210,100,.5);background:rgba(120,90,20,.25)}
+.tipBox.it .etR.lo{color:#ff8a7a;border-color:rgba(255,120,100,.55);background:rgba(120,30,20,.3)}
+.tipBox.it .bad{color:#ff8a7a;font-weight:700;font-size:12px}.tipBox.it .ok{color:#b8c0c8;font-size:12px}
+.tipBox.it .gold{color:#f1d58a;font-weight:700}
+.tipBox.it .itSt{color:#c9b8f0}
 </style>
 <style>html,body{background:#14121a}</style>
 </head>
@@ -2531,9 +2553,9 @@ function dollHtml(eq,rowOf){const on={},sp=[];eq.forEach(({it,idx})=>{if(it.spar
   const fig=k?`<img class="lbFig${full?'':' bust'}" src="${full?'hero_full':'hero'}/${k}.webp" alt="">`:'';
   const slot=d=>{const x=on[d[0]];const pos=d[3]>280?`right:${Math.max(0,(372-d[3]-48))/372*100}%;top:${d[4]}px`:`left:${d[3]/372*100}%;top:${d[4]}px`;const sd=d[3]>280?' r':d[3]<40?' l':'';
     if(!x)return `<div class="lbS empty${sd}" style="${pos}" title="${d[1]} · ${d[2]} (비어 있음)"><span class="lbI">${ITEM_ICON[d[0]]||''}</span><em>${d[1]}</em></div>`;
-    const r=rowOf[x.idx];return `<button type="button" class="lbS${sd} g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" style="${pos}" data-gs="${x.idx}"${tipAttr(itemName(x.it),r?r.tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}${x.it.aff&&x.it.aff.length?'<i class="lbA">✦</i>':''}${x.it.pin?'<i class="lbPin">📌</i>':''}<em class="lbPl"><i class="lbNm g${x.it.grade||0}">${esc(x.it.name)}</i><b>${stShort(x.it)}</b></em></button>`;};
+    const r=rowOf[x.idx];return `<button type="button" class="lbS${sd} g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" style="${pos}" data-gs="${x.idx}"${tipAttr(itemName(x.it),r?r.tl:[])}${r&&r.th?` data-th="${esc(r.th)}"`:''}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}${x.it.aff&&x.it.aff.length?'<i class="lbA">✦</i>':''}${x.it.pin?'<i class="lbPin">📌</i>':''}<em class="lbPl"><i class="lbNm g${x.it.grade||0}">${esc(x.it.name)}</i><b>${stShort(x.it)}</b></em></button>`;};
   const per=5,maxOff=Math.max(0,sp.length-per);bagOff=Math.min(bagOff,maxOff);
-  const bag=`<div class="lbBag"><button type="button" class="lbArr l" data-bag="-1" ${bagOff<=0?'disabled':''} aria-label="이전"></button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''} aria-label="다음"></button></div>`;
+  const bag=`<div class="lbBag"><button type="button" class="lbArr l" data-bag="-1" ${bagOff<=0?'disabled':''} aria-label="이전"></button>${Array.from({length:per},(_,i)=>{const x=sp[bagOff+i];return x?`<button type="button" class="lbS sm g${x.it.grade||0}${gearSel===x.idx?' sel':''} tipt" data-gs="${x.idx}"${tipAttr(itemName(x.it),rowOf[x.idx]?rowOf[x.idx].tl:[])}${rowOf[x.idx]&&rowOf[x.idx].th?` data-th="${esc(rowOf[x.idx].th)}"`:''}><span class="lbI">${itemIcon(x.it)}</span>${x.it.plus?`<b class="lbP">+${x.it.plus}</b>`:''}</button>`:'<div class="lbS sm empty"></div>';}).join('')}<button type="button" class="lbArr" data-bag="1" ${bagOff>=maxOff?'disabled':''} aria-label="다음"></button></div>`;
   const selRow=gearSel!=null&&rowOf[gearSel]?rowOf[gearSel].h:'';
   return `<div class="lbInfo top">${selRow||'<span class="dHint">칸을 누르면 여기에 이름과 옵션이 나오고, 강화·판매할 수 있다</span>'}</div><div class="lbRow"><div class="lbBoard">${LB_SIL}${DOLL.map(slot).join('')}<div class="lbPw"><small>전투력</small><b>${fmt(shownPower())}</b></div></div>${mythRibbon()}</div><div class="lbBagL">예비 장비 ${sp.length}/${SPARE_MAX}</div>${bag}`;}
 function renderHero(){
@@ -2592,9 +2614,19 @@ function renderHero(){
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
      const ipTxt=canEnhance(i)?`강화 시 ${itemDescAt(i,pl+1)}${pp?` · 전투력 ${fmt(pp[0])}→${fmt(pp[1])}`:''} · ${pl>=1?'실패하면 파괴':'실패해도 그대로'}`:'';
      const tl=[tip,`${itemDesc0(i)}${i.aff&&i.aff.length?' · '+affTxt(i):''}`,ipTxt,canEnhance(i)?`강화 성공 ${Math.round(er.rate*100)}%${ce?` · 비용 금화 ${fmtS(cost)}`:''}`:'',i.spare?'예비: 착용 중이 아니라 효과 없음 (착용 버튼으로 바꿔 낄 수 있다)':'',i.pin&&!i.spare?'📌 직접 착용해 고정했다':'',`판매 금화 ${fmt(sellPrice(run,i))}`];
-     const rowH=`<div class="irow tipt"${tipAttr(itemName(i),tl)}><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div>${(()=>{if(!canEnhance(i))return '';const r=Math.round(er.rate*100),rc=r>=70?'hi':r>=40?'md':'lo';const A=itemDesc0(i),B=itemDesc0(Object.assign({},i,{plus:pl+1})),k=A.lastIndexOf(' ');const g=k>0&&B.startsWith(A.slice(0,k+1))?`${A.slice(0,k)} <b>${A.slice(k+1)}</b><i>▶</i><b class="up">${B.slice(k+1)}</b>`:`${A}<i>▶</i><b class="up">${B}</b>`;
+     const itTh=(()=>{const g=i.grade||0;const sub=[GRADES[g].name,i.tier?TIER_NAME[i.tier]:'',i.src?i.src:'',i.where||''].filter(Boolean).join(' · ');
+  const affs=i.aff&&i.aff.length?i.aff.map(x=>`<span class="aff">${affTxt1(x)}</span>`).join(''):'';
+  let h=`<b class="tg${g}">${itemName(i)}</b><div class="itSub">${sub}</div>`;
+  h+=`<div class="etRow"><em>능력치</em><span>${itemDesc0(i)}${affs?`<span class="itAff">${affs}</span>`:''}</span></div>`;
+  if(canEnhance(i)){const A=itemDesc0(i),B=itemDesc0(Object.assign({},i,{plus:pl+1})),k=A.lastIndexOf(' ');const same=k>0&&B.startsWith(A.slice(0,k+1));const r=Math.round(er.rate*100),rc=r>=70?'hi':r>=40?'md':'lo';
+    h+=`<div class="etRow"><em>강화 시</em><span>${same?`${A.slice(0,k)} ${A.slice(k+1)} <i>▶</i> <b>${B.slice(k+1)}</b>`:`${A} <i>▶</i> <b>${B}</b>`}${pp?`<small>전투력 ${fmt(pp[0])} ▶ ${fmt(pp[1])}</small>`:''}</span></div>`;
+    h+=`<div class="etRow"><em>강화</em><span class="itEn"><span class="etR ${rc}">성공 ${r}%</span>${ce?`<span class="gold">금화 ${fmtS(cost)}</span>`:''}<span class="${pl>=1?'bad':'ok'}">실패 시 ${pl>=1?'파괴':'유지'}</span></span></div>`;}
+  if(i.spare)h+=`<div class="etRow"><em>상태</em><span class="itSt">예비 · 효과 없음<small>착용 버튼으로 바꿔 낄 수 있다</small></span></div>`;
+  else if(i.pin)h+=`<div class="etRow"><em>상태</em><span class="itSt">📌 직접 착용해 고정</span></div>`;
+  h+=`<div class="etRow"><em>판매</em><span class="gold">금화 ${fmt(sellPrice(run,i))}</span></div>`;return h;})();
+     const rowH=`<div class="irow tipt"${tipAttr(itemName(i),tl)} data-th="${esc(itTh)}"><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div>${(()=>{if(!canEnhance(i))return '';const r=Math.round(er.rate*100),rc=r>=70?'hi':r>=40?'md':'lo';const A=itemDesc0(i),B=itemDesc0(Object.assign({},i,{plus:pl+1})),k=A.lastIndexOf(' ');const g=k>0&&B.startsWith(A.slice(0,k+1))?`${A.slice(0,k)} <b>${A.slice(k+1)}</b><i>▶</i><b class="up">${B.slice(k+1)}</b>`:`${A}<i>▶</i><b class="up">${B}</b>`;
   return `<div class="ep"><span class="epS">+${pl}<i>▶</i>+${pl+1}</span><span class="epR ${rc}">성공 ${r}%</span><span class="epG">${g}</span>${pp?`<span class="epP">⚔ ${fmt(pp[0])}<i>▶</i><b class="up">${fmt(pp[1])}</b></span>`:''}</div><div class="ep ep2"><span class="epF ${pl>=1?'bad':''}">실패 시 ${pl>=1?'파괴':'유지'}</span>${ce?`<span class="epC${run.gold>=cost?'':' no'}">금화 ${fmtS(cost)}</span>`:''}</div>`;})()}<div class="ib">${i.spare&&keepable(i)?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀고 다시 자동 착용">해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매</button></div></div>`;
-     rowOf[idx]={h:rowH,tl,i};return rowH;}).join('');
+     rowOf[idx]={h:rowH,tl,i,th:itTh};return rowH;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?dollHtml(eq,rowOf)+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
   $('hItems').querySelectorAll('[data-gs]').forEach(b=>b.onclick=()=>{gearSel=+b.dataset.gs;renderHero();});
@@ -3366,7 +3398,7 @@ function loadCheckpoint(fromStart,seed){fromStart=fromStart===true;const c=ckptI
   heroSeed=c.seed>>>0;hero=makeHero(heroSeed);enhMsg='';
   const saved=store.get(logKey(heroSeed),null);if(saved&&Array.isArray(saved.log)){runLog=saved.log;runToken=saved.token;hero.rolls=saved.rolls||0;}else{runLog=null;runToken=null;}
   const loads=(runLog?runLog.filter(a=>a[0]==='L').length:0)+1;
-  run=restoreRun(c.snap,hero,mixSeed(heroSeed,100+loads),fromStart);logAct(fromStart?['L',1]:['L']);
+  run=restoreRun(c.snap,hero,loadSeed(heroSeed,c.snap,fromStart),fromStart);logAct(fromStart?['L',1]:['L']);
   stage=c.stage;store.set('stage',stage);
   lastOut=null;verdictHtml='';paused=false;prevStats=null;
   $('log').innerHTML=`<li><span class="t">0.000%</span><div><b>저장 지점</b> · ${hero.name}이(가) ${STAGES[stage].name} ${STAGES[stage].endless&&STAGES[stage].hunt==null?floorOf(run)+'층':'입구'}에서 다시 일어섰다.</div></li>`;
@@ -3462,7 +3494,7 @@ document.addEventListener('keydown',e=>{if($('helpModal').hidden)return;if(e.key
  const show=el=>{cur=el;const t=el.dataset.tt,l=(el.dataset.tl||'').split('¦').filter(Boolean);
    const ti=el.dataset.ti;const im=ti?null:el.querySelector('img.iI');const gm=(el.className.match(/\bg([0-3])\b/)||[])[1];const src=ti||(im&&im.getAttribute('src'));
    const txt=el.dataset.th?el.dataset.th:`<b${gm!=null&&!ti?` class="tg${gm}"`:''}>${esc(t)}</b>`+l.map(x=>`<div>${esc(x)}</div>`).join('');
-   box.classList.toggle('et',!!el.dataset.th);
+   {const isE=!!el.dataset.th&&el.classList.contains('enh');box.classList.toggle('et',isE);box.classList.toggle('it',!!el.dataset.th&&!isE);}
    box.classList.toggle('withImg',!!src);
    box.innerHTML=src?`<div class="tipImg ${ti?'comp':'g'+(gm||0)}"><img src="${src}" alt=""></div><div class="tipTx">${txt}</div>`:txt;box.hidden=false;
    const r=el.getBoundingClientRect(),bw=box.offsetWidth,bh=box.offsetHeight;let x=Math.min(Math.max(12,r.left),innerWidth-bw-12),y=r.bottom+8;if(y+bh>innerHeight-8)y=Math.max(8,r.top-bh-8);box.style.left=x+'px';box.style.top=y+'px';};
