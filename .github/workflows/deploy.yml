@@ -54,7 +54,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deploy1.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: supabase/setup-cli@v3
@@ -71,7 +71,14 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
+      - id: deploy1
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+      # GitHub 쪽 일시 오류(artifact metadata)로 실패하면 90초 기다렸다 한 번 더
+      - if: steps.deploy1.outcome == 'failure'
+        run: sleep 90
       - id: deployment
+        if: steps.deploy1.outcome == 'failure'
         uses: actions/deploy-pages@v4
   itch:
     # itch.io(lightsc/fate-hero)에도 같은 빌드를 올린다. 저장소 시크릿 BUTLERKEY(또는 BUTLER_API_KEY)가 있을 때만 동작한다.
