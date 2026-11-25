@@ -1410,7 +1410,7 @@ body.inRun .topRow .wbBar .wbAtk{padding:2px 8px!important;font-size:12px}
 body.inRun .hbHold{height:22px;z-index:60}
 body.inRun .hbTab{display:flex;align-items:center;gap:6px;height:22px;padding:0 12px;border:1px solid #6b4a1a;border-radius:6px;background:linear-gradient(180deg,#2a1c0c,#160e06);color:#c9a35a;font-size:11.5px;cursor:pointer;user-select:none}
 body.inRun .hbTab b{color:#ff9a6a;font-weight:700}
-body.inRun .hbHold>header.hb{position:absolute;top:0;left:0;right:0;opacity:0;pointer-events:none;transform:translateY(-8px);transition:opacity .18s,transform .18s;box-shadow:0 12px 30px rgba(0,0,0,.75)!important}
+body.inRun .hbHold>header.hb{position:absolute;top:0;left:0;right:0;opacity:0;pointer-events:none;transform:translateY(-4px);transition:opacity .08s,transform .08s;box-shadow:0 12px 30px rgba(0,0,0,.75)!important}
 body.inRun .hbHold:hover>header.hb,body.inRun .hbHold.open>header.hb,body.inRun .hbHold:focus-within>header.hb{opacity:1;pointer-events:auto;transform:none}
 .pInv .zone.zg>.zh{display:none!important}.pInv .zone.zg>.zbody{padding-top:8px!important}
 /* 신화 합성: 무지개 마법 봉인 띠 (정비 줄과 확실히 다르게) */
@@ -1613,13 +1613,43 @@ body.inRun .rtMe{top:-19px;width:21px;height:21px}
 @media (max-height:800px) and (min-width:641px){.fMon .fBody{width:21vh!important;height:21vh!important}.fHero .fBody{width:14vh!important;height:19vh!important}.arena.boss .fMon .fBody{width:18vh!important;height:18vh!important}.arena.boss .fHero .fBody{width:12vh!important;height:16vh!important}.aInfo{padding-top:10px!important}}
 @media (max-width:640px){.battleCard .opts.cmdbar{position:static}.battleCard .wkBox ol{grid-template-columns:1fr}.fMon .fBody,.arena.boss .fMon .fBody{width:clamp(130px,21vh,190px)!important;height:clamp(130px,21vh,190px)!important}.fHero .fBody{width:clamp(90px,14vh,120px)!important;height:clamp(110px,18vh,150px)!important}
   body.inRun header.hb{padding:8px 12px!important}}
+
+/* 정보줄 강화 미리보기 */
+.irow .ep{display:none}
+.lbInfo.top .irow .ep{display:flex;flex-wrap:wrap;gap:4px;align-items:center;min-width:0;grid-column:2/4;grid-row:2}
+.lbInfo.top .irow .ep.ep2{grid-column:2;grid-row:3}
+.lbInfo.top .irow:has(.ep){display:grid!important;grid-template-columns:auto 1fr auto;align-items:center;column-gap:8px!important;row-gap:5px!important}
+.lbInfo.top .irow:has(.ep) .iic{grid-column:1;grid-row:1/4;align-self:center}
+.lbInfo.top .irow:has(.ep) .in{grid-column:2/4;grid-row:1}
+.lbInfo.top .irow:has(.ep) .ib{grid-column:3;grid-row:3;margin-left:0!important}
+.lbInfo.top .irow .ib{order:4}
+.lbInfo.top .irow .ep>span{font-size:11.5px;line-height:18px;padding:0 7px;border-radius:4px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#d8ccb4;white-space:nowrap}
+.lbInfo.top .irow .ep i{font-style:normal;font-size:8px;margin:0 3px;opacity:.7;vertical-align:1px}
+.lbInfo.top .irow .ep b{font-weight:700}.lbInfo.top .irow .ep b.up{color:#7fe08f}
+.lbInfo.top .irow .ep .epS{color:#ffd27a;border-color:rgba(255,200,100,.4);background:rgba(120,70,10,.3);font-weight:700}
+.lbInfo.top .irow .ep .epR.hi{color:#8fe39b;border-color:rgba(120,220,140,.45)}
+.lbInfo.top .irow .ep .epR.md{color:#ffd56a;border-color:rgba(255,210,100,.45)}
+.lbInfo.top .irow .ep .epR.lo{color:#ff8a7a;border-color:rgba(255,120,100,.5)}
+.lbInfo.top .irow .ep .epF{color:#aab}.lbInfo.top .irow .ep .epF.bad{color:#ff8a7a;border-color:rgba(255,110,90,.45);background:rgba(120,20,10,.25)}
+.lbInfo.top .irow .ep .epC{color:#f1d58a}.lbInfo.top .irow .ep .epC.no{color:#ff8a7a}
+
+/* 헤더 숨김 탭: 숨겨진 메뉴가 있다는 표시 + 스크롤해도 위에 붙어 있음 */
+body.inRun .hbHold{position:sticky;top:0}
+body.inRun .hbTab{justify-content:space-between;height:24px;border-color:#9a6d22;background:linear-gradient(180deg,#3a260d,#1a1007);box-shadow:0 2px 8px rgba(0,0,0,.6)}
+body.inRun .hbHold{height:24px}
+body.inRun .hbTab .hbL{color:#e9c477;font-weight:700;letter-spacing:1px}
+body.inRun .hbTab .hbM{display:flex;align-items:center;gap:8px;padding:0 14px;height:18px;border-radius:9px;background:rgba(255,200,100,.12);border:1px solid rgba(255,200,100,.35);color:#ffe2a0;font-weight:700}
+body.inRun .hbTab .hbAr{font-style:normal;font-size:9px;color:#ffc85a;animation:hbBob 1.4s ease-in-out infinite}
+@keyframes hbBob{0%,100%{transform:translateY(-1px);opacity:.7}50%{transform:translateY(2px);opacity:1}}
+body.inRun .hbTab .hbR{color:#c9a35a}
+body.inRun .hbHold:hover .hbTab,body.inRun .hbHold.open .hbTab{visibility:hidden}
 </style>
 <style>html,body{background:#14121a}</style>
 </head>
 <body>
 
 <div class="wrap">
-  <div class="hbHold"><div class="hbTab" aria-hidden="true">▾ 운명의 용사 · 가문 · 랭킹 · 처치한 악마 <b id="hbTabKill"></b></div>
+  <div class="hbHold"><div class="hbTab" aria-hidden="true"><span class="hbL">운명의 용사</span><span class="hbM"><i class="hbAr">▼</i>메뉴 · 가문 · 랭킹 · 계정<i class="hbAr">▼</i></span><span class="hbR">처치한 악마 <b id="hbTabKill"></b></span></div>
   <header class="hb">
 <svg class="hbArt" viewBox="0 0 1600 220" preserveAspectRatio="xMaxYMax slice" aria-hidden="true">
   <defs>
@@ -2533,7 +2563,8 @@ function renderHero(){
      const tip=`${GRADES[i.grade||0].name}${i.tier?' · '+TIER_NAME[i.tier]:''}${i.src?` · 출처: ${i.src}${i.where?' · '+i.where:''}`:''}`;
      const ipTxt=canEnhance(i)?`강화 시 ${itemDescAt(i,pl+1)}${pp?` · 전투력 ${fmt(pp[0])}→${fmt(pp[1])}`:''} · ${pl>=1?'실패하면 파괴':'실패해도 그대로'}`:'';
      const tl=[tip,`${itemDesc0(i)}${i.aff&&i.aff.length?' · '+affTxt(i):''}`,ipTxt,canEnhance(i)?`강화 성공 ${Math.round(er.rate*100)}%${ce?` · 비용 금화 ${fmtS(cost)}`:''}`:'',i.spare?'예비: 착용 중이 아니라 효과 없음 (착용 버튼으로 바꿔 낄 수 있다)':'',i.pin&&!i.spare?'📌 직접 착용해 고정했다':'',`판매 금화 ${fmt(sellPrice(run,i))}`];
-     const rowH=`<div class="irow tipt"${tipAttr(itemName(i),tl)}><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div><div class="ib">${i.spare&&keepable(i)?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀고 다시 자동 착용">해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매</button></div></div>`;
+     const rowH=`<div class="irow tipt"${tipAttr(itemName(i),tl)}><span class="iic">${itemIcon(i)}</span><div class="in"><span class="nm g${i.grade||0}">${itemName(i)}${i.spare?'<span class="spTag tg">예비</span>':''}${i.pin&&!i.spare?' 📌':''}</span><span class="iv">${itemDesc0(i)}${affHtml(i)}${i.win&&effWin(i)>0.2?' <span style="color:var(--ember)">(상한 20%p)</span>':''}</span></div>${(()=>{if(!canEnhance(i))return '';const r=Math.round(er.rate*100),rc=r>=70?'hi':r>=40?'md':'lo';const A=itemDesc0(i),B=itemDesc0(Object.assign({},i,{plus:pl+1})),k=A.lastIndexOf(' ');const g=k>0&&B.startsWith(A.slice(0,k+1))?`${A.slice(0,k)} <b>${A.slice(k+1)}</b><i>▶</i><b class="up">${B.slice(k+1)}</b>`:`${A}<i>▶</i><b class="up">${B}</b>`;
+  return `<div class="ep"><span class="epS">+${pl}<i>▶</i>+${pl+1}</span><span class="epR ${rc}">성공 ${r}%</span><span class="epG">${g}</span>${pp?`<span class="epP">⚔ ${fmt(pp[0])}<i>▶</i><b class="up">${fmt(pp[1])}</b></span>`:''}</div><div class="ep ep2"><span class="epF ${pl>=1?'bad':''}">실패 시 ${pl>=1?'파괴':'유지'}</span>${ce?`<span class="epC${run.gold>=cost?'':' no'}">금화 ${fmtS(cost)}</span>`:''}</div>`;})()}<div class="ib">${i.spare&&keepable(i)?`<button type="button" class="wear" data-wear="${idx}" title="이 예비 전설을 착용하고 📌 고정한다">착용</button>`:i.pin&&!i.spare?`<button type="button" class="wear pin" data-unpin="${idx}" title="고정을 풀고 다시 자동 착용">해제</button>`:''}${enh}<button type="button" class="sell" data-sell="${idx}" ${canSell?'':'disabled'} title="판매 ${fmt(sellPrice(run,i))} 금화">판매</button></div></div>`;
      rowOf[idx]={h:rowH,tl,i};return rowH;}).join('');
    const crow=Object.keys(cons).length?`<div class="crow"><span class="cl">소모품</span>${Object.entries(cons).map(([k,ix])=>`<span class="cc">${k} ×${ix.length}<button type="button" class="sell" data-sell="${ix[0]}" ${canSell?'':'disabled'} title="하나 판매">판매 ${fmt(sellPrice(run,its[ix[0]]))}</button></span>`).join('')}</div>`:'';
    $('hItems').innerHTML=(its.length?dollHtml(eq,rowOf)+crow:'<span style="color:var(--muted);font-size:13px">없음</span>')+`<div id="enhMsg" class="enhMsg">${enhMsg||''}</div>`;}
