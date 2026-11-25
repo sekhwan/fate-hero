@@ -301,7 +301,7 @@ function applyItem(s,it,sign){ if(it.spare) return; // 예비 전설은 효과 �
 // 같은 부위(능력치·전투력·승률·도망)는 하나만 착용한다. 더 좋은 것이 들어오면 기존 것은 자동으로 판다.
 function wouldUpgrade(s,it){const slot=slotOf(it);if(!slot)return true;it.boost=1+SKV.mItem[mastery(s,'재물')];const old=s.items.find(x=>slotOf(x)===slot&&!x.spare);return !old||(!old.pin&&itemVal(it)>itemVal(old));}
 // 전설은 착용품보다 약하거나 같은 부위가 있어도 예비로 보관한다 (신화 합성 재료로 모을 수 있게)
-const SPARE_MAX=12;function spareCount(s){return s.items.filter(x=>x.spare).length;}
+const SPARE_MAX=30;function spareCount(s){return s.items.filter(x=>x.spare).length;}
 function keepable(it){return !!slotOf(it)&&((it.grade||0)===3||((it.grade||0)===2&&!!(it.aff&&it.aff.length)));}
 function canKeepSpare(s,it){return keepable(it)&&(spareCount(s)<SPARE_MAX||!!s.spareForce||!!s.buyKeep);}
 // 상점의 전설 장비는 보유품과 예비 칸 수에 관계없이 언제나 살 수 있다(사면 예비로 보관된다)
@@ -687,9 +687,12 @@ function nextRegion(s){
   {const b=makeBattle(s,i,D*0.4,true); if(b.final) s.queue.push({type:'prep',boss:b},b); else s.queue.push(b);}
   s.regionKilled[i]=0; s.regionTotal=D;
 }
+// 초반 완화: 지상계·지하 세계는 적을 약하게, 지상계 첫 지역들은 더 약하게
+const NEWBIE_R=3;const EASE_W=[0.75,0.63],EASE_EARLY=[0.7,0.8,0.9];
+function easeF(s,i){const k=s.stage;if(k>1)return 1;return EASE_W[k]*(k===0&&i<EASE_EARLY.length?EASE_EARLY[i]:1);}
 function battleBaseE(s,i){const st=STAGES[s.stage];let E;const N=st.regions.length,late=Math.max(0,i-Math.floor(N*0.55));
   if(st.hunt!=null){const W=STAGES[st.hunt];E=W.base*Math.pow(W.growth,W.regions.length-1)*HUNT_START*Math.pow(st.growth,i)*(s.enemyCarry||s.stageCarry);}
-  else E=st.base*Math.pow(st.growth,i)*Math.pow(LATE,late)*(s.enemyCarry||s.stageCarry);
+  else E=st.base*Math.pow(st.growth,i)*Math.pow(LATE,late)*(s.enemyCarry||s.stageCarry)*easeF(s,i);
   return E*DIFF[worldOf(s.stage)];}
 function makeBattle(s,i,share,boss){
   const st=STAGES[s.stage], r=s.r;
@@ -699,7 +702,7 @@ function makeBattle(s,i,share,boss){
   const N=st.regions.length, late=Math.max(0,i-Math.floor(N*0.55));
   let E;
   if(st.hunt!=null){const W=STAGES[st.hunt];E=W.base*Math.pow(W.growth,W.regions.length-1)*HUNT_START*Math.pow(st.growth,i)*sizeF*(s.enemyCarry||s.stageCarry);}
-  else E=st.base*Math.pow(st.growth,i)*Math.pow(LATE,late)*sizeF*(s.enemyCarry||s.stageCarry);
+  else E=st.base*Math.pow(st.growth,i)*Math.pow(LATE,late)*sizeF*(s.enemyCarry||s.stageCarry)*easeF(s,i);
   E*=DIFF[worldOf(s.stage)];
   const pool=(st.endless&&st.hunt==null)?[...MINIONS[4],...ENDLESS_MON.slice(0,Math.floor((i+1)/20))]:MINIONS[worldOf(s.stage)]; const mname=pool[Math.min(pool.length-1,Math.floor(r()*Math.min(pool.length,2+i)))];
   const count=boss?1:Math.max(3,Math.round(size*(5+i*2.5)*(1+s.stage*0.6)*(0.7+r()*0.6)));
@@ -740,7 +743,7 @@ function hiddenQuiz(){return [
   ['PvP 스탯이 효과를 내기 시작하는 최소 수치는?',String(PVP_MIN),['3','10','1','5']],
   ['부활은 최대 몇 회까지 지닐 수 있나?',REVIVE_MAX+'회',['2회','3회','5회','1회']],
   ['지휘 스킬 없이 용병은 최대 몇 명인가?',MERC_CAP+'명',['8명','10명','20명','12명']],
-  ['예비 전설은 최대 몇 개까지 보관하나?',SPARE_MAX+'개',['8개','10개','15개','20개']],
+  ['예비 전설은 최대 몇 개까지 보관하나?',SPARE_MAX+'개',['12개','20개','25개','40개']],
   ['끝없는 전장은 몇 층마다 자동 저장되나?','5층',['3층','10층','1층','5층']],
   ['히든 영웅이 태어날 확률은?','0.1%',['1%','0.01%','5%','0.1%']],
   ['공허의 옥좌는 몇 번째 세계인가?','5번째',['3번째','4번째','6번째','5번째']],
@@ -964,6 +967,7 @@ function lossRisk(s,n){ // 패배 시 예상 피해(읽기 전용, 판정에 영
 function hurt(s,frac,out){
   frac*=(1-SKV.mDmg[mastery(s,'생존')])*(1-affSum(s,'dmg'));
   const dmg=Math.max(1,Math.round(s.maxHp*frac/Math.max(0.5,1+tsum(s,'hp',0)))); s.hp-=dmg; out.push({t:'bad',x:`체력 -${dmg}`});
+  if(s.hp<=0&&s.stage===0&&s.region<NEWBIE_R){s.hp=1;out.push({t:'good',x:'초심자의 가호: 쓰러지기 직전 버텼다'});}
   if(s.hp<=0){
     const feather=s.items.findIndex(it=>it.revive);
     const potion=s.items.findIndex(it=>it.heal);
@@ -1048,6 +1052,8 @@ function choose(s,optId){
     if(s.r()<sr){ s.insight=0; learnSkill(s,id,out); checkCombos(s,out); text=`${SKILL_BY[id].name}을(를) 익혔다.`; s.lastEvent={ok:true,head:'스킬 습득',sub:`${SKILL_BY[id].name} ${sk(s,id)}랭크`}; }
     else { s.pendingPicks--; s.insight=(s.insight||0)+1; text=`${SKILL_BY[id].name}을(를) 익히려 했지만 실패했다. 깨달음이 쌓였다.`; out.push({t:'bad',x:`스킬 습득 실패: ${SKILL_BY[id].name} (깨달음 ${s.insight}, 다음 습득 +${s.insight*5}%p)`}); s.lastEvent={ok:false,head:'스킬 습득 실패',sub:`${SKILL_BY[id].name} · 깨달음 +1 (다음 +${s.insight*5}%p)`}; } }
   else if(n.type==='battle'){
+    // 판의 첫 일반 전투(튜토리얼 전투)는 무엇을 골라도 성공한다
+    if(!n.boss&&!s.b1){s.b1=1;roll=0;}
     if(optId==='skill'||optId==='wk'||String(optId).startsWith('wk:')){
       if(optId==='skill'){const key=s.stage*1e4+s.region;if(!s.skUse||s.skUse.r!==key)s.skUse={r:key,n:0};s.skUse.n++;n.p=n.pSk;out.push({t:'good',x:`스킬 공격 (승률 ${Math.round(n.pSk*100)}%)`});}
       else if(optId==='wk'){n.p=n.pWk;const w=monWeak(n.name);out.push({t:n.pWk>=n.pBase?'good':'bad',x:`약점 공략: ${WK_NAME[w]} (승률 ${Math.round(n.pWk*100)}%)`});}
@@ -1197,7 +1203,7 @@ function travelHunt(s,k){if(!canTravel(s)||!(k>=0&&k<=3))return false;
   s.region=-1; s.queue=[]; s.killed=0; s.regionKilled=[]; s.pacified=[]; s.over=false; s.cleared=false; s.conquered=false; s.activeQuest=null;
   s.hp=Math.max(s.hp,Math.round(s.maxHp*0.6)); s.gritLeft=sk(s,'grit'); nextRegion(s); queueSkill(s); prime(s); return true;}
 // ---- 랭킹 검증용: 결정적 시드, 저장/불러오기, 재현 ----
-const ENGINE_VERSION='1.15.0';
+const ENGINE_VERSION='1.16.0';
 // 다음 결정의 무작위 요소(사건 종류, 탐험 문구)를 즉시 굴려 둔다. 화면이 current()를 몇 번 부르든 결과가 같아진다.
 function prime(s){ if(s&&!s.dead&&!s.over) current(s); return s; }
 function mixSeed(a,b){let h=((a>>>0)^Math.imul((b>>>0)+0x9e3779b9,0x85ebca6b))>>>0;h^=h>>>16;h=Math.imul(h,0x7feb352d)>>>0;h^=h>>>15;h=Math.imul(h,0x846ca68b)>>>0;h^=h>>>16;return h>>>0;}
