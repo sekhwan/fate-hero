@@ -39,12 +39,12 @@ jobs:
           # 목록 조회가 실패하면(권한 부족 등) 절대 새로 만들지 않는다. 새로 만들면 이미 발급된 모든 용사가 등록 불가가 된다.
           LIST=$(supabase secrets list --project-ref "$PROJECT_REF") || { echo "secrets list 실패: RUN_SECRET을 건드리지 않는다"; exit 1; }
           if ! echo "$LIST" | grep -q RUN_SECRET; then
-            supabase secrets set RUN_SECRET="$(openssl rand -hex 32)" --project-ref "$PROJECT_REF"
+            supabase secrets set RUN_SECRET="$(openssl rand -hex 32)" --project-ref "$PROJECT_REF" --yes
           fi
       - name: functions
         run: |
-          supabase functions deploy start-run --no-verify-jwt --project-ref "$PROJECT_REF"
-          supabase functions deploy submit-run --no-verify-jwt --project-ref "$PROJECT_REF"
+          supabase functions deploy start-run --no-verify-jwt --project-ref "$PROJECT_REF" --yes
+          supabase functions deploy submit-run --no-verify-jwt --project-ref "$PROJECT_REF" --yes
       - name: smoke test
         run: |
           KEY=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="anon" or .type=="publishable")][0].api_key')
