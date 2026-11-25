@@ -1685,6 +1685,20 @@ body.inRun .hbHold:hover .hbTab,body.inRun .hbHold.open .hbTab{visibility:hidden
 .tipBox.it .bad{color:#ff8a7a;font-weight:700;font-size:12px}.tipBox.it .ok{color:#b8c0c8;font-size:12px}
 .tipBox.it .gold{color:#f1d58a;font-weight:700}
 .tipBox.it .itSt{color:#c9b8f0}
+
+/* 클릭으로 빨리 넘기기 */
+#stage,#log{-webkit-user-select:none;user-select:none}
+#stage input,#stage textarea{-webkit-user-select:text;user-select:text}
+#stage img{-webkit-user-drag:none;user-drag:none}
+.skipHint{position:absolute;right:10px;bottom:10px;z-index:5;pointer-events:none;font-size:12px;font-weight:700;color:#ffe2a0;background:rgba(20,12,6,.78);border:1px solid rgba(255,200,100,.45);border-radius:999px;padding:4px 12px;animation:skipP 1.6s ease-in-out infinite}
+.skipHint i{font-style:normal;color:#ffc85a;margin-right:4px}
+@keyframes skipP{0%,100%{opacity:.65}50%{opacity:1}}
+.autoCard{position:relative}
+.skipFx{position:fixed;z-index:90;pointer-events:none;width:0;height:0}
+.skipFx::before{content:'';position:absolute;left:-26px;top:-26px;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,210,120,.9);box-shadow:0 0 14px rgba(255,180,60,.7);animation:skipR .5s ease-out forwards}
+.skipFx b{position:absolute;left:-14px;top:-10px;font-size:14px;color:#ffe2a0;text-shadow:0 0 6px #ff9a2a,0 1px 2px #000;animation:skipT .5s ease-out forwards}
+@keyframes skipR{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
+@keyframes skipT{from{transform:translateX(-6px);opacity:1}to{transform:translateX(12px);opacity:0}}
 </style>
 <style>html,body{background:#14121a}</style>
 </head>
@@ -2966,8 +2980,8 @@ function renderStage(){
     const pick=c.options.find(o=>o.id===autoChoice(run,c));
     const ms=stepMs(n); const label=n.type==='battle'?(n.boss?'지배자 전투':'전투'):n.type==='explore'?'탐험':n.type==='rest'?'휴식':n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건';
     const body=`<div><b>${label} · ${c.title}</b><div class="phase" id="phase">${(PHASES[n.type]||PHASES.event)[0]}…</div><div style="font-size:13px;margin-top:4px">자동 선택: ${pick.label}${n.type==='battle'?` (승리확률 ${pctTxt(n.p)}%)`:''}</div></div>`;
-    box.innerHTML=`<div class="autoCard${n.type==='battle'?' battleAuto':''}">${n.type==='battle'?arenaHtml(n,c,true)+body:sceneHtml(n,true)+body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':'<span class="skipHint">화면을 누르면 바로 넘어간다 · Enter</span>'}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
-    bindModes(); {const ac=box.querySelector('.autoCard');if(ac){ac.style.cursor='pointer';ac.title='누르면 바로 넘어간다';ac.onclick=e=>{if(e.target.closest('button,a'))return;skipAuto();};}} tickAuto(ms); return;
+    box.innerHTML=`<div class="autoCard${n.type==='battle'?' battleAuto':''}">${n.type==='battle'?arenaHtml(n,c,true)+body:sceneHtml(n,true)+body}<div class="prog"><i style="animation-duration:${ms}ms;${paused?'animation-play-state:paused':''}"></i></div><div class="pausedMsg">${paused?'일시정지됨 · 재개를 누르면 이어서 진행한다':'<span class="skipHint"><i>▶▶</i> 화면 아무 곳이나 클릭하면 빨리 넘어갑니다 · Enter</span>'}</div></div>`+modesHtml()+(lastOut?outcomeHtml(lastOut):'');
+    bindModes(); {const ac=box.querySelector('.autoCard');if(ac){ac.style.cursor='pointer';}} tickAuto(ms); return;
   }
   const why=mode==='manual'?'':n.type==='skill'?'스킬 선택':n.type==='prep'?'마지막 지배자':n.type!=='battle'?'중요한 만남':n.boss?'지배자 전투':n.quest?'의뢰':n.p<0.6?'불리한 싸움':'생명력 위험';
   box.innerHTML=`<div class="decide${n.type==='battle'?' battleCard':''}"><div class="where">${s.regions[run.region][0]} · ${n.type==='battle'?(n.boss?'지배자 전투':n.quest?'의뢰 토벌':'전투'):n.type==='prep'?'결전 준비':n.type==='skill'?'스킬 습득':'사건'}${why?`<span class="why">${why} · 직접 결정</span>`:''}</div>
@@ -3116,7 +3130,15 @@ function autoStep(){clearTimeout(autoT);phaseT.forEach(clearTimeout);phaseT=[];i
     if(c.node.type==='rest'){const b=autoShop(run);if(b.length)logBuy(b.map(x=>x.it),b[0].why);}
     decide(autoChoice(run,c),true);}
 // 자동으로 넘어가는 장면은 누르면 바로 넘어간다 (연타 방지: 0.15초)
-let skipAt=0;function skipAuto(){const now=Date.now();if(now-skipAt<150||paused||!run||run.dead||run.over)return;const c=current(run);if(!c||impNow(c))return;skipAt=now;autoStep();}
+let skipAt=0;
+
+// 전투 화면 아무 곳이나 누르면 자동 장면을 빨리 넘긴다 (버튼·입력·선택지는 제외). 누른 곳에 효과를 보여준다.
+{const fx=(x,y)=>{const d=document.createElement('div');d.className='skipFx';d.style.left=x+'px';d.style.top=y+'px';d.innerHTML='<b>▶▶</b>';document.body.appendChild(d);setTimeout(()=>d.remove(),520);};
+ const zone=t=>t.closest&&t.closest('#stage,#log');
+ document.addEventListener('mousedown',e=>{if(e.detail>1&&zone(e.target)&&!e.target.closest('input,textarea'))e.preventDefault();});
+ document.addEventListener('click',e=>{if(!zone(e.target)||e.target.closest('button,a,input,textarea,select,.opt,[data-tt].tipt button'))return;if(!run||run.dead||run.over||paused)return;const c=current(run);if(!c||impNow(c))return;
+   fx(e.clientX,e.clientY);skipAuto();try{const n=+(localStorage.getItem('fh_skipN')||0)+1;localStorage.setItem('fh_skipN',n);}catch(_){}});}
+function skipAuto(){const now=Date.now();if(now-skipAt<150||paused||!run||run.dead||run.over)return;const c=current(run);if(!c||impNow(c))return;skipAt=now;autoStep();}
 // 쓰러질 뻔한 순간: 화면 연출 + 기록 강조
 const NEAR_TXT={revive:['부활','죽음의 문턱에서 되살아났다'],potion:['기사회생','성수가 목숨을 붙잡았다'],saver:['구원','동료가 몸을 던져 구해냈다'],grit:['불굴','질긴 목숨으로 버텨냈다']};
 function nearDeathFx(e){const [h,sub]=NEAR_TXT[e.near]||['생존',e.x];let o=$('nearFx');if(!o){o=document.createElement('div');o.id='nearFx';o.setAttribute('aria-live','polite');document.body.appendChild(o);}
