@@ -1,0 +1,44 @@
+# stats 브랜치에 커밋이 올라오면 접속·플레이 기록과 가입 시각을 꺼내 비공개 아티팩트로 남긴다(공개 브랜치에 올리지 않는다).
+name: stats
+on:
+  push:
+    branches: [stats]
+permissions:
+  contents: read
+env:
+  PROJECT_REF: shrxpippitspelhfhvbo
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+    steps:
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: dump
+        run: |
+          SERVICE=$(supabase projects api-keys --project-ref "$PROJECT_REF" -o json | jq -r '[.[]|select(.name=="service_role" or .type=="secret")][0].api_key')
+          echo "::add-mask::$SERVICE"
+          AUTH=""; case "$SERVICE" in eyJ*) AUTH="Authorization: Bearer $SERVICE";; esac
+          B="https://$PROJECT_REF.supabase.co"
+          mkdir -p out
+          SINCE=$(date -u -d '-14 days' +%FT%TZ)
+          : > out/events.jsonl
+          for off in $(seq 0 1000 200000); do
+            curl -fsS "$B/rest/v1/events?select=ts,vid,sid,kind,logged,ver,d&ts=gte.$SINCE&order=id.asc&limit=1000&offset=$off" -H "apikey: $SERVICE" -H "$AUTH" > page.json
+            n=$(jq length page.json); jq -c '.[]' page.json >> out/events.jsonl; [ "$n" -lt 1000 ] && break
+          done
+          # 가입자: 이메일은 빼고 시각만
+          : > out/users.jsonl
+          for pg in $(seq 1 50); do
+            curl -fsS "$B/auth/v1/admin/users?page=$pg&per_page=1000" -H "apikey: $SERVICE" -H "Authorization: Bearer $SERVICE" > u.json || break
+            n=$(jq '.users|length' u.json); jq -c '.users[]|{created_at,last_sign_in_at}' u.json >> out/users.jsonl; [ "$n" -lt 1000 ] && break
+          done
+          curl -fsS "$B/rest/v1/runs?select=created_at,reach,kills,power,actions&order=created_at.asc&limit=5000" -H "apikey: $SERVICE" -H "$AUTH" > out/runs.json || echo '[]' > out/runs.json
+          wc -l out/*.jsonl
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stats
+          path: out
+          retention-days: 1

@@ -2725,7 +2725,15 @@ const TRACK=(()=>{const sid=Date.now().toString(36)+Math.random().toString(36).s
   const st={v:ENGINE_VERSION,start:Date.now(),last:Date.now(),activeMs:0,decisions:0,heroes:0,runs:0,deaths:0,clears:[],maxWorld:0,maxPct:0,maxFloor:0,help:0,rank:0,duel:0,myth:0,enh:0,where:'',events:[]};
   let ref=null,busy=false,again=false,lastWrite=0,lastAct=Date.now();
   function where(){try{if(!run)return hero?`용사 확인 중 (${hero.race.name})`:'시작 화면';const n=run.queue&&run.queue[0];return `${STAGES[run.stage].name} ${floorOf(run)?floorOf(run)+'층':pfmt(pct(run))+'%'} · ${n?(n.type==='event'?'사건:'+(n.kind||''):n.type):'-'}${run.dead?' · 전사':''}`;}catch(e){return '';}}
-  function ev(k,o){const now=Date.now();if(now-lastAct<120000)st.activeMs+=now-lastAct;lastAct=now;st.last=now;st.where=where();
+  // 서버 기록 (접속·플레이 분석). 개인정보 없이 브라우저별 무작위 번호만 보낸다.
+  const SINK_K={visit:1,hero:1,go:1,death:1,clear:1,rank:1,back:1};let vid='';try{vid=localStorage.getItem('fh_vid')||'';if(!vid){vid='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,9);localStorage.setItem('fh_vid',vid);}}catch(e){vid='x'+sid;}
+  let lastBack=0;
+  function sink(k,o){try{if(!SINK_K[k]||typeof RANK==='undefined'||!RANK.on)return;if(k==='back'){if(Date.now()-lastBack<600000)return;lastBack=Date.now();}
+    let d=Object.assign({},o||{},{at:st.where});if(run){d.w=run.stage;d.pct=STAGES[run.stage]&&!STAGES[run.stage].endless?+pct(run).toFixed(2):null;d.fl=floorOf(run)||null;d.lv=run.level||null;d.dec=run.decisions||0;}
+    let js=JSON.stringify(d);if(js.length>1500)d={at:String(st.where).slice(0,200)};
+    const logged=!!(typeof acctOn==='function'&&acctOn());
+    fetch(RANK.url+'/rest/v1/events',{method:'POST',keepalive:true,headers:{'apikey':RANK.key,'Authorization':'Bearer '+RANK.key,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({vid,sid,kind:k,logged,ver:ENGINE_VERSION,d})}).catch(()=>{});}catch(e){}}
+  function ev(k,o){sink(k,o);const now=Date.now();if(now-lastAct<120000)st.activeMs+=now-lastAct;lastAct=now;st.last=now;st.where=where();
     if(k)st.events.push({t:Math.round((now-st.start)/1000),k,...(o||{}),at:st.where});if(st.events.length>80)st.events.splice(0,st.events.length-80);
     try{store.set('track_last',st);}catch(e){} save(k==='hide'||k==='death'||k==='clear');}
   async function save(now){if(!ref)return;if(!now&&Date.now()-lastWrite<15000){clearTimeout(save.t);save.t=setTimeout(()=>save(true),15000);return;}
@@ -2733,6 +2741,7 @@ const TRACK=(()=>{const sid=Date.now().toString(36)+Math.random().toString(36).s
   (async()=>{try{if(!window.claude||!claude.use)return;const [d,u]=await Promise.all([claude.use('db'),claude.use('user')]);if(!d||!u)return;const id=await u.id();if(!id)return;
     ref=d.doc('play/'+id+'/s/'+sid);save(true);}catch(e){}})();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)ev('hide');else ev('back');});
+  setTimeout(()=>sink('visit',{ref:(document.referrer||'').slice(0,120),w:innerWidth}),1500);
   return {ev,st,decide(){st.decisions++;if(run){const w=Math.min(5,worldOf(run.stage));st.maxWorld=Math.max(st.maxWorld,w);if(!STAGES[run.stage].endless)st.maxPct=Math.max(st.maxPct,+pct(run).toFixed(3));else st.maxFloor=Math.max(st.maxFloor,floorOf(run));}
       if(st.decisions%10===0)ev('d'+st.decisions);else ev(null);}};})();
 let toastT=null;
