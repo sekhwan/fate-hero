@@ -27,7 +27,7 @@ jobs:
       - name: link
         run: supabase link --project-ref "$PROJECT_REF" -p "$SUPABASE_DB_PASSWORD"
       - name: db push
-        run: supabase db push --remote -p "$SUPABASE_DB_PASSWORD" || supabase db push --linked -p "$SUPABASE_DB_PASSWORD"
+        run: supabase db push --remote --yes -p "$SUPABASE_DB_PASSWORD"
       - name: auth 설정 (이메일 가입 켜기, 인증 메일 없이 바로 가입)
         run: |
           API="https://api.supabase.com/v1/projects/$PROJECT_REF/config/auth"
